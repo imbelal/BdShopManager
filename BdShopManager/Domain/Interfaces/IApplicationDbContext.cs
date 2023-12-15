@@ -1,0 +1,19 @@
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Domain.Interfaces
+{
+    public interface IApplicationDbContext : IDisposable
+    {
+        DbSet<T> GetDbSet<T>() where T : class;
+        DbSet<UserRole> UserRoles { get; set; }
+        DbSet<ErrorLog> ErrorLogs { get; set; }
+        DbSet<User> Users { get; set; }
+        DbSet<RefreshToken> RefreshTokens { get; set; }
+        DbSet<Category> Categories { get; set; }
+        DbSet<Tag> Tags { get; set; }
+        DbSet<Product> Products { get; set; }
+        DbSet<ProductTag> ProductTags { get; set; }
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    }
+}
