@@ -25,6 +25,7 @@ namespace Infrastructure
         public new IQueryable<Tag> Tags => base.Tags.AsQueryable();
         public new IQueryable<Product> Products => base.Products.AsQueryable();
         public new IQueryable<ProductTag> ProductTags => base.ProductTags.AsQueryable();
+        public new IQueryable<Supplier> Suppliers => base.Suppliers.AsQueryable();
 
         public override int SaveChanges()
         {
