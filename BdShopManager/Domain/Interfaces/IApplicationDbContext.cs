@@ -15,6 +15,7 @@ namespace Domain.Interfaces
         DbSet<Product> Products { get; set; }
         DbSet<ProductTag> ProductTags { get; set; }
         DbSet<Supplier> Suppliers { get; set; }
+        DbSet<Inventory> Inventories { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
