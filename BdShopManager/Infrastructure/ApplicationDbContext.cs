@@ -33,6 +33,7 @@ namespace Infrastructure
         public DbSet<ProductTag> ProductTags { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
