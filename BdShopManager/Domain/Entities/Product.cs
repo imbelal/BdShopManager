@@ -9,7 +9,6 @@ namespace Domain.Entities
         private List<ProductTag> postTags = new();
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public int StockQuantity { get; set; }
         public ProductUnit Unit { get; set; }
         public Guid CategoryId { get; set; }
         public ProductStatus Status { get; set; }
@@ -19,13 +18,11 @@ namespace Domain.Entities
         {
         }
 
-        public Product(string title, string description, Guid categoryId, int stockQuantity, ProductUnit unit, List<Guid> tagIds)
+        public Product(string title, string description, Guid categoryId, ProductUnit unit, List<Guid> tagIds)
         {
             Title = title;
             Description = description;
-            StockQuantity = 0;
             CategoryId = categoryId;
-            StockQuantity = stockQuantity;
             Unit = unit;
             Status = ProductStatus.Active;
             AddTags(tagIds);

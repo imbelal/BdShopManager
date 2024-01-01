@@ -31,7 +31,7 @@ namespace IntegrationTest
         public async Task Delete_Product_Should_Succeed()
         {
             // Arrange
-            Product entity = new("Test post", "Test desc", Guid.NewGuid(), 5, ProductUnit.Piece, new List<Guid>())
+            Product entity = new("Test post", "Test desc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>())
             {
                 Id = Guid.NewGuid()
             };

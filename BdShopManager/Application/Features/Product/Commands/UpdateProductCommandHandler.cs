@@ -24,7 +24,6 @@ namespace Application.Features.Product.Commands
             product.Title = command.Title;
             product.Description = command.Description;
             product.CategoryId = command.CategoryId;
-            product.StockQuantity = command.StockQuantity;
             product.Unit = command.Unit;
             product.UpdateTags(command.TagIds);
 

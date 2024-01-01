@@ -22,7 +22,6 @@ namespace Application.Features.Product.Queries
                 Id = p.Id,
                 Title = p.Title,
                 Desc = p.Description,
-                StockQuantity = p.StockQuantity,
                 Unit = p.Unit,
                 CreatedBy = p.CreatedBy,
                 CreatedDate = p.CreatedUtcDate.ToString("F"),

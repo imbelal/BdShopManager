@@ -15,7 +15,7 @@ namespace Application.Features.Product.Commands
 
         public async Task<IResponse<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Product product = new(command.Title, command.Description, command.CategoryId, command.StockQuantity, command.Unit, command.TagIds);
+            Domain.Entities.Product product = new(command.Title, command.Description, command.CategoryId, command.Unit, command.TagIds);
             _postRepository.Add(product);
             await _postRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

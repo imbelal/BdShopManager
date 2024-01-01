@@ -30,7 +30,7 @@ namespace IntegrationTest
             {
                 Id = Guid.NewGuid()
             };
-            Product post = new("TestPost", "desc", entity.Id, 5, Domain.Enums.ProductUnit.Piece, new List<Guid>())
+            Product post = new("TestPost", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>())
             {
                 Id = Guid.NewGuid()
             };
