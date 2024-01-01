@@ -13,7 +13,7 @@ namespace UnitTest
             Guid tag3 = Guid.NewGuid();
             List<Guid> initiallistOfTagIds = new List<Guid>();
             initiallistOfTagIds.Add(tag1);
-            Product post = new("Test title", "Test description", Guid.NewGuid(), 5, Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
+            Product post = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
 
             //Act
             List<Guid> newlistOfTagIds = new List<Guid>();

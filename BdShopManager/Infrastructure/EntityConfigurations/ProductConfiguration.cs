@@ -11,7 +11,6 @@ namespace Infrastructure.EntityConfigurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Title).HasColumnName("Title").HasColumnType("nvarchar(200)").IsRequired();
             builder.Property(x => x.Description).HasColumnName("Description").HasColumnType("nvarchar(max)").IsRequired();
-            builder.Property(x => x.StockQuantity).HasColumnName("StockQuantity").HasColumnType("int").IsRequired();
             builder.Property(x => x.Unit).HasColumnName("Unit").HasColumnType("int").IsRequired();
             builder.Property(x => x.CategoryId).HasColumnName("CategoryId").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(x => x.Status).HasColumnName("Status").HasColumnType("tinyint").IsRequired();
