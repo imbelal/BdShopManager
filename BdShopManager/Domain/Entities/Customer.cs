@@ -22,5 +22,15 @@ namespace Domain.Entities
             Email = email;
             Remark = remark;
         }
+
+        public void Update(string firstName, string lastName, string address, string contactNo, string email, string remark)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Address = address;
+            ContactNo = contactNo;
+            Email = email;
+            Remark = remark;
+        }
     }
 }

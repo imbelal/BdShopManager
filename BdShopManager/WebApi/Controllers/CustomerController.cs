@@ -1,0 +1,45 @@
+﻿using Application.Features.Customer.Commands;
+using Application.Features.Customer.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CustomerController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+
+        public CustomerController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateCustomerCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateCustomerCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(DeleteCustomerCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var results = await _mediator.Send(new GetAllCustomersQuery());
+
+            return Ok(results);
+        }
+    }
+}
