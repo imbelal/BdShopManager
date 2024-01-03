@@ -37,7 +37,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("GetProductWithPaging")]
-        public async Task<IActionResult> GetPosts(GetAllProductsQuery query)
+        public async Task<IActionResult> GetProducts(GetAllProductsQuery query)
         {
             return Ok(await _mediator.Send(query));
         }

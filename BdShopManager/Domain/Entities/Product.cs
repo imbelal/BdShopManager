@@ -6,7 +6,7 @@ namespace Domain.Entities
 {
     public class Product : AuditableEntityBase, IAggregateRoot, ISoftDeletable
     {
-        private List<ProductTag> postTags = new();
+        private List<ProductTag> productTags = new();
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public ProductUnit Unit { get; set; }
@@ -28,24 +28,24 @@ namespace Domain.Entities
             AddTags(tagIds);
         }
 
-        public IReadOnlyCollection<ProductTag> PostTags
+        public IReadOnlyCollection<ProductTag> ProductTags
         {
-            get => postTags;
+            get => productTags;
         }
 
         private void AddTags(List<Guid> tagIds)
         {
-            postTags.AddRange(tagIds.Select(tagId => new ProductTag(this.Id, tagId)).ToList());
+            productTags.AddRange(tagIds.Select(tagId => new ProductTag(this.Id, tagId)).ToList());
         }
 
         private void RemoveTags(List<Guid> tagIds)
         {
-            postTags = postTags.Where(pt => !tagIds.Contains(pt.TagId)).ToList();
+            productTags = productTags.Where(pt => !tagIds.Contains(pt.TagId)).ToList();
         }
 
         public void UpdateTags(List<Guid> tagIds)
         {
-            List<Guid> existingTagIds = postTags.Select(pt => pt.TagId).ToList();
+            List<Guid> existingTagIds = productTags.Select(pt => pt.TagId).ToList();
             List<Guid> tagsToBeAdded = tagIds.Except(existingTagIds).ToList();
             List<Guid> tagsToBeDeleted = existingTagIds.Except(tagIds).ToList();
             AddTags(tagsToBeAdded);

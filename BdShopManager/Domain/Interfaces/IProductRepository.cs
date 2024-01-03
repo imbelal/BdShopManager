@@ -2,7 +2,7 @@
 
 namespace Domain.Interfaces
 {
-    public interface IPostRepository : IRepository<Domain.Entities.Product>
+    public interface IProductRepository : IRepository<Domain.Entities.Product>
     {
     }
 }

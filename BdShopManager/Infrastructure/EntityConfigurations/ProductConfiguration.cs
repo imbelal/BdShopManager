@@ -15,7 +15,7 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.CategoryId).HasColumnName("CategoryId").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(x => x.Status).HasColumnName("Status").HasColumnType("tinyint").IsRequired();
             builder.Property(x => x.IsDeleted).HasColumnName("IsDeleted").HasColumnType("bit").IsRequired().HasDefaultValue(false);
-            builder.HasMany(x => x.PostTags).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade).IsRequired(false);
+            builder.HasMany(x => x.ProductTags).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade).IsRequired(false);
         }
     }
 }

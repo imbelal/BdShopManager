@@ -6,17 +6,17 @@ namespace Application.Features.Product.Commands
 {
     public class DeleteProductCommandHandler : ICommandHandler<DeleteProductCommand, Guid>
     {
-        private readonly IPostRepository _postRepository;
+        private readonly IProductRepository _productRepository;
 
-        public DeleteProductCommandHandler(IPostRepository postRepository)
+        public DeleteProductCommandHandler(IProductRepository productRepository)
         {
-            _postRepository = postRepository;
+            _productRepository = productRepository;
         }
         public async Task<IResponse<Guid>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            Domain.Entities.Product product = await _postRepository.GetByIdAsync(request.PostId) ?? throw new KeyNotFoundException("User not found!!");
-            _postRepository.Remove(product);
-            await _postRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            Domain.Entities.Product product = await _productRepository.GetByIdAsync(request.ProductId) ?? throw new KeyNotFoundException("User not found!!");
+            _productRepository.Remove(product);
+            await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Response.Success(product.Id);
         }

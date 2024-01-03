@@ -6,18 +6,18 @@ namespace Application.Features.Product.Commands
 {
     public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, Guid>
     {
-        private readonly IPostRepository _postRepository;
+        private readonly IProductRepository _productRepository;
 
-        public CreateProductCommandHandler(IPostRepository postRepository)
+        public CreateProductCommandHandler(IProductRepository productRepository)
         {
-            _postRepository = postRepository;
+            _productRepository = productRepository;
         }
 
         public async Task<IResponse<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
             Domain.Entities.Product product = new(command.Title, command.Description, command.CategoryId, command.Unit, command.TagIds);
-            _postRepository.Add(product);
-            await _postRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _productRepository.Add(product);
+            await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Response.Success(product.Id);
         }

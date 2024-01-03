@@ -17,21 +17,21 @@ namespace IntegrationTest
         public async Task Create_Product_Should_Succeed()
         {
             // Arrange
-            CreateProductCommand command = new("TestPost", "TestDesc", Guid.NewGuid(), 5, ProductUnit.Piece, new List<Guid>());
+            CreateProductCommand command = new("Testproduct", "TestDesc", Guid.NewGuid(), 5, ProductUnit.Piece, new List<Guid>());
 
             // Act
             await _mediator.Send(command);
 
             // Assert
-            int numberOfPost = _context.Products.Count();
-            Assert.True(numberOfPost > 0);
+            int numberOfproduct = _context.Products.Count();
+            Assert.True(numberOfproduct > 0);
         }
 
         [Fact]
         public async Task Delete_Product_Should_Succeed()
         {
             // Arrange
-            Product entity = new("Test post", "Test desc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>())
+            Product entity = new("Test product", "Test desc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>())
             {
                 Id = Guid.NewGuid()
             };
@@ -39,12 +39,12 @@ namespace IntegrationTest
             await _context.SaveChangesAsync(new CancellationToken());
 
             // Act
-            DeleteProductCommand deletePostCommand = new(entity.Id);
-            await _mediator.Send(deletePostCommand);
+            DeleteProductCommand deleteproductCommand = new(entity.Id);
+            await _mediator.Send(deleteproductCommand);
 
             // Assert
-            Product? post = await _context.Products.FirstOrDefaultAsync(x => x.Id == entity.Id, new CancellationToken());
-            Assert.Null(post);
+            Product? product = await _context.Products.FirstOrDefaultAsync(x => x.Id == entity.Id, new CancellationToken());
+            Assert.Null(product);
 
         }
     }

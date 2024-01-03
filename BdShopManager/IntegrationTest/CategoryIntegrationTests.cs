@@ -23,19 +23,19 @@ namespace IntegrationTest
         }
 
         [Fact]
-        public async Task Delete_Category_Should_Delete_Related_Posts_Also()
+        public async Task Delete_Category_Should_Delete_Related_products_Also()
         {
             // Arrange
             Category entity = new("TestCate")
             {
                 Id = Guid.NewGuid()
             };
-            Product post = new("TestPost", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>())
+            Product product = new("Testproduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>())
             {
                 Id = Guid.NewGuid()
             };
             _context.Categories.Add(entity);
-            _context.Products.Add(post);
+            _context.Products.Add(product);
             await _context.SaveChangesAsync(new CancellationToken());
 
             // Act
@@ -44,9 +44,9 @@ namespace IntegrationTest
 
             // Assert
             Category? existingCategory = await _context.Categories.FirstOrDefaultAsync(x => x.Id == entity.Id, new CancellationToken());
-            List<Product> existingPosts = await _context.Products.Where(x => x.CategoryId == entity.Id).ToListAsync(new CancellationToken());
+            List<Product> existingproducts = await _context.Products.Where(x => x.CategoryId == entity.Id).ToListAsync(new CancellationToken());
             Assert.Null(existingCategory);
-            Assert.Empty(existingPosts);
+            Assert.Empty(existingproducts);
         }
     }
 }
