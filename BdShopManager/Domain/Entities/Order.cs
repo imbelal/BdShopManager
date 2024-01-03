@@ -26,15 +26,18 @@ namespace Domain.Entities
             Remark = remark;
         }
 
-        private void AddOrderDetails(List<OrderDetailsDto> orderDetailDtos)
+        public static Order CreateOrderWithDetails(Guid customerId, decimal totalPrice, decimal totalPaid, string remark, List<OrderDetailsDto> orderDetailDtos)
         {
-            orderDetails.AddRange(
-                orderDetailDtos.Select(orderDetail => new OrderDetail(orderDetail.OrderId,
+            Order newOrder = new(customerId, totalPrice, totalPaid, remark);
+            newOrder.orderDetails.AddRange(
+                orderDetailDtos.Select(orderDetail => new OrderDetail(newOrder.Id,
                 orderDetail.ProductId,
                 orderDetail.Quantity,
                 orderDetail.Unit,
                 orderDetail.UnitPrice)).ToList()
             );
+
+            return newOrder;
         }
     }
 }

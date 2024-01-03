@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             return await GetDbSet().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid Id)
+        public virtual async Task<T> GetByIdAsync(Guid Id)
         {
             return await GetDbSet().FindAsync(Id);
         }

@@ -5,7 +5,7 @@ namespace Application.Features.Product.Commands
 {
     public class UpdateProductCommand : ICommand<Guid>
     {
-        public Guid PostId { get; set; }
+        public Guid ProductId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public Guid CategoryId { get; set; }
@@ -13,9 +13,9 @@ namespace Application.Features.Product.Commands
         public ProductUnit Unit { get; set; }
         public List<Guid> TagIds { get; set; }
 
-        public UpdateProductCommand(Guid postId, string title, string description, Guid categoryId, int stockQuantity, ProductUnit unit, List<Guid> tagIds)
+        public UpdateProductCommand(Guid productId, string title, string description, Guid categoryId, int stockQuantity, ProductUnit unit, List<Guid> tagIds)
         {
-            PostId = postId;
+            ProductId = productId;
             Title = title;
             Description = description;
             CategoryId = categoryId;

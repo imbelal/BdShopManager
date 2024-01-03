@@ -17,7 +17,7 @@ namespace Application.Features.Product.Queries
 
         public async Task<IResponse<Pagination<ProductDto>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var queryable = _context.Products.Include(p => p.PostTags).Select(p => new ProductDto
+            var queryable = _context.Products.Include(p => p.ProductTags).Select(p => new ProductDto
             {
                 Id = p.Id,
                 Title = p.Title,
@@ -25,7 +25,7 @@ namespace Application.Features.Product.Queries
                 Unit = p.Unit,
                 CreatedBy = p.CreatedBy,
                 CreatedDate = p.CreatedUtcDate.ToString("F"),
-                PostTags = _context.Tags.Where(t => p.PostTags.Select(x => x.TagId).Contains(t.Id)).Select(x => x.Title).ToList()
+                ProductTags = _context.Tags.Where(t => p.ProductTags.Select(x => x.TagId).Contains(t.Id)).Select(x => x.Title).ToList()
             });
 
             var pagination = await new Pagination<ProductDto>().CreateAsync(queryable, request.PageNumber, request.PageSize);

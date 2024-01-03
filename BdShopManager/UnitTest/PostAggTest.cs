@@ -2,10 +2,10 @@
 
 namespace UnitTest
 {
-    public class PostAggTest
+    public class productAggTest
     {
         [Fact]
-        public void ShouldUpdateTagsForPost()
+        public void ShouldUpdateTagsForproduct()
         {
             // Arranage
             Guid tag1 = Guid.NewGuid();
@@ -13,18 +13,18 @@ namespace UnitTest
             Guid tag3 = Guid.NewGuid();
             List<Guid> initiallistOfTagIds = new List<Guid>();
             initiallistOfTagIds.Add(tag1);
-            Product post = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
+            Product product = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
 
             //Act
             List<Guid> newlistOfTagIds = new List<Guid>();
             newlistOfTagIds.Add(tag2);
             newlistOfTagIds.Add(tag3);
-            post.UpdateTags(newlistOfTagIds);
+            product.UpdateTags(newlistOfTagIds);
 
             // Assert
-            Assert.DoesNotContain(tag1, post.PostTags.Select(pt => pt.TagId));
-            Assert.Equal(newlistOfTagIds, post.PostTags.Select(pt => pt.TagId));
-            Assert.Equal(newlistOfTagIds.Count, post.PostTags.Count);
+            Assert.DoesNotContain(tag1, product.ProductTags.Select(pt => pt.TagId));
+            Assert.Equal(newlistOfTagIds, product.ProductTags.Select(pt => pt.TagId));
+            Assert.Equal(newlistOfTagIds.Count, product.ProductTags.Count);
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Domain.Dtos
         public ProductUnit Unit { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedDate { get; set; }
-        public List<string> PostTags { get; set; }
+        public List<string> ProductTags { get; set; }
     }
 }

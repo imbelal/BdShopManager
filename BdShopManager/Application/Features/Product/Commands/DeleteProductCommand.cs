@@ -4,11 +4,11 @@ namespace Application.Features.Product.Commands
 {
     public class DeleteProductCommand : ICommand<Guid>
     {
-        public Guid PostId { get; set; }
+        public Guid ProductId { get; set; }
 
-        public DeleteProductCommand(Guid postId)
+        public DeleteProductCommand(Guid productId)
         {
-            PostId = postId;
+            ProductId = productId;
         }
     }
 }
