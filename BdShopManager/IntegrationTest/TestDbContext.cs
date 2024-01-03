@@ -43,5 +43,7 @@ namespace IntegrationTest
         public new IQueryable<Supplier> Suppliers => base.Suppliers.AsQueryable();
         public new IQueryable<Inventory> Inventories => base.Inventories.AsQueryable();
         public new IQueryable<Customer> Customers => base.Customers.AsQueryable();
+        public new IQueryable<Order> Orders => base.Orders.AsQueryable();
+        public new IQueryable<OrderDetail> OrderDetails => base.OrderDetails.AsQueryable();
     }
 }
