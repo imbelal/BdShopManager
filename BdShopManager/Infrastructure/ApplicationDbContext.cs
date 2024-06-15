@@ -4,8 +4,8 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.EntityConfigurations;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
@@ -13,7 +13,7 @@ namespace Infrastructure
 {
     public class ApplicationDbContext : EventContextBase<ApplicationDbContext>, IApplicationDbContext
     {
-        public ApplicationDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostingEnvironment hostingEnvironment, ILogger<ApplicationDbContext> logger)
+        public ApplicationDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostEnvironment hostingEnvironment, ILogger<ApplicationDbContext> logger)
             : base(dbConnectionStringProvider.ConnectionString, dbContextOptionsProvider, currentUserService, publisher, hostingEnvironment, logger)
         {
         }

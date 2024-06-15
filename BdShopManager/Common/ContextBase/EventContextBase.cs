@@ -2,9 +2,9 @@
 using Common.Events;
 using Common.Services.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Common.ContextBase
@@ -13,7 +13,7 @@ namespace Common.ContextBase
     {
         private readonly IPublisher _publisher;
         private readonly ILogger<EventContextBase<TContext>> _logger;
-        public EventContextBase(string connectionString, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostingEnvironment hostingEnvironment, ILogger<EventContextBase<TContext>> logger)
+        public EventContextBase(string connectionString, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostEnvironment hostingEnvironment, ILogger<EventContextBase<TContext>> logger)
             : base(connectionString, dbContextOptionsProvider, currentUserService, hostingEnvironment)
         {
             _publisher = publisher;

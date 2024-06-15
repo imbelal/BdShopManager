@@ -4,7 +4,6 @@ using Common.Cache;
 using Common.NlogExtentions;
 using Domain;
 using Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -79,7 +78,7 @@ try
         });
     });
 
-    builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddDomain();

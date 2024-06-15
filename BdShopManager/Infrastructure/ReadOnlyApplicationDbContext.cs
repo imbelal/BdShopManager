@@ -3,15 +3,15 @@ using Common.Services.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure
 {
     public class ReadOnlyApplicationDbContext : ApplicationDbContext, IReadOnlyApplicationDbContext
     {
-        public ReadOnlyApplicationDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService _currentUserService, IPublisher _publisher, IHostingEnvironment _hostingEnvironment, ILogger<ApplicationDbContext> logger)
+        public ReadOnlyApplicationDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService _currentUserService, IPublisher _publisher, IHostEnvironment _hostingEnvironment, ILogger<ApplicationDbContext> logger)
             : base(dbConnectionStringProvider, dbContextOptionsProvider, _currentUserService, _publisher, _hostingEnvironment, logger)
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

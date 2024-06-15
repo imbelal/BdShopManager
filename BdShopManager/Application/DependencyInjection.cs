@@ -1,7 +1,6 @@
 ﻿using Application.Services.Auth.Implementations;
 using Application.Services.Auth.Interfaces;
 using Common.Services.Interfaces;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -11,7 +10,7 @@ namespace Application
     {
         public static void AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IAccessTokenService, AccessTokenService>();

@@ -8,11 +8,11 @@ namespace Common.NlogExtentions
 {
     public class NLogConfigurationService : IHostedService
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly ICurrentUserService _currentUserService;
         private readonly IExceptionRendererService _exceptionRendererService;
 
-        public NLogConfigurationService(IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IExceptionRendererService exceptionRendererService)
+        public NLogConfigurationService(IHostEnvironment hostingEnvironment, ICurrentUserService currentUserService, IExceptionRendererService exceptionRendererService)
         {
             _hostingEnvironment = hostingEnvironment;
             _currentUserService = currentUserService;

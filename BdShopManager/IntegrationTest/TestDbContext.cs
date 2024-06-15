@@ -4,15 +4,15 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace IntegrationTest
 {
     public class TestDbContext : ApplicationDbContext, IReadOnlyApplicationDbContext
     {
-        public TestDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostingEnvironment hostingEnvironment, ILogger<TestDbContext> logger)
+        public TestDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostEnvironment hostingEnvironment, ILogger<TestDbContext> logger)
         : base(dbConnectionStringProvider, dbContextOptionsProvider, currentUserService, publisher, hostingEnvironment, logger)
         {
             if (!Database.IsSqlServer())

@@ -9,10 +9,10 @@ namespace Common.NlogExtentions
     [LayoutRenderer("formatted-exception")]
     public class CustomExceptionLayoutRenderer : LayoutRenderer
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly ICurrentUserService _currentUserService;
         private readonly IExceptionRendererService _exceptionRendererService;
-        public CustomExceptionLayoutRenderer(IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IExceptionRendererService exceptionRendererService)
+        public CustomExceptionLayoutRenderer(IHostEnvironment hostingEnvironment, ICurrentUserService currentUserService, IExceptionRendererService exceptionRendererService)
         {
             _hostingEnvironment = hostingEnvironment;
             _currentUserService = currentUserService;

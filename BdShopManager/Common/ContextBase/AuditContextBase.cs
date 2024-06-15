@@ -1,15 +1,15 @@
 ﻿using Common.Entities.Interfaces;
 using Common.Services.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Common.ContextBase
 {
     public class AuditContextBase<TContext> : SoftDeletableContextBase<TContext> where TContext : DbContext
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly IHostingEnvironment _hostingEnvironment;
-        public AuditContextBase(string connectionString, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IHostingEnvironment hostingEnvironment)
+        private readonly IHostEnvironment _hostingEnvironment;
+        public AuditContextBase(string connectionString, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IHostEnvironment hostingEnvironment)
             : base(dbContextOptionsProvider.CreateDbContextOptions(connectionString))
         {
             _currentUserService = currentUserService;
