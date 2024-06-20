@@ -2,7 +2,7 @@
 
 namespace UnitTest
 {
-    public class productAggTest
+    public class ProductAggTest
     {
         [Fact]
         public void ShouldUpdateTagsForproduct()
@@ -11,14 +11,11 @@ namespace UnitTest
             Guid tag1 = Guid.NewGuid();
             Guid tag2 = Guid.NewGuid();
             Guid tag3 = Guid.NewGuid();
-            List<Guid> initiallistOfTagIds = new List<Guid>();
-            initiallistOfTagIds.Add(tag1);
+            List<Guid> initiallistOfTagIds = [tag1];
             Product product = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
 
             //Act
-            List<Guid> newlistOfTagIds = new List<Guid>();
-            newlistOfTagIds.Add(tag2);
-            newlistOfTagIds.Add(tag3);
+            List<Guid> newlistOfTagIds = [tag2, tag3];
             product.UpdateTags(newlistOfTagIds);
 
             // Assert
