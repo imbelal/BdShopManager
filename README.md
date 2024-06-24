@@ -34,7 +34,6 @@ This project is a .NET-based modular monolith application that demonstrates a cl
 
     ```bash
     git clone https://github.com/imbelal/BdShopManager.git
-    cd BdShopManager
     ```
 
 2. **Restore dependencies:**
@@ -51,10 +50,18 @@ This project is a .NET-based modular monolith application that demonstrates a cl
 
 4. **Run the application:**
 
-    ```bash
+   ```bash
     dotnet run --project webapi
-    ```
+   ```
 
+### Run with docker-compose
+  ```bash
+    docker-compose up
+  ```
+
+   ```bash
+    docker-compose down
+   ```
 
 ## Project Structure
 
