@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server
+    restart: always
+    environment:
+      MSSQL_SA_PASSWORD: StrongPassword1!!
+      ACCEPT_EULA: Y
+    ports:
+      - "14333:1433"
+    networks:
+      - bd-shop-manager-network
+    volumes:
+      - bd-shop-manager-volume:/var/opt/mssql
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    depends_on: [sql-server]
+    build:
+      context: .
+      dockerfile: src/WebApi/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sql-server;Database=CleanCqrsAndDddTestDb;MultipleActiveResultSets=true;uid=sa;pwd=StrongPassword1!!;TrustServerCertificate=true"
+    ports:
+      - "80:443"
+    networks:
+      - bd-shop-manager-network
+networks:
+  bd-shop-manager-network:
+
+
+volumes:
+  bd-shop-manager-volume:
