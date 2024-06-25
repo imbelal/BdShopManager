@@ -30,15 +30,7 @@ namespace Common.ContextBase
                 if (entry.Entity is IAuditableEntity entity)
                 {
                     var now = DateTime.UtcNow;
-                    string user;
-                    if (_hostingEnvironment.IsDevelopment())
-                    {
-                        user = "System from dev env.";
-                    }
-                    else
-                    {
-                        user = _currentUserService.GetUser().Identity?.Name ?? "System";
-                    }
+                    string user = _currentUserService.GetUser().Identity?.Name ?? "System";
 
                     switch (entry.State)
                     {
