@@ -1,0 +1,52 @@
+parameters:
+  - name: projectPath
+    type: string
+
+  - name: artifactName
+    type: string
+
+steps:
+  - checkout: self
+    fetchDepth: 1
+    fetchTags: false
+
+  # Task: Nuget authentication
+  - task: NuGetAuthenticate@1
+
+  - task: UseDotNet@2
+    displayName: "Use .NET 8 Core sdk"
+    inputs:
+      packageType: "sdk"
+      version: "8.0.x"
+      includePreviewVersions: false
+
+  - task: DotNetCoreCLI@2
+    displayName: Restore
+    inputs:
+      command: restore
+      projects: "${{ parameters.projectPath }}/*.csproj"
+      feedsToUse: config
+      nugetConfigPath: "nuget.config"
+
+  # Task: Build the project with dotnet core cli (dotnet build)
+  - task: DotNetCoreCLI@2
+    displayName: "Build"
+    inputs:
+      projects: "${{ parameters.projectPath }}/*.csproj"
+      arguments: "--configuration Release"
+
+  # Task: Publish the project with dotnet core cli (dotnet publish) for production build
+  - task: DotNetCoreCLI@2
+    displayName: "Publish production"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: "${{ parameters.projectPath }}/*.csproj"
+      arguments: "--configuration Release --output $(build.artifactstagingdirectory)/buildProduction"
+
+  # Task: Publish the build artifacts to Azure Pipelines (so we can download them later)
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact"
+    inputs:
+      PathtoPublish: "$(build.artifactstagingdirectory)"
+      ArtifactName: "${{ parameters.artifactName }}"

@@ -1,0 +1,53 @@
+trigerr:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - src/WebApi/*
+      - src/Application/*
+      - src/Domain/*
+      - src/Infrastructure/*
+      - src/Common/*
+      - src/UnitTest/*
+      - src/IntegrationTest/*
+
+variables:
+  - name: ProjectName
+    value: "WebApi"
+  - name: ArtifactName
+    value: "WebApi"
+  - name: UnitTestProjects
+    value: "**/UnitTest.csproj"
+  - name: IntegrationTestProjects
+    value: "**/IntegrationTest.csproj"
+
+name: WebApi_$(Date:yyyy) -$(Date:dd)$(Rev:.r)--$(Build.SourceBranchName)
+
+stages:
+  - stage: Build_And_Tests
+    jobs:
+      - job: Build
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          - template: templates/build-dot-net.yml
+            parameters:
+              projectPath: "src/$(ProjectName)"
+              artifactName: "$(ArtifactName)"
+
+      - job: Unit_Tests
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          - templates: templates/test-dot-net.yml
+            parameters:
+              testProjects: "$(UnitTestProjects)"
+
+      - job: Integration_Tests
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          - templates: templates/test-dot-net.yml
+            parameters:
+              testProjects: "$(IntegrationTestProjects)"
