@@ -25,7 +25,7 @@ This project is a .NET-based modular monolith application that demonstrates a cl
 
 ### Prerequisites
 
-- .NET 7.0 SDK or later
+- .NET 8.0 SDK or later
 - Docker (optional, for containerization)
 
 ### Installation
@@ -65,11 +65,12 @@ This project is a .NET-based modular monolith application that demonstrates a cl
 
 ## Project Structure
 
-- **Core**: Contains domain entities, value objects, aggregates, and interfaces.
+- **Domain**: Contains domain entities, value objects, aggregates, and interfaces.
 - **Application**: Application logic including commands, queries, handlers, validators, and DTOs.
 - **Infrastructure**: Implementation of repository patterns, database context, logging, and other services.
 - **WebAPI**: Entry point of the application with controllers, middleware, and configuration.
-- **Tests**: Unit and integration tests.
+- **UnitTest**: Contains all unit tests.
+- **IntegrationTest**: Contains all integration tests.
 
 ## Key Components
 
