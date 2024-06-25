@@ -1,4 +1,4 @@
-trigerr:
+triger:
   branches:
     include:
       - master
@@ -40,7 +40,7 @@ stages:
         pool:
           vmImage: "windows-latest"
         steps:
-          - templates: templates/test-dot-net.yml
+          - template: templates/test-dot-net.yml
             parameters:
               testProjects: "$(UnitTestProjects)"
 
@@ -48,6 +48,6 @@ stages:
         pool:
           vmImage: "windows-latest"
         steps:
-          - templates: templates/test-dot-net.yml
+          - template: templates/test-dot-net.yml
             parameters:
               testProjects: "$(IntegrationTestProjects)"
