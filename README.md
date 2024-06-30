@@ -1,10 +1,10 @@
-# Modular Monolith Application with Clean Architecture
+# Modular Monolith .NET Boilerplate with Clean Architecture
 
 This project is a .NET-based modular monolith application that demonstrates a clean architecture design pattern. It leverages Domain-Driven Design (DDD), Command Query Responsibility Segregation (CQRS), and MediatR for decoupling and modularity. The application is built with various modern software engineering principles and practices to ensure scalability, maintainability, and testability.
 
 ## Features
 
-- **Architecture**: Clean architecture following DDD and CQRS principles.
+- **Architecture**: Event driven clean architecture following DDD and CQRS principles.
 - **Database**: Separate databases for read and write operations.
 - **Caching**: In-memory caching for improved performance.
 - **Soft Delete**: Soft delete implementation for entities.
@@ -19,6 +19,7 @@ This project is a .NET-based modular monolith application that demonstrates a cl
 - **Testing**: 
   - Unit tests using xUnit
   - Integration tests using in-memory SQLite database.
+- **Build Pipeline**: Azure build pipeline scripts provided.
 - **Docker Support**: Containerized using Docker.
 
 ## Getting Started
