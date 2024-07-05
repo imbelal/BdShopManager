@@ -16,6 +16,7 @@ This project is a .NET-based monolith application that demonstrates a clean arch
 - **Logging**: Implemented using NLog.
 - **Cron Jobs**: Scheduled tasks using cron jobs.
 - **Exception Handling**: Global exception handler.
+- **Custom user authentication and authorization**: Custom user authentication using JWT token (Access and Refresh token) with role based authorization.
 - **Testing**: 
   - Unit tests using xUnit
   - Integration tests using in-memory SQLite database.
