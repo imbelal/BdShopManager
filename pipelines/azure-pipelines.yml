@@ -92,6 +92,6 @@ stages:
               CUSTOM_SLOT_NAME: ${{ parameters.slotName }}
               BUILD_SOURCEBRANCHNAME: $(Build.SourceBranchName)  # Pass the branch name
               DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
-              RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
-              APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
+              RESOURCE_GROUP: 'bdshop'  # Use the RESOURCE_GROUP variable
+              APP_NAME: 'bdshopmanager'  # Use the APP_NAME variable
               DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/*.zip'  # Specify the path to your deployment package
