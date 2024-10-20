@@ -81,7 +81,7 @@ stages:
               buildType: 'current'
               downloadType: 'single'
               artifactName: $(ArtifactName)
-              downloadPath: '$(System.ArtifactsDirectory)'
+              downloadPath: '$(Pipeline.Workspace)'
   - stage: Feature_Deployment
     dependsOn: Build_And_Tests
     condition: succeeded()
@@ -97,6 +97,10 @@ stages:
               scriptType: 'python'
               scriptLocation: 'inlineScript'
               inlineScript: |
+                echo "System workspace Directory: $(System.DefaultWorkingDirectory)"
+                echo "Pipeline workspace Directory: $(Pipeline.Workspace)"
+                echo "Artifact Staging Directory: $(Build.ArtifactStagingDirectory)"
+                echo "Project Output Path: $(Build.ArtifactStagingDirectory)/buildProduction"
                 python pipelines/scripts/deployToFeatureSlot.py
               workingDirectory: $(System.DefaultWorkingDirectory)
             env:
@@ -105,4 +109,4 @@ stages:
               DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
               RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
               APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
-              DEPLOYMENT_PACKAGE: '$(System.ArtifactsDirectory)/$(ArtifactName).zip'  # Specify the path to your deployment package
+              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/$(ArtifactName).zip'  # Specify the path to your deployment package
