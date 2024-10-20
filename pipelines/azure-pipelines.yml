@@ -25,9 +25,9 @@ variables:
   - name: IntegrationTestProjects
     value: "**/IntegrationTest.csproj"
   - name: RESOURCE_GROUP
-    value: 'MyResourceGroup'  # Replace with your actual resource group name
+    value: 'bdshop'
   - name: APP_NAME
-    value: 'MyAppServiceName'  # Replace with your actual app service name
+    value: 'bdshopmanager'
 
 parameters:
   - name: slotName
@@ -92,6 +92,6 @@ stages:
               CUSTOM_SLOT_NAME: ${{ parameters.slotName }}
               BUILD_SOURCEBRANCHNAME: $(Build.SourceBranchName)  # Pass the branch name
               DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
-              RESOURCE_GROUP: 'bdshop'  # Use the RESOURCE_GROUP variable
-              APP_NAME: 'bdshopmanager'  # Use the APP_NAME variable
-              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)\$(ArtifactName)\BuildProduction\$(ProjectName).zip'  # Specify the path to your deployment package
+              RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
+              APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
+              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/$(ArtifactName)/BuildProduction/$(ProjectName).zip'  # Specify the path to your deployment package
