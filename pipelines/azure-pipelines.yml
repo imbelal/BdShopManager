@@ -46,7 +46,7 @@ stages:
     jobs:
       - job: Build
         pool:
-          vmImage: "windows-latest"
+          name: Default
         steps:
           - template: templates/build-dot-net.yml
             parameters:
@@ -55,7 +55,7 @@ stages:
 
       - job: Unit_Tests
         pool:
-          vmImage: "windows-latest"
+          name: Default
         steps:
           - template: templates/test-dot-net.yml
             parameters:
@@ -63,20 +63,35 @@ stages:
 
       - job: Integration_Tests
         pool:
-          vmImage: "windows-latest"
+          name: Default
         steps:
           - template: templates/test-dot-net.yml
             parameters:
               testProjects: "$(IntegrationTestProjects)"
 
-      - job: Manage_Slots
-        displayName: 'Manage Deployment Slots'
+      - job: Download_artifact
+        displayName: 'Downloading artifact'
         pool:
-          vmImage: "windows-latest"
+          name: Default
         dependsOn: 
           - Build
           - Unit_Tests
           - Integration_Tests
+        condition: and(succeeded(), eq(${{ parameters.deployToFeatureSlot }}, true))  # Use parameters directly
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: $(ArtifactName)
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+      - job: Manage_Slots
+        displayName: 'Manage Deployment Slots'
+        pool:
+          name: Default
+        dependsOn: 
+          - Download_artifact
         condition: and(succeeded(), eq(${{ parameters.deployToFeatureSlot }}, true))  # Use parameters directly
         steps:
           - task: AzureCLI@2
@@ -94,4 +109,4 @@ stages:
               DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
               RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
               APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
-              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/$(ProjectName)/BuildProduction/$(ArtifactName).zip'  # Specify the path to your deployment package
+              DEPLOYMENT_PACKAGE: '$(System.ArtifactsDirectory)/$(ArtifactName).zip'  # Specify the path to your deployment package
