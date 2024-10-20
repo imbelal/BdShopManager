@@ -21,10 +21,6 @@ variables:
     value: "**/UnitTest.csproj"
   - name: IntegrationTestProjects
     value: "**/IntegrationTest.csproj"
-  - name: RESOURCE_GROUP
-    value: 'bdshop'
-  - name: APP_NAME
-    value: 'bdshopmanager'
 
 parameters:
   - name: slotName
