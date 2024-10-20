@@ -117,11 +117,8 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     app.UseCors();
     app.UseHttpsRedirection();
@@ -134,11 +131,8 @@ try
 
     app.MapControllers();
 
-    if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TESTING_ENVIRONMENT")))
-    {
-        logger.Debug("Database migration");
-        RunAutoDatabaseMigration(app);
-    }
+    logger.Debug("Database migration");
+    RunAutoDatabaseMigration(app);
 
     logger.Debug("Application Starting Up");
     app.Run();
