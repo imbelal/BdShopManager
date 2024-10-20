@@ -30,7 +30,7 @@ parameters:
   - name: slotName
     displayName: 'Custom Slot Name'
     type: string
-    default: ''  # By default, the branch name will be used if not provided
+    default: 'branch name'  # By default, the branch name will be used if not provided
   - name: deployToFeatureSlot
     displayName: 'Deploy to Feature Slot'
     type: boolean
