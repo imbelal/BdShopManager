@@ -21,6 +21,20 @@ variables:
     value: "**/UnitTest.csproj"
   - name: IntegrationTestProjects
     value: "**/IntegrationTest.csproj"
+  - name: RESOURCE_GROUP
+    value: 'MyResourceGroup'  # Replace with your actual resource group name
+  - name: APP_NAME
+    value: 'MyAppServiceName'  # Replace with your actual app service name
+
+parameters:
+  - name: slotName
+    displayName: 'Custom Slot Name'
+    type: string
+    default: ''  # By default, the branch name will be used if not provided
+  - name: deployToFeatureSlot
+    displayName: 'Deploy to Feature Slot'
+    type: boolean
+    default: false  # Default to false, can be set to true in the UI
 
 name: WebApi_$(Date:yyyy) -$(Date:dd)$(Rev:.r)--$(Build.SourceBranchName)
 
@@ -51,3 +65,29 @@ stages:
           - template: templates/test-dot-net.yml
             parameters:
               testProjects: "$(IntegrationTestProjects)"
+
+      - job: Manage_Slots
+        displayName: 'Manage Deployment Slots'
+        pool:
+          vmImage: "windows-latest"
+        dependsOn: 
+          - Build
+          - Unit_Tests
+          - Integration_Tests
+        condition: and(succeeded(), eq(${{ parameters.deployToFeatureSlot }}, true))  # Use parameters directly
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'MyAzureConnection'  # Name of your service connection
+              scriptType: 'python'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                python scripts/python deployToFeatureSlot.py
+              workingDirectory: $(System.DefaultWorkingDirectory)
+            env:
+              CUSTOM_SLOT_NAME: ${{ parameters.slotName }}
+              BUILD_SOURCEBRANCHNAME: $(Build.SourceBranchName)  # Pass the branch name
+              DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
+              RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
+              APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
+              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/*.zip'  # Specify the path to your deployment package
