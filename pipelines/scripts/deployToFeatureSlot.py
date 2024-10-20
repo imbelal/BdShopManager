@@ -15,8 +15,14 @@ def check_existing_slots(resource_group, app_name):
         sys.exit(1)
     return result.stdout.strip().splitlines()
 
-def create_slot(resource_group, app_name, slot_name):
-    command = f"az webapp deployment slot create --resource-group {resource_group} --name {app_name} --slot {slot_name}"
+def create_slot(resource_group, app_name, slot_name, source_slot = None):
+    if source_slot:
+        # Clone the existing slot to create the new slot
+        command = f"az webapp deployment slot clone --resource-group {resource_group} --name {app_name} --slot {slot_name} --src-slot {source_slot}"
+    else:
+        # Create a new slot without cloning
+        command = f"az webapp deployment slot create --resource-group {resource_group} --name {app_name} --slot {slot_name}"
+    
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         print("Error creating slot:", result.stderr)
@@ -46,6 +52,7 @@ if __name__ == "__main__":
     custom_slot_name = os.getenv("CUSTOM_SLOT_NAME", "")
     branch_name = os.getenv("BUILD_SOURCEBRANCHNAME", "")
     deployment_package = os.getenv("DEPLOYMENT_PACKAGE")
+    source_slot = os.getenv("SOURCE_SLOT")
 
     slot_name = get_slot_name(branch_name, custom_slot_name)
     print(f"Using slot name: {slot_name}")
@@ -60,6 +67,6 @@ if __name__ == "__main__":
         if len(existing_slots) >= max_slots:
             print(f"Error: Maximum number of slots ({max_slots}) has been reached.")
             sys.exit(1)
-        create_slot(resource_group, app_name, slot_name)
+        create_slot(resource_group, app_name, slot_name, source_slot)
 
     deploy_to_slot(resource_group, app_name, slot_name, deployment_package)
