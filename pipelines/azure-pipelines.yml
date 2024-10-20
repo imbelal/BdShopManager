@@ -94,4 +94,4 @@ stages:
               DEPLOY_TO_FEATURE_SLOT: ${{ parameters.deployToFeatureSlot }}  # Pass the checkbox value
               RESOURCE_GROUP: 'bdshop'  # Use the RESOURCE_GROUP variable
               APP_NAME: 'bdshopmanager'  # Use the APP_NAME variable
-              DEPLOYMENT_PACKAGE: '$(System.DefaultWorkingDirectory)/**/*.zip'  # Specify the path to your deployment package
+              DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)\$(ArtifactName)\BuildProduction\$(ProjectName).zip'  # Specify the path to your deployment package
