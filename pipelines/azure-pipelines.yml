@@ -12,6 +12,9 @@ trigger:
       - src/UnitTest/*
       - src/IntegrationTest/*
 
+pool:
+  name: Default
+
 variables:
   - name: ProjectName
     value: "WebApi"
