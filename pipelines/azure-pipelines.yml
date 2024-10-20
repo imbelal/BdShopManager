@@ -82,7 +82,7 @@ stages:
               scriptType: 'python'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                python scripts/deployToFeatureSlot.py
+                python pipelines/scripts/deployToFeatureSlot.py
               workingDirectory: $(System.DefaultWorkingDirectory)
             env:
               CUSTOM_SLOT_NAME: ${{ parameters.slotName }}
