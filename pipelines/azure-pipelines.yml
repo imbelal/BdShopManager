@@ -81,7 +81,7 @@ stages:
               buildType: 'current'
               downloadType: 'single'
               artifactName: $(ArtifactName)
-              downloadPath: '$(System.DefaultWorkingDirectory)/$(ArtifactName).zip'
+              downloadPath: '$(Pipeline.Workspace)/$(ProjectName)'
   - stage: Feature_Deployment
     dependsOn: Build_And_Tests
     condition: succeeded()
