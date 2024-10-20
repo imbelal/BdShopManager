@@ -82,7 +82,7 @@ stages:
               scriptType: 'python'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                pip install --upgrade paramiko cryptography  # Upgrade necessary libraries
+                pip install --upgrade paramiko cryptography
                 python pipelines/scripts/deployToFeatureSlot.py
               workingDirectory: $(System.DefaultWorkingDirectory)
             env:
