@@ -116,9 +116,12 @@ try
 
     var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    if (!app.Environment.IsProduction())
+    {
+        // Configure swagger for dev and staging env.
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
     app.UseCors();
     app.UseHttpsRedirection();
@@ -131,8 +134,12 @@ try
 
     app.MapControllers();
 
-    logger.Debug("Database migration");
-    RunAutoDatabaseMigration(app);
+    if (!app.Environment.IsDevelopment())
+    {
+        // Run auto migration for production and staging envrionment.
+        logger.Debug("Database migration");
+        RunAutoDatabaseMigration(app);
+    }
 
     logger.Debug("Application Starting Up");
     app.Run();
