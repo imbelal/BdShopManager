@@ -26,11 +26,11 @@ parameters:
   - name: slotName
     displayName: 'Custom Slot Name'
     type: string
-    default: ''  # Empty by default; if not provided, branch name will be used
+    default: 'branch name'  # By default branch name will be used
   - name: deployToFeatureSlot
     displayName: 'Deploy to Feature Slot'
     type: boolean
-    default: true  # Default to true, can be set to false in the UI
+    default: false  # Default to false, can be set to false in the UI
 
 name: WebApi_$(Date:yyyy) -$(Date:dd)$(Rev:.r)--$(Build.SourceBranchName)
 
