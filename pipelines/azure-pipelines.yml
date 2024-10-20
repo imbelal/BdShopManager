@@ -82,14 +82,14 @@ stages:
               downloadType: 'single'
               artifactName: $(ArtifactName)
               downloadPath: '$(System.ArtifactsDirectory)'
-
+  - stage: Feature_Deployment
+    dependsOn: Build_And_Tests
+    condition: succeeded()
+    jobs:
       - job: Manage_Slots
         displayName: 'Manage Deployment Slots'
         pool:
           name: Default
-        dependsOn: 
-          - Download_artifact
-        condition: and(succeeded(), eq(${{ parameters.deployToFeatureSlot }}, true))  # Use parameters directly
         steps:
           - task: AzureCLI@2
             inputs:
@@ -97,7 +97,6 @@ stages:
               scriptType: 'python'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                pip install --upgrade paramiko cryptography
                 python pipelines/scripts/deployToFeatureSlot.py
               workingDirectory: $(System.DefaultWorkingDirectory)
             env:
