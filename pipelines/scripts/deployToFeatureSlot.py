@@ -70,6 +70,6 @@ if __name__ == "__main__":
         if len(existing_slots) >= max_slots:
             print(f"Error: Maximum number of slots ({max_slots}) has been reached.")
             sys.exit(1)
-        create_slot(resource_group, app_name, slot_name, source_slot, "appsettings.Staging.json")
+        create_slot(resource_group, app_name, slot_name, "appsettings.Staging.json")
 
     deploy_to_slot(resource_group, app_name, slot_name, deployment_package)
