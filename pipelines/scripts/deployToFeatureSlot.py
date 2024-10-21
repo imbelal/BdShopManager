@@ -15,19 +15,22 @@ def check_existing_slots(resource_group, app_name):
         sys.exit(1)
     return result.stdout.strip().splitlines()
 
-def create_slot(resource_group, app_name, slot_name, source_slot = None):
-    if source_slot:
-        # Clone the existing slot to create the new slot
-        command = f"az webapp deployment slot clone --resource-group {resource_group} --name {app_name} --slot {slot_name} --src-slot {source_slot}"
-    else:
-        # Create a new slot without cloning
-        command = f"az webapp deployment slot create --resource-group {resource_group} --name {app_name} --slot {slot_name}"
-    
+def create_slot(resource_group, app_name, slot_name, json_file_path):
+    # Create the deployment slot
+    command = f"az webapp deployment slot create --resource-group {resource_group} --name {app_name} --slot {slot_name}"
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         print("Error creating slot:", result.stderr)
         sys.exit(1)
     print(f"Slot '{slot_name}' created successfully.")
+
+     # Set the environment variables directly from the JSON file
+    command_set = f"az webapp config appsettings set --resource-group {resource_group} --name {app_name} --slot {slot_name} --settings @{json_file_path}"
+    result_set = subprocess.run(command_set, shell=True, capture_output=True, text=True)
+    if result_set.returncode != 0:
+        print("Error setting environment variables:", result_set.stderr)
+        sys.exit(1)
+    print(f"Environment variables set for slot '{slot_name}' from '{json_file_path}' successfully.")
 
 def deploy_to_slot(resource_group, app_name, slot_name, deployment_package):
     command = f"az webapp deployment source config-zip --resource-group {resource_group} --name {app_name} --slot {slot_name} --src {deployment_package}"
@@ -67,6 +70,6 @@ if __name__ == "__main__":
         if len(existing_slots) >= max_slots:
             print(f"Error: Maximum number of slots ({max_slots}) has been reached.")
             sys.exit(1)
-        create_slot(resource_group, app_name, slot_name, source_slot)
+        create_slot(resource_group, app_name, slot_name, source_slot, "appsettings.Staging.json")
 
     deploy_to_slot(resource_group, app_name, slot_name, deployment_package)
