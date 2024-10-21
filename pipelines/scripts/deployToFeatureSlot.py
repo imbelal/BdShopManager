@@ -55,7 +55,6 @@ if __name__ == "__main__":
     custom_slot_name = os.getenv("CUSTOM_SLOT_NAME", "")
     branch_name = os.getenv("BUILD_SOURCEBRANCHNAME", "")
     deployment_package = os.getenv("DEPLOYMENT_PACKAGE")
-    source_slot = os.getenv("SOURCE_SLOT")
 
     slot_name = get_slot_name(branch_name, custom_slot_name)
     print(f"Using slot name: {slot_name}")
