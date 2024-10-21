@@ -102,4 +102,3 @@ stages:
               RESOURCE_GROUP: $(RESOURCE_GROUP)  # Use the RESOURCE_GROUP variable
               APP_NAME: $(APP_NAME)  # Use the APP_NAME variable
               DEPLOYMENT_PACKAGE: '$(Pipeline.Workspace)/$(ProjectName)/$(ArtifactName).zip'  # Specify the path to your deployment package
-              SOURCE_SLOT: $(SOURCE_SLOT)
