@@ -8,5 +8,6 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Guid UserRoleId { get; set; }
+        public Guid TenantId { get; set; }
     }
 }

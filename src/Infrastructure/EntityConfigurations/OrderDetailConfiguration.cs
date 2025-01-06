@@ -16,6 +16,8 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.Quantity).HasColumnName("Quantity").HasColumnType("int").IsRequired();
             builder.Property(x => x.TotalPrice).HasColumnName("TotalPrice").HasColumnType("decimal(18,2)").IsRequired();
             builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.TenantId).HasColumnName("TenantId").HasColumnType("uniqueidentifier").IsRequired();
+            builder.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict); ;
         }
     }
 }

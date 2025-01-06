@@ -16,5 +16,6 @@ namespace Domain.Interfaces
         IQueryable<Inventory> Inventories { get; }
         IQueryable<Customer> Customers { get; }
         IQueryable<Order> Orders { get; }
+        IQueryable<Tenant> Tenants { get; }
     }
 }

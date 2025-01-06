@@ -4,7 +4,7 @@ using Domain.Dtos;
 
 namespace Domain.Entities
 {
-    public class Order : AuditableEntityBase, IAggregateRoot, ISoftDeletable
+    public class Order : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
     {
         private List<OrderDetail> orderDetails = new();
         public Guid CustomerId { get; set; }
@@ -12,6 +12,7 @@ namespace Domain.Entities
         public decimal TotalPaid { get; set; }
         public string Remark { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public Tenant Tenant { get; set; }
 
         public IReadOnlyCollection<OrderDetail> OrderDetails
         {

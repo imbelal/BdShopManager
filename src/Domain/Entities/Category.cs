@@ -4,10 +4,11 @@ using Domain.Events;
 
 namespace Domain.Entities
 {
-    public class Category : AuditableEntityBase, IAggregateRoot, ISoftDeletable
+    public class Category : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
     {
         public string Title { get; set; }
         public bool IsDeleted { get; set; }
+        public Tenant Tenant { get; set; }
 
         public Category()
         {

@@ -12,6 +12,8 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.Name).HasColumnName("Name").HasColumnType("nvarchar(200)").IsRequired();
             builder.Property(x => x.Details).HasColumnName("Details").HasColumnType("nvarchar(max)").IsRequired();
             builder.Property(x => x.ContactNo).HasColumnName("ContactNo").HasColumnType("nvarchar(20)").IsRequired();
+            builder.Property(x => x.TenantId).HasColumnName("TenantId").HasColumnType("uniqueidentifier").IsRequired();
+            builder.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict); ;
         }
     }
 }

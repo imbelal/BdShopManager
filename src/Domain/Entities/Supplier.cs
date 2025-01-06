@@ -3,12 +3,13 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Supplier : AuditableEntityBase, IAggregateRoot, ISoftDeletable
+    public class Supplier : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
     {
         public string Name { get; private set; }
         public string Details { get; private set; }
         public string ContactNo { get; private set; }
         public bool IsDeleted { get; set; } = false;
+        public Tenant Tenant { get; set; }
 
         public Supplier(string name, string details, string contactNo)
         {

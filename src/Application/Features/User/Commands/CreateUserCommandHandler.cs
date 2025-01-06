@@ -20,9 +20,14 @@ namespace Application.Features.User.Commands
         }
         public async Task<IResponse<Guid>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
         {
-            var userRole = await _applicationDbContext.UserRoles
+            var userRoleId = await _applicationDbContext.UserRoles
                                                       .Where(userRole => userRole.Id.Equals(command.userToCreate.UserRoleId))
+                                                      .Select(userRole => (Guid?)userRole.Id)
                                                       .FirstOrDefaultAsync(cancellationToken) ?? throw new KeyNotFoundException("Given user role is not found");
+            var tenantId = await _applicationDbContext.Tenants
+                                                      .Where(tenant => tenant.Id.Equals(command.userToCreate.TenantId))
+                                                      .Select(tenant => (Guid?)tenant.Id)
+                                                      .FirstOrDefaultAsync(cancellationToken) ?? throw new KeyNotFoundException("Given tenant is not found");
 
             var passwordHash = _passwordHasher.CreateHash(command.userToCreate.Password);
             Domain.Entities.User newUser = new(
@@ -31,7 +36,9 @@ namespace Application.Features.User.Commands
                     command.userToCreate.Email,
                     command.userToCreate.FirstName,
                     command.userToCreate.LastName,
-                    userRole.Id);
+                    userRoleId,
+                    tenantId);
+
             _userRepository.Add(newUser);
             await _userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

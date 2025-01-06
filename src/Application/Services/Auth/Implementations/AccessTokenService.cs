@@ -22,6 +22,7 @@ namespace Application.Services.Auth.Implementations
                 new Claim("email", user.Email),
                 new Claim("username", user.Username),
                 new Claim("role", user.UserRole.Title),
+                new Claim("tenantId", user.TenantId.ToString()),
             };
             return _tokenGenerator.Generate(_appSettings.JwtSettings.Secret, _appSettings.JwtSettings.ValidIssuer, _appSettings.JwtSettings.ValidAudience,
                 _appSettings.JwtSettings.TokenValidityInMinutes, claims);

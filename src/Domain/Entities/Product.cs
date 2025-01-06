@@ -4,7 +4,7 @@ using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class Product : AuditableEntityBase, IAggregateRoot, ISoftDeletable
+    public class Product : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
     {
         private List<ProductTag> productTags = new();
         public string Title { get; set; } = string.Empty;
@@ -13,6 +13,7 @@ namespace Domain.Entities
         public Guid CategoryId { get; set; }
         public ProductStatus Status { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public Tenant Tenant { get; set; }
 
         public Product()
         {

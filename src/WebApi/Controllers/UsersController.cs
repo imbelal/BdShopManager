@@ -21,7 +21,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateUserRequestDto request)
         {
             return Ok(await _mediator.Send(new CreateUserCommand(request)));

@@ -17,6 +17,8 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.UserRoleId).HasColumnName("UserRoleId").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(x => x.IsDeleted).HasColumnName("IsDeleted").HasColumnType("bit").IsRequired().HasDefaultValue(false);
             builder.HasOne(x => x.UserRole).WithMany().HasForeignKey(x => x.UserRoleId);
+            builder.Property(x => x.TenantId).HasColumnName("TenantId").HasColumnType("uniqueidentifier").IsRequired();
+            builder.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId);
         }
     }
 }

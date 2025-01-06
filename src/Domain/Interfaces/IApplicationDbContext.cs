@@ -19,6 +19,7 @@ namespace Domain.Interfaces
         DbSet<Customer> Customers { get; set; }
         DbSet<Order> Orders { get; set; }
         DbSet<OrderDetail> OrderDetails { get; set; }
+        DbSet<Tenant> Tenants { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

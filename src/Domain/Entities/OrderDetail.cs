@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class OrderDetail : AuditableEntityBase
+    public class OrderDetail : AuditableTenantEntityBase
     {
         public Guid OrderId { get; set; }
         public Guid ProductId { get; set; }
@@ -13,6 +13,7 @@ namespace Domain.Entities
         public decimal TotalPrice { get; set; }
 
         public virtual Order Order { get; set; }
+        public Tenant Tenant { get; set; }
 
         public OrderDetail(Guid orderId, Guid productId, int quantity, ProductUnit unit, decimal unitPrice)
         {

@@ -30,6 +30,7 @@ namespace Infrastructure
         public new IQueryable<Customer> Customers => base.Customers.AsQueryable();
         public new IQueryable<Order> Orders => base.Orders.AsQueryable();
         public new IQueryable<OrderDetail> OrderDetails => base.OrderDetails.AsQueryable();
+        public new IQueryable<Tenant> Tenants => base.Tenants.AsQueryable();
 
         public override int SaveChanges()
         {
