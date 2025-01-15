@@ -15,7 +15,7 @@ namespace Application.Features.Tag.Commands
         {
             var tag = await _tagRepository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException("Category not found!!");
 
-            tag.Title = request.Title;
+            tag.Update(request.Title);
 
             _tagRepository.Update(tag);
             await _tagRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

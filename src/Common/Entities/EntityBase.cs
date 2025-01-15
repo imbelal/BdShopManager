@@ -3,10 +3,10 @@ using Common.Events;
 
 namespace Common.Entities
 {
-    public abstract class EntityBase : IEntityBase
+    public abstract class EntityBase<TIdentity> : IEntityBase
     {
         private readonly List<IDomainEvent> _domainEvents = new();
-        public Guid Id { get; set; }
+        public TIdentity Id { get; private set; }
 
         public IReadOnlyList<IDomainEvent> GetDomainEvents()
         {
@@ -18,9 +18,19 @@ namespace Common.Entities
             _domainEvents.Clear();
         }
 
-        protected void RaiseDomainEvent(IDomainEvent domainEvent)
+        public void RaiseDomainEvent(IDomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
+        }
+
+        protected EntityBase()
+        {
+
+        }
+
+        protected EntityBase(TIdentity id)
+        {
+            Id = id;
         }
     }
 }

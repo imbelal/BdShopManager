@@ -1,10 +1,11 @@
 ﻿using Common.Entities;
 using Common.Entities.Interfaces;
 using Domain.Dtos;
+using Domain.Events;
 
 namespace Domain.Entities
 {
-    public class Order : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
+    public class Order : AuditableTenantEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
         private List<OrderDetail> orderDetails = new();
         public Guid CustomerId { get; set; }
@@ -19,7 +20,12 @@ namespace Domain.Entities
             get => orderDetails;
         }
 
-        public Order(Guid customerId, decimal totalPrice, decimal totalPaid, string remark)
+        public Order() : base()
+        {
+
+        }
+
+        public Order(Guid customerId, decimal totalPrice, decimal totalPaid, string remark) : base(Guid.NewGuid())
         {
             CustomerId = customerId;
             TotalPrice = totalPrice;
@@ -37,6 +43,8 @@ namespace Domain.Entities
                 orderDetail.Unit,
                 orderDetail.UnitPrice)).ToList()
             );
+
+            newOrder.RaiseDomainEvent(new OrderCreatedEvent(newOrder.Id));
 
             return newOrder;
         }

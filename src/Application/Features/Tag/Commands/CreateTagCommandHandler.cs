@@ -15,9 +15,7 @@ namespace Application.Features.Tag.Commands
 
         public async Task<IResponse<Guid>> Handle(CreateTagCommand request, CancellationToken cancellationToken)
         {
-            var tag = new Domain.Entities.Tag();
-            tag.Id = Guid.NewGuid();
-            tag.Title = request.Title;
+            var tag = new Domain.Entities.Tag(request.Title);
 
             _tagRepository.Add(tag);
             await _tagRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

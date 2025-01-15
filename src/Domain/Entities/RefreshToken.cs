@@ -2,9 +2,9 @@
 
 namespace Domain.Entities
 {
-    public class RefreshToken : AuditableEntityBase
+    public class RefreshToken : AuditableEntityBase<Guid>
     {
-        public RefreshToken()
+        public RefreshToken() : base()
         {
 
         }
@@ -13,7 +13,7 @@ namespace Domain.Entities
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="token">The refresh token.</param>
-        public RefreshToken(Guid userId, string token)
+        public RefreshToken(Guid userId, string token) : base(Guid.NewGuid())
         {
             UserId = userId;
             Token = token;

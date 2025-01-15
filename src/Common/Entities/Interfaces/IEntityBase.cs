@@ -1,7 +1,13 @@
-﻿namespace Common.Entities.Interfaces
+﻿using Common.Events;
+
+namespace Common.Entities.Interfaces
 {
     public interface IEntityBase
     {
-        public Guid Id { get; set; }
+        IReadOnlyList<IDomainEvent> GetDomainEvents();
+
+        void ClearDomainEvents();
+
+        void RaiseDomainEvent(IDomainEvent domainEvent);
     }
 }

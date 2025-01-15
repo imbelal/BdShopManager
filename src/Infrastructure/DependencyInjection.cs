@@ -21,10 +21,8 @@ namespace Infrastructure
            ));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
-            // Read db context.
-            services.AddDbContext<ReadOnlyApplicationDbContext>();
-            services.AddScoped<IReadOnlyApplicationDbContext>(provider => provider.GetService<ReadOnlyApplicationDbContext>()!);
+            services.AddTransient<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+            services.AddTransient<IReadOnlyApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
             services.AddTransient(typeof(IRepository<>), typeof(GenericRepository<>));
             // Find all other repository types except generic reository.

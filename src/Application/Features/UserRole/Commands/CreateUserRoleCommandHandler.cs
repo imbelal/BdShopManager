@@ -15,9 +15,7 @@ namespace Application.Features.UserRole.Commands
 
         public async Task<IResponse<Guid>> Handle(CreateUserRoleCommand request, CancellationToken cancellationToken)
         {
-            var userRole = new Domain.Entities.UserRole();
-            userRole.Id = Guid.NewGuid();
-            userRole.Title = request.Title;
+            var userRole = new Domain.Entities.UserRole(request.Title);
 
             _userRoleRepository.Add(userRole);
             await _userRoleRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

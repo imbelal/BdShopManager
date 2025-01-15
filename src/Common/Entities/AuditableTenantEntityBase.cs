@@ -2,8 +2,15 @@
 
 namespace Common.Entities
 {
-    public class AuditableTenantEntityBase : AuditableEntityBase, IAuditableTenantEntity
+    public class AuditableTenantEntityBase<TIdentity> : AuditableEntityBase<TIdentity>, IAuditableTenantEntity
     {
         public Guid TenantId { get; set; }
+
+        public AuditableTenantEntityBase()
+        {
+
+        }
+
+        public AuditableTenantEntityBase(TIdentity id) : base(id) { }
     }
 }

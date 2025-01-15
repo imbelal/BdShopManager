@@ -25,5 +25,11 @@ namespace WebApi.Controllers
                 request.Remark,
                 request.OrderDetails)));
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(DeleteOrderCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
     }
 }

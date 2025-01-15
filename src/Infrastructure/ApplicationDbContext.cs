@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Infrastructure
 {
-    public class ApplicationDbContext : EventContextBase<ApplicationDbContext>, IApplicationDbContext
+    public class ApplicationDbContext : EventContextBase<ApplicationDbContext>, IApplicationDbContext, IReadOnlyApplicationDbContext
     {
         public ApplicationDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostEnvironment hostingEnvironment, ILogger<ApplicationDbContext> logger)
             : base(dbConnectionStringProvider.ConnectionString, dbContextOptionsProvider, currentUserService, publisher, hostingEnvironment, logger)
@@ -37,6 +37,24 @@ namespace Infrastructure
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
+
+        #region ReadOnly
+
+        IQueryable<UserRole> IReadOnlyApplicationDbContext.UserRoles => UserRoles.AsQueryable();
+        IQueryable<ErrorLog> IReadOnlyApplicationDbContext.ErrorLogs => ErrorLogs.AsQueryable();
+        IQueryable<User> IReadOnlyApplicationDbContext.Users => Users.AsQueryable();
+        IQueryable<RefreshToken> IReadOnlyApplicationDbContext.RefreshTokens => RefreshTokens.AsQueryable();
+        IQueryable<Category> IReadOnlyApplicationDbContext.Categories => Categories.AsQueryable();
+        IQueryable<Tag> IReadOnlyApplicationDbContext.Tags => Tags.AsQueryable();
+        IQueryable<Product> IReadOnlyApplicationDbContext.Products => Products.AsQueryable();
+        IQueryable<ProductTag> IReadOnlyApplicationDbContext.ProductTags => ProductTags.AsQueryable();
+        IQueryable<Supplier> IReadOnlyApplicationDbContext.Suppliers => Suppliers.AsQueryable();
+        IQueryable<Inventory> IReadOnlyApplicationDbContext.Inventories => Inventories.AsQueryable();
+        IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
+        IQueryable<Order> IReadOnlyApplicationDbContext.Orders => Orders.AsQueryable();
+        IQueryable<OrderDetail> IReadOnlyApplicationDbContext.OrderDetails => OrderDetails.AsQueryable();
+        IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

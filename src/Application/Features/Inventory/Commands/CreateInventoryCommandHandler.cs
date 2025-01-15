@@ -27,7 +27,7 @@ namespace Application.Features.Inventory.Commands
 
             Domain.Entities.Supplier? supplier = await _context.Suppliers
                 .FirstOrDefaultAsync(x => x.Id == command.SupplierId, cancellationToken);
-            if (product == null)
+            if (supplier == null)
             {
                 throw new Exception("Supplier not found!!");
             }

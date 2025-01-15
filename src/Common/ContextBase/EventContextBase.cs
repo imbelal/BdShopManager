@@ -1,4 +1,4 @@
-﻿using Common.Entities;
+﻿using Common.Entities.Interfaces;
 using Common.Events;
 using Common.Services.Interfaces;
 using MediatR;
@@ -58,7 +58,7 @@ namespace Common.ContextBase
 
             foreach (var entry in entries)
             {
-                if (entry.Entity is EntityBase entity)
+                if (entry.Entity is IEntityBase entity)
                 {
                     domainEvents.AddRange(entity.GetDomainEvents());
                     entity.ClearDomainEvents();

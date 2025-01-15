@@ -1,5 +1,4 @@
-﻿using Common.Entities;
-using Common.Entities.Interfaces;
+﻿using Common.Entities.Interfaces;
 using Common.Extensions;
 using Common.Interceptor;
 using Common.Services.Interfaces;
@@ -30,7 +29,7 @@ namespace Common.ContextBase
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyQueryFilter<ISoftDeletable>(e => e.IsDeleted == false);
-            modelBuilder.ApplyQueryFilter<AuditableTenantEntityBase>(e => tenantId == null || e.TenantId == tenantId);
+            modelBuilder.ApplyQueryFilter<IAuditableTenantEntity>(e => tenantId == null || e.TenantId == tenantId);
 
             base.OnModelCreating(modelBuilder);
         }

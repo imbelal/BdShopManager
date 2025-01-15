@@ -26,14 +26,8 @@ namespace IntegrationTest
         public async Task Delete_Category_Should_Delete_Related_products_Also()
         {
             // Arrange
-            Category entity = new("TestCate")
-            {
-                Id = Guid.NewGuid()
-            };
-            Product product = new("Testproduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>())
-            {
-                Id = Guid.NewGuid()
-            };
+            Category entity = new("TestCate");
+            Product product = new("Testproduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>());
             _context.Categories.Add(entity);
             _context.Products.Add(product);
             await _context.SaveChangesAsync(new CancellationToken());

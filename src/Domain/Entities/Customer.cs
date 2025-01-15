@@ -3,7 +3,7 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Customer : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
+    public class Customer : AuditableTenantEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
@@ -14,7 +14,12 @@ namespace Domain.Entities
         public bool IsDeleted { get; set; } = false;
         public Tenant Tenant { get; set; }
 
-        public Customer(string firstName, string lastName, string address, string contactNo, string email, string remark)
+        public Customer() : base()
+        {
+
+        }
+
+        public Customer(string firstName, string lastName, string address, string contactNo, string email, string remark) : base(Guid.NewGuid())
         {
             FirstName = firstName;
             LastName = lastName;

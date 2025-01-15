@@ -3,7 +3,7 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class User : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
+    public class User : AuditableTenantEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
         public string Username { get; set; }
         public string PasswordHash { get; set; }
@@ -15,9 +15,12 @@ namespace Domain.Entities
         public UserRole UserRole { get; set; }
         public Tenant Tenant { get; set; }
 
-        public User() { } // Needed for ef core
+        public User() : base()
+        {
 
-        public User(string username, string passwordHash, string email, string firstname, string lastname, Guid userRoleId, Guid tenantId)
+        }
+
+        public User(string username, string passwordHash, string email, string firstname, string lastname, Guid userRoleId, Guid tenantId) : base(Guid.NewGuid())
         {
             Username = username;
             PasswordHash = passwordHash;

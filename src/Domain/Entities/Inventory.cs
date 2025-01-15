@@ -3,7 +3,7 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Inventory : AuditableTenantEntityBase, IAggregateRoot, ISoftDeletable
+    public class Inventory : AuditableTenantEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
         public Guid ProductId { get; private set; }
         public Guid SupplierId { get; private set; }
@@ -14,7 +14,12 @@ namespace Domain.Entities
         public bool IsDeleted { get; set; } = false;
         public Tenant Tenant { get; set; }
 
-        public Inventory(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, decimal totalCost, string remark)
+        public Inventory() : base()
+        {
+
+        }
+
+        public Inventory(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, decimal totalCost, string remark) : base(Guid.NewGuid())
         {
             ProductId = productId;
             SupplierId = supplierId;
@@ -23,5 +28,14 @@ namespace Domain.Entities
             TotalCost = totalCost;
             Remark = remark;
         }
+
+        public void DecreaseQuantity(int quantity)
+        {
+            if (quantity > 0)
+            {
+                Quantity -= quantity;
+            }
+        }
+
     }
 }
