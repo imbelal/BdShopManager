@@ -1,13 +1,14 @@
 ﻿using Application.Features.UserRole.Commands;
 using Application.Features.UserRole.Queires;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
     public class UserRoleController : ControllerBase
     {
         private readonly IMediator _mediator;

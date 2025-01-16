@@ -31,7 +31,7 @@ namespace Common.ContextBase
                 if (entry.Entity is IAuditableEntity entity)
                 {
                     var now = DateTime.UtcNow;
-                    string user = _currentUserService?.GetUser()?.Identity?.Name ?? "System";
+                    string user = _currentUserService?.GetUser()?.Claims?.FirstOrDefault(x => x.Type == "username")?.Value ?? "System";
 
                     switch (entry.State)
                     {
