@@ -3,7 +3,7 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Tag : AuditableEntityBase<Guid>, IAggregateRoot
+    public class Tag : AuditableTenantEntityBase<Guid>, IAggregateRoot
     {
         public string Title { get; private set; }
 

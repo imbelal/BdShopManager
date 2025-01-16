@@ -4,7 +4,7 @@ using Common.Entities.Interfaces;
 
 namespace Domain.Entities
 {
-    public class UserRole : AuditableEntityBase<Guid>, IAggregateRoot
+    public class UserRole : AuditableTenantEntityBase<Guid>, IAggregateRoot
     {
         public string Title { get; private set; }
 
