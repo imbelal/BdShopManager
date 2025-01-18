@@ -1,25 +1,29 @@
 ﻿using Application.Features.Category.Commands;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using WebApi.Controllers;
 using Xunit;
 
 namespace IntegrationTest
 {
     public class CategoryIntegrationTests : IntegrationTestBase
     {
+        private CategoriesController _categoriesController;
+
         public CategoryIntegrationTests(CustomWebApplicationFactory<Program> factory) : base(factory)
         {
-
+            _categoriesController = new CategoriesController(_mediator);
         }
+
         [Fact]
         public async Task Create_Category_ShouldSucceed()
         {
-            var entity = new Category("TestCategory");
-            var json = System.Text.Json.JsonSerializer.Serialize(entity);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var httpResponse = await _client.PostAsync("api/categories", content);
-            httpResponse.EnsureSuccessStatusCode();
+            CreateCategoryCommand createCategoryCommand = new CreateCategoryCommand("Test");
+
+            var status = await _categoriesController.Create(createCategoryCommand);
+
+            Category category = await _context.Categories.FirstAsync(default);
+            Assert.NotNull(category);
         }
 
         [Fact]
