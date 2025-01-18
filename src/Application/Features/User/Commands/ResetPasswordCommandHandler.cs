@@ -1,8 +1,8 @@
-﻿using Application.Services.Auth.Interfaces;
-using Application.Services.Common;
+﻿using Application.Services.Common;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Interfaces;
+using Domain.Interfaces.Auth;
 using Microsoft.Extensions.Options;
 
 namespace Application.Features.User.Commands

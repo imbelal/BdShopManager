@@ -1,7 +1,7 @@
-﻿using Application.Services.Auth.Dtos;
+﻿using Domain.Dtos.Auth;
 using Domain.Entities;
 
-namespace Application.Services.Auth.Interfaces
+namespace Domain.Interfaces.Auth
 {
     /// <summary>
     /// Interface for authentication.

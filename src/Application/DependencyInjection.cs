@@ -1,6 +1,6 @@
 ﻿using Application.Services.Auth.Implementations;
-using Application.Services.Auth.Interfaces;
 using Common.Services.Interfaces;
+using Domain.Interfaces.Auth;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

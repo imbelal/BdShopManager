@@ -16,7 +16,7 @@ namespace Application.Features.UserRole.Commands
             var userRole = await _userRoleRepository.GetByIdAsync(request.Id);
             if (userRole == null) throw new KeyNotFoundException();
 
-            userRole.Update(request.Title);
+            userRole.Update(request.Type);
 
             _userRoleRepository.Update(userRole);
             await _userRoleRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

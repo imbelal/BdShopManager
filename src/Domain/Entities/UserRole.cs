@@ -1,26 +1,29 @@
 ﻿
 using Common.Entities;
 using Common.Entities.Interfaces;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class UserRole : AuditableTenantEntityBase<Guid>, IAggregateRoot
+    public class UserRole : AuditableEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
-        public string Title { get; private set; }
+        public UserRoleType Type { get; private set; }
+
+        public bool IsDeleted { get; set; } = false;
 
         public UserRole() : base()
         {
 
         }
 
-        public UserRole(string title) : base(Guid.NewGuid())
+        public UserRole(UserRoleType type) : base(Guid.NewGuid())
         {
-            Title = title;
+            Type = type;
         }
 
-        public void Update(string title)
+        public void Update(UserRoleType type)
         {
-            Title = title;
+            Type = type;
         }
     }
 }

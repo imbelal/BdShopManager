@@ -1,5 +1,7 @@
 ﻿using Common.Entities;
 using Common.Entities.Interfaces;
+using Domain.Dtos;
+using Domain.Events;
 
 namespace Domain.Entities
 {
@@ -15,11 +17,13 @@ namespace Domain.Entities
 
         }
 
-        public Tenant(string name, string address, string phoneNumber) : base(Guid.NewGuid())
+        public Tenant(CreateTenantWithUserRequestDto request) : base(Guid.NewGuid())
         {
-            Name = name;
-            Address = address;
-            PhoneNumber = phoneNumber;
+            Name = request.TenantName;
+            Address = request.TenantAddress;
+            PhoneNumber = request.TenantPhoneNumeber;
+
+            RaiseDomainEvent(new TenantCreatedEvent(this.Id, request.Username, request.Password, request.FirstName, request.LastName, request.Email));
         }
     }
 }

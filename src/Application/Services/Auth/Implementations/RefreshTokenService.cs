@@ -1,6 +1,6 @@
-﻿using Application.Services.Auth.Interfaces;
-using Application.Services.Common;
+﻿using Application.Services.Common;
 using Domain.Entities;
+using Domain.Interfaces.Auth;
 using Microsoft.Extensions.Options;
 
 namespace Application.Services.Auth.Implementations

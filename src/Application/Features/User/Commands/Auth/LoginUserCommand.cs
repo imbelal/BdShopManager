@@ -1,5 +1,5 @@
-﻿using Application.Services.Auth.Dtos;
-using Common.RequestWrapper;
+﻿using Common.RequestWrapper;
+using Domain.Dtos.Auth;
 
 namespace Application.Features.User.Commands.Auth
 {

@@ -1,7 +1,7 @@
-﻿using Application.Services.Auth.Interfaces;
-using Common.RequestWrapper;
+﻿using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Interfaces;
+using Domain.Interfaces.Auth;
 
 namespace Application.Features.User.Commands
 {

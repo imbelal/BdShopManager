@@ -1,5 +1,5 @@
-﻿using Application.Services.Auth.Interfaces;
-using Application.Services.Common;
+﻿using Application.Services.Common;
+using Domain.Interfaces.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

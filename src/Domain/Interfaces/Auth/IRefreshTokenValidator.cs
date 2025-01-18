@@ -1,4 +1,4 @@
-﻿namespace Application.Services.Auth.Interfaces
+﻿namespace Domain.Interfaces.Auth
 {
     /// <summary>
     /// Interface for validating refresh token.

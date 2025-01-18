@@ -1,9 +1,10 @@
 ﻿using Common.RequestWrapper;
+using Domain.Enums;
 
 namespace Application.Features.UserRole.Commands
 {
     public class CreateUserRoleCommand : ICommand<Guid>
     {
-        public string Title { get; set; }
+        public UserRoleType Type { get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Application.Services.Auth.Dtos;
-using Application.Services.Auth.Interfaces;
-using Application.Services.Exceptions;
+﻿using Application.Services.Exceptions;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
+using Domain.Dtos.Auth;
 using Domain.Interfaces;
+using Domain.Interfaces.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.User.Commands.Auth

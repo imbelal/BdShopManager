@@ -1,8 +1,8 @@
 ﻿using Application.Features.User.Commands;
 using Application.Features.User.Commands.Auth;
 using Application.Features.User.Queries;
-using Application.Services.Auth.Dtos;
 using Domain.Dtos;
+using Domain.Dtos.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +18,13 @@ namespace WebApi.Controllers
         public UsersController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpPost("tenant")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateNewTenantWithUser(CreateTenantWithUserRequestDto request)
+        {
+            return Ok(await _mediator.Send(new CreateTenantWithUserCommand(request)));
         }
 
         [HttpPost]

@@ -17,7 +17,7 @@ namespace IntegrationTest
         public async Task Create_Product_Should_Succeed()
         {
             // Arrange
-            CreateProductCommand command = new("Testproduct", "TestDesc", Guid.NewGuid(), 5, ProductUnit.Piece, new List<Guid>());
+            CreateProductCommand command = new("Testproduct", "TestDesc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>());
 
             // Act
             await _mediator.Send(command);

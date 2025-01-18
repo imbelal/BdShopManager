@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Application.Services.Auth.Interfaces
+namespace Domain.Interfaces.Auth
 {
     /// <summary>
     /// Interface for generating token.

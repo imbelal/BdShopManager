@@ -1,7 +1,7 @@
-﻿using Application.Services.Auth.Interfaces;
-using Common.RequestWrapper;
+﻿using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Interfaces;
+using Domain.Interfaces.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.User.Commands
