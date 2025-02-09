@@ -30,15 +30,16 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(command));
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(DeleteProductCommand command)
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> Delete(Guid productId)
         {
-            return Ok(await _mediator.Send(command));
+            return Ok(await _mediator.Send(new DeleteProductCommand(productId)));
         }
 
-        [HttpPost("GetProductWithPaging")]
-        public async Task<IActionResult> GetProducts(GetAllProductsQuery query)
+        [HttpGet("GetProductWithPaging/{pageSize}/{pageNumber}")]
+        public async Task<IActionResult> GetProducts(int pageSize, int pageNumber)
         {
+            GetAllProductsQuery query = new(pageNumber, pageSize);
             return Ok(await _mediator.Send(query));
         }
 

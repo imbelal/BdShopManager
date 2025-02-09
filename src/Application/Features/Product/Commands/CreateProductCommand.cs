@@ -9,7 +9,7 @@ namespace Application.Features.Product.Commands
         public string Description { get; set; }
         public Guid CategoryId { get; set; }
         public ProductUnit Unit { get; set; }
-        public List<Guid> TagIds { get; set; }
+        public List<Guid> TagIds { get; set; } = new List<Guid>();
 
         public CreateProductCommand(string title, string description, Guid categoryId, ProductUnit unit, List<Guid> tagIds)
         {
@@ -17,7 +17,7 @@ namespace Application.Features.Product.Commands
             Description = description;
             CategoryId = categoryId;
             Unit = unit;
-            TagIds = tagIds;
+            TagIds = tagIds ?? new List<Guid>();
         }
     }
 }

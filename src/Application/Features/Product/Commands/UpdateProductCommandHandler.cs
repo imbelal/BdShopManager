@@ -19,13 +19,11 @@ namespace Application.Features.Product.Commands
         public async Task<IResponse<Guid>> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
         {
             Domain.Entities.Product product = await _applicationDbContext.Products.Include(p => p.ProductTags)
-                .FirstOrDefaultAsync(p => p.Id == command.ProductId, cancellationToken) ?? throw new KeyNotFoundException("User not found!!");
+                .FirstOrDefaultAsync(p => p.Id == command.ProductId, cancellationToken) ?? throw new KeyNotFoundException("Product not found!!");
 
             product.Title = command.Title;
             product.Description = command.Description;
             product.CategoryId = command.CategoryId;
-            product.Unit = command.Unit;
-            product.UpdateTags(command.TagIds);
 
             _productRepository.Update(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

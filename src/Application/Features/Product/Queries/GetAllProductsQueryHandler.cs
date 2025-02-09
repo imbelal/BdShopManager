@@ -21,8 +21,10 @@ namespace Application.Features.Product.Queries
             {
                 Id = p.Id,
                 Title = p.Title,
-                Desc = p.Description,
+                Description = p.Description,
                 Unit = p.Unit,
+                CategoryId = p.CategoryId,
+                CategoryName = _context.Categories.FirstOrDefault(c => c.Id.Equals(p.CategoryId)).Title,
                 CreatedBy = p.CreatedBy,
                 CreatedDate = p.CreatedUtcDate.ToString("F"),
                 ProductTags = _context.Tags.Where(t => p.ProductTags.Select(x => x.TagId).Contains(t.Id)).Select(x => x.Title).ToList()
