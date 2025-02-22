@@ -33,7 +33,7 @@ namespace Application.Features.Category.Queries
                 return Response.Success(categories);
             }
 
-            categories = await _context.Categories.ToListAsync(cancellationToken);
+            categories = await _context.Categories.OrderByDescending(c => c.CreatedUtcDate).ToListAsync(cancellationToken);
             if (categories.Count == 0)
                 return Response.Fail<List<Domain.Entities.Category>>("No Category found!!");
             _cacheService.Set<List<Domain.Entities.Category>>(_cacheKey, categories, TimeSpan.FromDays(1));
