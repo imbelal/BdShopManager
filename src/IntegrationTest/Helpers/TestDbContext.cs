@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IntegrationTest.Helpers
 {
-    public class TestDbContext : ApplicationDbContext
+    public sealed class TestDbContext : ApplicationDbContext
     {
         public TestDbContext(IDbConnectionStringProvider dbConnectionStringProvider, IDbContextOptionsProvider dbContextOptionsProvider, ICurrentUserService currentUserService, IPublisher publisher, IHostEnvironment hostingEnvironment, ILogger<TestDbContext> logger)
         : base(dbConnectionStringProvider, dbContextOptionsProvider, currentUserService, publisher, hostingEnvironment, logger)

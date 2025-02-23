@@ -15,7 +15,7 @@ namespace IntegrationTest.Tests
         public async Task Create_Product_Should_Succeed()
         {
             // Arrange
-            CreateProductCommand command = new("Testproduct", "TestDesc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>());
+            CreateProductCommand command = new("TestProduct", "TestDesc", Guid.NewGuid(), ProductUnit.Piece, []);
 
             // Act
             var status = await ExecuteControllerMethodAsync(
@@ -23,19 +23,19 @@ namespace IntegrationTest.Tests
             );
 
             // Assert
-            int numberOfproduct = Context.Products.Count();
-            Assert.True(numberOfproduct > 0);
+            int numberOfProduct = Context.Products.Count();
+            Assert.True(numberOfProduct > 0);
         }
 
         [Fact]
         public async Task Delete_Product_Should_Succeed()
         {
-            Product entity = new("Test product", "Test desc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>());
+            Product entity = new("Test product", "Test desc", Guid.NewGuid(), ProductUnit.Piece, []);
 
             // Act
             var status = await ExecuteControllerMethodAsync(
                 () => ResolveController<ProductsController>().Delete(entity.Id),
-                preparedEntities: new List<object>() { entity }
+                preparedEntities: [entity]
             );
 
             // Assert
