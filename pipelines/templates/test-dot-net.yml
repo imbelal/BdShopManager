@@ -22,5 +22,5 @@ steps:
     inputs:
       command: test
       projects: ${{ parameters.testProjects }}
-      arguments: "--configuration Release"
+      arguments: '--configuration Release --verbosity detailed --logger:"console;verbosity=detailed"'
     retryCountOnTaskFailure: 3
