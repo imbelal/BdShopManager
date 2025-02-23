@@ -1,6 +1,6 @@
 ﻿using Common.ContextBase;
 
-namespace IntegrationTest
+namespace IntegrationTest.Helpers
 {
     internal class TestDbConnectionProvider : IDbConnectionStringProvider
     {

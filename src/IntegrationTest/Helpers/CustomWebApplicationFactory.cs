@@ -8,12 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Security.Claims;
 
-namespace IntegrationTest
+namespace IntegrationTest.Helpers
 {
-    public class CustomWebApplicationFactory<TProgram>
-    : WebApplicationFactory<TProgram> where TProgram : class
+    public class CustomWebApplicationFactory<TProgram>(string connectionString) : WebApplicationFactory<TProgram>
+        where TProgram : class
     {
         private readonly Guid _tenantId = Guid.NewGuid();
+        private readonly string _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
         public Guid GetTenantId()
         {
@@ -29,12 +30,19 @@ namespace IntegrationTest
 
                 // Register TestDbContextOptionsProvider as IDbContextOptionsProvider
                 services.AddSingleton<IDbContextOptionsProvider, TestDbContextOptionsProvider>();
-                services.AddSingleton<IDbConnectionStringProvider>(new TestDbConnectionProvider("DataSource=:memory:"));
+                services.AddSingleton<IDbConnectionStringProvider>(new TestDbConnectionProvider(_connectionString));
 
-                // Use TestDbContext instead of ApplicationDbContext.
+                // Use TestDbContext instead of ApplicationDbContext
+                services.AddDbContext<TestDbContext>();
                 services.AddScoped<IApplicationDbContext>(provider => provider.GetService<TestDbContext>()!);
                 services.AddScoped<IReadOnlyApplicationDbContext>(provider => provider.GetService<TestDbContext>()!);
-                services.AddDbContext<TestDbContext>();
+
+                // Register MediatR
+                services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+                services.AddControllers()
+                    .AddApplicationPart(typeof(Program).Assembly)
+                    .AddControllersAsServices();
 
                 // Register a mocked IHttpContextAccessor
                 CreateMockHttpContextAccessor(services);
@@ -45,31 +53,24 @@ namespace IntegrationTest
 
         private void RemoveAllDbContextsFromServices(IServiceCollection services)
         {
-            // reverse operation of AddDbContext<XDbContext> which removes  DbContexts from services
             var descriptors = services.Where(d => d.ServiceType.BaseType == typeof(DbContextOptions)).ToList();
             descriptors.ForEach(d => services.Remove(d));
 
-            // Remove existing connections
-            var dbConnectionDescriptor = services.Where(
-                d => d.ServiceType == typeof(IDbConnectionStringProvider)).ToList();
+            var dbConnectionDescriptor = services.Where(d => d.ServiceType == typeof(IDbConnectionStringProvider)).ToList();
             dbConnectionDescriptor.ForEach(d => services.Remove(d));
 
-            // Remove existing context options providers
-            var dbContextDescriptor = services.Where(
-                d => d.ServiceType == typeof(IDbContextOptionsProvider)).ToList();
+            var dbContextDescriptor = services.Where(d => d.ServiceType == typeof(IDbContextOptionsProvider)).ToList();
             dbContextDescriptor.ForEach(d => services.Remove(d));
         }
 
         private void CreateMockHttpContextAccessor(IServiceCollection services)
         {
-            // Remove the default IHttpContextAccessor registration
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IHttpContextAccessor));
             if (descriptor != null)
             {
                 services.Remove(descriptor);
             }
 
-            // Set up the mock HttpContext
             var claims = new List<Claim>
             {
                 new Claim("username", "TestUser"),
@@ -83,7 +84,6 @@ namespace IntegrationTest
             mockHttpContext.Setup(ctx => ctx.User).Returns(claimsPrincipal);
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            // Configure the accessor to return the mocked HttpContext
             mockHttpContextAccessor.Setup(accessor => accessor.HttpContext).Returns(mockHttpContext.Object);
 
             services.AddSingleton(mockHttpContextAccessor.Object);
