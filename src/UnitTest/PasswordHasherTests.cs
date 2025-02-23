@@ -9,17 +9,17 @@ namespace UnitTest
         [Fact]
         public void ShouldCreatePasswordHashAndVerify()
         {
-            // Arranage
+            // Arrange
             var someOptions = Options.Create(new AppSettings { Iterations = 10000 });
             var _passwordHasher = new PasswordHasher(someOptions);
             string password = "Asdf@098765";
 
             //Act
             var hash = _passwordHasher.CreateHash(password);
-            (bool varified, bool needUpgrade) = _passwordHasher.VerifyPassword(hash, password);
+            (bool verified, bool needUpgrade) = _passwordHasher.VerifyPassword(hash, password);
 
             // Assert
-            Assert.True(varified);
+            Assert.True(verified);
             Assert.False(needUpgrade);
         }
     }

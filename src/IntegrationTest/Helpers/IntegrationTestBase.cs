@@ -8,6 +8,7 @@ using Xunit;
 
 namespace IntegrationTest.Helpers
 {
+    [Collection("DatabaseCollection")]
     public abstract class IntegrationTestBase : IAsyncLifetime
     {
         protected HttpClient Client { get; }

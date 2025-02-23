@@ -5,10 +5,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Testcontainers.MsSql;
+using Xunit;
 
 namespace IntegrationTest.Helpers
 {
-    public class TestDatabaseFixture
+    public class TestDatabaseFixture : IDisposable
     {
         private static readonly MsSqlContainer _msSqlContainer;
         private static readonly string _connectionString;
@@ -16,12 +17,26 @@ namespace IntegrationTest.Helpers
 
         static TestDatabaseFixture()
         {
-            _msSqlContainer = new MsSqlBuilder()
-                .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
-                .Build();
+            // Check if running on Azure Pipeline agent
+            var isRunningInPipeline = Environment.GetEnvironmentVariable("TF_BUILD") == "True";
 
-            _msSqlContainer.StartAsync().GetAwaiter().GetResult();
-            _connectionString = _msSqlContainer.GetConnectionString();
+            if (isRunningInPipeline)
+            {
+                // Use TestContainers in Azure Pipeline
+                Console.WriteLine("##vso[task.logissue type=info]Running in Azure Pipeline: Using TestContainers for MSSQL");
+                _msSqlContainer = new MsSqlBuilder()
+                    .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
+                    .Build();
+
+                _msSqlContainer.StartAsync().GetAwaiter().GetResult();
+                _connectionString = _msSqlContainer.GetConnectionString();
+            }
+            else
+            {
+                // Use mssqllocaldb locally
+                Console.WriteLine("Running Locally: Using MSSQL LocalDB");
+                _connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=TestDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+            }
 
             InitializeDatabase();
         }
@@ -49,9 +64,70 @@ namespace IntegrationTest.Helpers
             }
         }
 
-        public static void Dispose()
+        public void Dispose()
         {
-            _msSqlContainer?.DisposeAsync().GetAwaiter().GetResult();
+            if (_msSqlContainer != null)
+            {
+                _msSqlContainer?.DisposeAsync().GetAwaiter().GetResult();
+            }
+            else
+            {
+                using var context = new TestDbContext(
+                    new TestDbConnectionProvider(_connectionString),
+                    new TestDbContextOptionsProvider(),
+                    new Mock<ICurrentUserService>().Object,
+                    new Mock<IPublisher>().Object,
+                    new Mock<IHostEnvironment>().Object,
+                    new Mock<ILogger<TestDbContext>>().Object);
+
+                // Drop all Foreign Key Constraints
+                context.Database.ExecuteSqlRaw(@"
+                DECLARE @sql NVARCHAR(MAX) = '';
+                    SELECT @sql += 'ALTER TABLE [' + sch.name + '].[' + t.name + '] DROP CONSTRAINT [' + fk.name + '];'
+                    FROM sys.foreign_keys fk
+                    INNER JOIN sys.tables t ON fk.parent_object_id = t.object_id
+                    INNER JOIN sys.schemas sch ON t.schema_id = sch.schema_id;
+                    EXEC sp_executesql @sql;
+                ");
+
+                // Drop all Tables
+                context.Database.ExecuteSqlRaw(@"
+                    EXEC sp_MSforeachtable 'DROP TABLE ?';
+                ");
+
+                // Drop all Views
+                context.Database.ExecuteSqlRaw(@"
+                    DECLARE @sql NVARCHAR(MAX) = '';
+                    SELECT @sql += 'DROP VIEW [' + s.name + '].[' + v.name + '];'
+                    FROM sys.views v
+                    INNER JOIN sys.schemas s ON v.schema_id = s.schema_id;
+                    EXEC sp_executesql @sql;
+                ");
+
+                // Drop all Functions
+                context.Database.ExecuteSqlRaw(@"
+                    DECLARE @sql NVARCHAR(MAX) = '';
+                    SELECT @sql += 'DROP FUNCTION [' + s.name + '].[' + f.name + '];'
+                    FROM sys.objects f
+                    INNER JOIN sys.schemas s ON f.schema_id = s.schema_id
+                    WHERE f.type IN ('FN', 'IF', 'TF'); -- Scalar, Inline, Table-valued functions
+                    EXEC sp_executesql @sql;
+                ");
+
+                // Drop all Stored Procedures
+                context.Database.ExecuteSqlRaw(@"
+                    DECLARE @sql NVARCHAR(MAX) = '';
+                    SELECT @sql += 'DROP PROCEDURE [' + s.name + '].[' + p.name + '];'
+                    FROM sys.procedures p
+                    INNER JOIN sys.schemas s ON p.schema_id = s.schema_id;
+                    EXEC sp_executesql @sql;
+                ");
+            }
         }
+    }
+
+    [CollectionDefinition("DatabaseCollection")]
+    public class DatabaseCollection : ICollectionFixture<TestDatabaseFixture>
+    {
     }
 }
