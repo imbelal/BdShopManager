@@ -80,7 +80,7 @@ stages:
               downloadPath: '$(Pipeline.Workspace)'
   - stage: Feature_Deployment
     dependsOn: Build_And_Tests
-    condition: succeeded()
+    condition: and(succeeded(), eq(${{ parameters.deployToFeatureSlot }}, true))  # Use parameters directly
     jobs:
       - job: Manage_Slots
         displayName: 'Manage Deployment Slots'
