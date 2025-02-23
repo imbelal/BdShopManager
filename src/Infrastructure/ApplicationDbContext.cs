@@ -59,7 +59,7 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Add all external entity configurations
-            Assembly assemblyWithConfigurations = typeof(ErrorLogConfiguration).Assembly;
+            Assembly assemblyWithConfigurations = typeof(TenantConfiguration).Assembly;
             modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
             base.OnModelCreating(modelBuilder);
         }

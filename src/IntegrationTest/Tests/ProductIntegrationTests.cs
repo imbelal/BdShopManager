@@ -1,18 +1,15 @@
 ﻿using Application.Features.Product.Commands;
 using Domain.Entities;
 using Domain.Enums;
+using IntegrationTest.Helpers;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Controllers;
 using Xunit;
 
-namespace IntegrationTest
+namespace IntegrationTest.Tests
 {
     public class ProductIntegrationTests : IntegrationTestBase
     {
-
-        public ProductIntegrationTests(CustomWebApplicationFactory<Program> factory) : base(factory)
-        {
-
-        }
 
         [Fact]
         public async Task Create_Product_Should_Succeed()
@@ -21,10 +18,12 @@ namespace IntegrationTest
             CreateProductCommand command = new("Testproduct", "TestDesc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>());
 
             // Act
-            await _mediator.Send(command);
+            var status = await ExecuteControllerMethodAsync(
+                () => ResolveController<ProductsController>().Create(command)
+            );
 
             // Assert
-            int numberOfproduct = _context.Products.Count();
+            int numberOfproduct = Context.Products.Count();
             Assert.True(numberOfproduct > 0);
         }
 
@@ -33,15 +32,14 @@ namespace IntegrationTest
         {
             Product entity = new("Test product", "Test desc", Guid.NewGuid(), ProductUnit.Piece, new List<Guid>());
 
-            _context.Products.Add(entity);
-            await _context.SaveChangesAsync(new CancellationToken());
-
             // Act
-            DeleteProductCommand deleteproductCommand = new(entity.Id);
-            await _mediator.Send(deleteproductCommand);
+            var status = await ExecuteControllerMethodAsync(
+                () => ResolveController<ProductsController>().Delete(entity.Id),
+                preparedEntities: new List<object>() { entity }
+            );
 
             // Assert
-            Product? product = await _context.Products.FirstOrDefaultAsync(x => x.Id == entity.Id, new CancellationToken());
+            Product? product = await Context.Products.FirstOrDefaultAsync(x => x.Id == entity.Id, new CancellationToken());
             Assert.Null(product);
 
         }
