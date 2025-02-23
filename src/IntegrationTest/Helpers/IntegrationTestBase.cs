@@ -10,16 +10,14 @@ namespace IntegrationTest.Helpers
 {
     public abstract class IntegrationTestBase : IAsyncLifetime
     {
-        protected HttpClient Client { get; private set; }
-        protected IServiceScope Scope { get; private set; }
-        protected IApplicationDbContext Context { get; private set; }
+        protected HttpClient Client { get; }
+        protected IServiceScope Scope { get; }
+        protected IApplicationDbContext Context { get; }
         protected IMediator Mediator { get; private set; }
-        protected CustomWebApplicationFactory<Program> Factory { get; private set; }
+        protected CustomWebApplicationFactory<Program> Factory { get; }
 
         protected IntegrationTestBase()
         {
-            Environment.SetEnvironmentVariable("TESTING_ENVIRONMENT", "1");
-
             Factory = new CustomWebApplicationFactory<Program>(TestDatabaseFixture.ConnectionString);
             Client = Factory.CreateClient();
 
@@ -34,7 +32,7 @@ namespace IntegrationTest.Helpers
                 .RuleFor(u => u.Id, f => tenantId)
                 .RuleFor(u => u.Name, f => f.Person.FullName)
                 .RuleFor(u => u.Address, f => f.Person.Address.Street)
-                .RuleFor(u => u.PhoneNumber, f => f.Person.Phone.Substring(0, 10));
+                .RuleFor(u => u.PhoneNumber, f => f.Person.Phone[..10]);
 
             Tenant fakeTenant = faker.Generate();
             Context.Tenants.Add(fakeTenant);
@@ -52,7 +50,6 @@ namespace IntegrationTest.Helpers
             Client?.Dispose();
             Context?.Dispose();
             Factory?.Dispose();
-            Environment.SetEnvironmentVariable("TESTING_ENVIRONMENT", null);
             return Task.CompletedTask;
         }
 
@@ -67,10 +64,11 @@ namespace IntegrationTest.Helpers
         /// </summary>
         /// <typeparam name="TResult">The type of the result returned by the controller method.</typeparam>
         /// <param name="controllerMethod">The controller method to execute (e.g., myController.Create(param)).</param>
+        /// <param name="preparedEntities">Seeding objects.</param>
         /// <returns>The result of the controller method.</returns>
         protected async Task<TResult> ExecuteControllerMethodAsync<TResult>(
             Func<Task<TResult>> controllerMethod,
-            List<Object> preparedEntities = null)
+            List<Object>? preparedEntities = null)
         {
             if (preparedEntities != null)
             {
@@ -81,6 +79,12 @@ namespace IntegrationTest.Helpers
             return await controllerMethod();
         }
 
+        /// <summary>
+        /// Add seeding entities.
+        /// </summary>
+        /// <param name="preparedEntities"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         private async Task AddEntities(List<Object> preparedEntities)
         {
             // Add and save prepared entities

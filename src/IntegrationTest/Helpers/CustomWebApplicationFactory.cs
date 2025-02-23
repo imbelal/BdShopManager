@@ -40,6 +40,7 @@ namespace IntegrationTest.Helpers
                 // Register MediatR
                 services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+                // Register controller as service
                 services.AddControllers()
                     .AddApplicationPart(typeof(Program).Assembly)
                     .AddControllersAsServices();

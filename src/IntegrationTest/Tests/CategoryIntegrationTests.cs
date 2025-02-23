@@ -21,16 +21,16 @@ namespace IntegrationTest.Tests
         [Fact]
         public async Task Create_Category_ShouldSucceed()
         {
+            // Arrange
             CreateCategoryCommand createCategoryCommand = new("Test");
 
+            // Act
             var status = await ExecuteControllerMethodAsync(
-                    () => ResolveController<CategoriesController>().Create(createCategoryCommand)
-                    );
+                () => ResolveController<CategoriesController>().Create(createCategoryCommand)
+            );
 
-            // Verify the result in the same scope
-            //var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-            Category category = await Context.Categories.FirstOrDefaultAsync(default);
-
+            // Assert
+            Category? category = await Context.Categories.FirstOrDefaultAsync(default);
             Assert.NotNull(category);
             Assert.Equal("Test", category.Title);
         }
@@ -40,17 +40,17 @@ namespace IntegrationTest.Tests
         {
             // Arrange
             Category entity = new("TestCate");
-            Product product = new("Testproduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, new List<Guid>());
+            Product product = new("TestProduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, []);
             DeleteCategoryCommand command = new(entity.Id);
 
             // Act
             var status = await ExecuteControllerMethodAsync(
                 () => ResolveController<CategoriesController>().Delete(command),
-                preparedEntities: new List<object>()
-                {
+                preparedEntities:
+                [
                     entity,
                     product
-                }
+                ]
             );
 
             // Assert
