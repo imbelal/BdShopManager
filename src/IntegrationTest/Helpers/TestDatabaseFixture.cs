@@ -23,7 +23,7 @@ namespace IntegrationTest.Helpers
             if (isRunningInPipeline)
             {
                 // Use TestContainers in Azure Pipeline
-                Console.WriteLine("##vso[task.logissue type=info]Running in Azure Pipeline: Using TestContainers for MSSQL");
+                Console.WriteLine("##vso[task.logissue type=debug]Running in Azure Pipeline: Using TestContainers for MSSQL");
                 _msSqlContainer = new MsSqlBuilder()
                     .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
                     .Build();
