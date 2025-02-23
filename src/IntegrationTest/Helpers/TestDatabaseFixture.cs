@@ -23,6 +23,7 @@ namespace IntegrationTest.Helpers
             if (isRunningInPipeline)
             {
                 // Use TestContainers in Azure Pipeline
+                Console.WriteLine("Running in Azure Pipeline: Using TestContainers for MSSQL");
                 _msSqlContainer = new MsSqlBuilder()
                     .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
                     .Build();
@@ -33,6 +34,7 @@ namespace IntegrationTest.Helpers
             else
             {
                 // Use mssqllocaldb locally
+                Console.WriteLine("Running Locally: Using MSSQL LocalDB");
                 _connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=TestDb;Trusted_Connection=True;MultipleActiveResultSets=true";
             }
 
