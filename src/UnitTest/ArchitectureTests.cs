@@ -68,18 +68,17 @@ namespace UnitTest
 
                 // Check if ApplicationDbContext is used
                 bool isApplicationDbContextUsed = constructorParameters
-                                                            .Where(param => param.ParameterType == typeof(IApplicationDbContext))
-                                                            .Any();
+                    .Any(param => param.ParameterType == typeof(IApplicationDbContext));
 
-                // Find the number of repository used insde the command handler.
+                // Find the number of repository used inside the command handler.
                 int numberOfRepository = constructorParameters
-                                                            .Where(param => param.ParameterType
-                                                                                 .GetInterfaces()
-                                                                                 .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRepository<>)))
-                                                                                 .Count();
+                    .Count(param => param.ParameterType
+                        .GetInterfaces()
+                        .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRepository<>)));
+
                 // Assert that command handler shouldn't use ApplicationDbContext.
                 Assert.False(isApplicationDbContextUsed);
-                // Assert that number of used repository shuld be less than 2.
+                // Assert that number of used repository should be less than 2.
                 Assert.True(numberOfRepository < 2);
             }
         }

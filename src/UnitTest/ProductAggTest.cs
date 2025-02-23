@@ -5,23 +5,23 @@ namespace UnitTest
     public class ProductAggTest
     {
         [Fact]
-        public void ShouldUpdateTagsForproduct()
+        public void ShouldUpdateTagsForProduct()
         {
-            // Arranage
+            // Arrange
             Guid tag1 = Guid.NewGuid();
             Guid tag2 = Guid.NewGuid();
             Guid tag3 = Guid.NewGuid();
-            List<Guid> initiallistOfTagIds = [tag1];
-            Product product = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initiallistOfTagIds);
+            List<Guid> initialListOfTagIds = [tag1];
+            Product product = new("Test title", "Test description", Guid.NewGuid(), Domain.Enums.ProductUnit.Box, initialListOfTagIds);
 
             //Act
-            List<Guid> newlistOfTagIds = [tag2, tag3];
-            product.UpdateTags(newlistOfTagIds);
+            List<Guid> newListOfTagIds = [tag2, tag3];
+            product.UpdateTags(newListOfTagIds);
 
             // Assert
             Assert.DoesNotContain(tag1, product.ProductTags.Select(pt => pt.TagId));
-            Assert.Equal(newlistOfTagIds, product.ProductTags.Select(pt => pt.TagId));
-            Assert.Equal(newlistOfTagIds.Count, product.ProductTags.Count);
+            Assert.Equal(newListOfTagIds, product.ProductTags.Select(pt => pt.TagId));
+            Assert.Equal(newListOfTagIds.Count, product.ProductTags.Count);
         }
     }
 }
