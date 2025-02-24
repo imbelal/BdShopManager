@@ -21,8 +21,6 @@ variables:
     value: "**/UnitTest.csproj"
   - name: IntegrationTestProjects
     value: "**/IntegrationTest.csproj"
-
-variables:
   system.debug: true
 
 parameters:
