@@ -13,11 +13,11 @@ trigger:
       - src/IntegrationTest/*
 
 variables:
-  system.debug: true # Key-value pair
-  ProjectName: "WebApi" # Key-value pair
-  ArtifactName: "WebApi" # Key-value pair
-  UnitTestProjects: "**/UnitTest.csproj" # Key-value pair
-  IntegrationTestProjects: "**/IntegrationTest.csproj" # Key-value pair
+  #system.debug: true #Comment out only if need to debug.
+  ProjectName: "WebApi"
+  ArtifactName: "WebApi"
+  UnitTestProjects: "**/UnitTest.csproj"
+  IntegrationTestProjects: "**/IntegrationTest.csproj"
 
 parameters:
   - name: slotName
