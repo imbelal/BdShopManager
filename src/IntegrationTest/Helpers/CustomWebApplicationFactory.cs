@@ -16,6 +16,7 @@ namespace IntegrationTest.Helpers
         private readonly Guid _tenantId = Guid.NewGuid();
         private readonly string _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
+        public Mock<IFileStorageService> MockFileStorageService { get; } = new();
         public Guid GetTenantId()
         {
             return _tenantId;
@@ -47,6 +48,26 @@ namespace IntegrationTest.Helpers
 
                 // Register a mocked IHttpContextAccessor
                 CreateMockHttpContextAccessor(services);
+
+                // Remove existing IFileStorageService registration if any
+                var fileStorageDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IFileStorageService));
+                if (fileStorageDescriptor != null)
+                {
+                    services.Remove(fileStorageDescriptor);
+                }
+
+                // Add a mock IFileStorageService for testing
+                MockFileStorageService
+                    .Setup(x => x.UploadFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync("https://test-storage.blob.core.windows.net/product-photos/test-image.jpg");
+                MockFileStorageService
+                    .Setup(x => x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(true);
+                MockFileStorageService
+                    .Setup(x => x.GetFileUrl(It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns("https://test-storage.blob.core.windows.net/product-photos/test-image.jpg");
+
+                services.AddSingleton(MockFileStorageService.Object);
             });
 
             builder.UseEnvironment("Development");

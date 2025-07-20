@@ -14,7 +14,12 @@ namespace Application.Features.Product.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            Domain.Entities.Product product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken) ?? throw new KeyNotFoundException("User not found!!");
+            Domain.Entities.Product product =
+                await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+
+            if (product == null)
+                return Response.Fail<Guid>("Product not found");
+
             _productRepository.Remove(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
