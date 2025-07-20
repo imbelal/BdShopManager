@@ -18,7 +18,7 @@ namespace Application.Features.User.Queries
         }
         public async Task<IResponse<List<UserDto>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
         {
-            var userList = await _context.Users.Include(u => u.UserRole).ToListAsync();
+            var userList = await _context.Users.Include(u => u.UserRole).ToListAsync(cancellationToken);
             var results = _mapper.Map<List<Domain.Entities.User>, List<UserDto>>(userList);
             if (results.Count == 0)
                 return Response.Fail<List<UserDto>>("No user found!!");

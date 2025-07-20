@@ -15,7 +15,7 @@ namespace Application.Features.User.Commands
 
         public async Task<IResponse<Guid>> Handle(UpdateUserInfoCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIdAsync(command.UserId);
+            var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
             if (user == null) throw new KeyNotFoundException("User not found!!");
 
             user.UpdateProfileInfo(command.Email, command.Firstname, command.Lastname);

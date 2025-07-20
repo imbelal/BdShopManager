@@ -18,7 +18,7 @@ namespace Application.Features.User.Commands
 
         public async Task<IResponse<Guid>> Handle(UpdatePasswordCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIdAsync(command.UserId) ?? throw new KeyNotFoundException("User not found!!");
+            var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken) ?? throw new KeyNotFoundException("User not found!!");
             if (user.Username != command.Username) throw new KeyNotFoundException("Username or email is not correct!!");
 
             (bool isVarified, bool needUpgrade) = _passwordHasher.VerifyPassword(user.PasswordHash, command.OldPassword);

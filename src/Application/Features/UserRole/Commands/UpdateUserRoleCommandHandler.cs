@@ -13,7 +13,7 @@ namespace Application.Features.UserRole.Commands
         }
         public async Task<IResponse<Guid>> Handle(UpdateUserRoleCommand request, CancellationToken cancellationToken)
         {
-            var userRole = await _userRoleRepository.GetByIdAsync(request.Id);
+            var userRole = await _userRoleRepository.GetByIdAsync(request.Id, cancellationToken);
             if (userRole == null) throw new KeyNotFoundException();
 
             userRole.Update(request.Type);

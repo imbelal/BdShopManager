@@ -13,7 +13,7 @@ namespace Application.Features.Tag.Commands
         }
         public async Task<IResponse<Guid>> Handle(UpdateTagCommad request, CancellationToken cancellationToken)
         {
-            var tag = await _tagRepository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException("Category not found!!");
+            var tag = await _tagRepository.GetByIdAsync(request.Id, cancellationToken) ?? throw new KeyNotFoundException("Category not found!!");
 
             tag.Update(request.Title);
 

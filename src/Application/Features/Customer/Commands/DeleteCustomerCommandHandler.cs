@@ -14,7 +14,7 @@ namespace Application.Features.Customer.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteCustomerCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Customer customer = await _customerRepository.GetByIdAsync(command.Id);
+            Domain.Entities.Customer customer = await _customerRepository.GetByIdAsync(command.Id, cancellationToken);
             if (customer == null) throw new Exception("Customer not found!!");
 
             _customerRepository.Remove(customer);

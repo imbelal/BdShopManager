@@ -13,7 +13,7 @@ namespace Application.Features.Tag.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
         {
-            var tag = await _tagRepository.GetByIdAsync(request.Id);
+            var tag = await _tagRepository.GetByIdAsync(request.Id, cancellationToken);
             if (tag == null) throw new KeyNotFoundException();
 
             _tagRepository.Remove(tag);

@@ -14,7 +14,7 @@ namespace Application.Features.UserRole.Queires
         }
         public async Task<IResponse<Domain.Entities.UserRole>> Handle(GetUserRoleByIdQuery query, CancellationToken cancellationToken)
         {
-            var userRole = await _context.UserRoles.Where(a => a.Id == query.Id).FirstOrDefaultAsync();
+            var userRole = await _context.UserRoles.Where(a => a.Id == query.Id).FirstOrDefaultAsync(cancellationToken);
             if (userRole == null)
                 return Response.Fail<Domain.Entities.UserRole>("No user role found!!");
 

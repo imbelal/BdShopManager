@@ -54,8 +54,8 @@ namespace IntegrationTest.Tests
             );
 
             // Assert
-            Category? existingCategory = await Context.Categories.FirstOrDefaultAsync(x => x.Id == entity.Id);
-            List<Product> existingProducts = await Context.Products.Where(x => x.CategoryId == entity.Id).ToListAsync();
+            Category? existingCategory = await Context.Categories.FirstOrDefaultAsync(x => x.Id == entity.Id, default);
+            List<Product> existingProducts = await Context.Products.Where(x => x.CategoryId == entity.Id).ToListAsync(default);
             Assert.Null(existingCategory);
             Assert.Empty(existingProducts);
         }

@@ -50,5 +50,33 @@ namespace WebApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("{productId}/photos")]
+        public async Task<IActionResult> UploadPhoto(Guid productId, IFormFile file, [FromQuery] bool isPrimary = false, [FromQuery] int displayOrder = 0)
+        {
+            var command = new UploadProductPhotoCommand(productId, file, isPrimary, displayOrder);
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpGet("{productId}/photos")]
+        public async Task<IActionResult> GetProductPhotos(Guid productId)
+        {
+            var query = new GetProductPhotosQuery(productId);
+            return Ok(await _mediator.Send(query));
+        }
+
+        [HttpDelete("photos/{photoId}")]
+        public async Task<IActionResult> DeletePhoto(Guid photoId)
+        {
+            var command = new DeleteProductPhotoCommand(photoId);
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpPut("photos/{photoId}/set-primary")]
+        public async Task<IActionResult> SetPrimaryPhoto(Guid photoId)
+        {
+            var command = new SetPrimaryProductPhotoCommand(photoId);
+            return Ok(await _mediator.Send(command));
+        }
     }
 }

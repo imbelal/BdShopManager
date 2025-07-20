@@ -15,7 +15,9 @@ namespace Application.Features.Product.Queries
 
         public async Task<IResponse<Domain.Entities.Product>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var product = await _context.Products
+                .Include(p => p.ProductPhotos)
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (product == null)
                 return Response.Fail<Domain.Entities.Product>("No Product found!!");
 

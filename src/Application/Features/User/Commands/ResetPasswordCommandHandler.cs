@@ -21,7 +21,7 @@ namespace Application.Features.User.Commands
         }
         public async Task<IResponse<Guid>> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIdAsync(command.UserId) ?? throw new KeyNotFoundException("User not found!!");
+            var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken) ?? throw new KeyNotFoundException("User not found!!");
 
             var newPasswordHash = _passwordHasher.CreateHash(_appSettings.DefaultPassword);
             user.ChangePassword(user.PasswordHash, newPasswordHash);

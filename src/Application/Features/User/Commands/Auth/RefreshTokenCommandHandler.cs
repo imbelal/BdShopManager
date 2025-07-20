@@ -37,7 +37,7 @@ namespace Application.Features.User.Commands.Auth
             _userRepository.RemoveRefreshToken(refreshToken);
             await _userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
-            var user = await _context.Users.Include(u => u.UserRole).FirstOrDefaultAsync(x => x.Id == refreshToken.UserId);
+            var user = await _context.Users.Include(u => u.UserRole).FirstOrDefaultAsync(x => x.Id == refreshToken.UserId, cancellationToken);
             if (user is null) throw new UserNotFoundException();
 
             return Response.Success(await _authenticateService.Authenticate(user, cancellationToken));

@@ -45,14 +45,14 @@ namespace Infrastructure.Repositories
             GetDbSet().UpdateRange(entities);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await GetDbSet().ToListAsync();
+            return await GetDbSet().ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid Id)
+        public virtual async Task<T> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
         {
-            return await GetDbSet().FindAsync(Id);
+            return await GetDbSet().FindAsync(Id, cancellationToken);
         }
 
         public void Remove(T entity)

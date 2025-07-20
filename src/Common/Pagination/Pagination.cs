@@ -29,15 +29,15 @@ namespace Common.Pagination
                              .ToList();
         }
 
-        public async Task<Pagination<T>> CreateAsync(IQueryable<T> queryable, int pageNumber, int pageSize)
+        public async Task<Pagination<T>> CreateAsync(IQueryable<T> queryable, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
-            TotalCount = await queryable.CountAsync();
+            TotalCount = await queryable.CountAsync(cancellationToken);
 
             Items = await queryable.Skip((PageNumber - 1) * PageSize)
                                    .Take(PageSize)
-                                   .ToListAsync();
+                                   .ToListAsync(cancellationToken);
 
             return this;
         }

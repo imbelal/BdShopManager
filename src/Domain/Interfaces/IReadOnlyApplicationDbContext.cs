@@ -12,6 +12,7 @@ namespace Domain.Interfaces
         IQueryable<Tag> Tags { get; }
         IQueryable<Product> Products { get; }
         IQueryable<ProductTag> ProductTags { get; }
+        IQueryable<ProductPhoto> ProductPhotos { get; }
         IQueryable<Supplier> Suppliers { get; }
         IQueryable<Inventory> Inventories { get; }
         IQueryable<Customer> Customers { get; }

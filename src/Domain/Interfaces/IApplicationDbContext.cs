@@ -14,6 +14,7 @@ namespace Domain.Interfaces
         DbSet<Tag> Tags { get; set; }
         DbSet<Product> Products { get; set; }
         DbSet<ProductTag> ProductTags { get; set; }
+        DbSet<ProductPhoto> ProductPhotos { get; set; }
         DbSet<Supplier> Suppliers { get; set; }
         DbSet<Inventory> Inventories { get; set; }
         DbSet<Customer> Customers { get; set; }

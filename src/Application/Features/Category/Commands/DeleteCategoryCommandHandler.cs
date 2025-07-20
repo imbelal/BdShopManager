@@ -14,7 +14,7 @@ namespace Application.Features.Category.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteCategoryCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Category category = await _categoryRepository.GetByIdAsync(command.Id);
+            Domain.Entities.Category category = await _categoryRepository.GetByIdAsync(command.Id, cancellationToken);
             if (category == null) throw new Exception("Category not found!!");
 
             _categoryRepository.Remove(category);

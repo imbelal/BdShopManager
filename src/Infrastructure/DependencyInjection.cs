@@ -2,6 +2,7 @@
 using Common.Repositories.Interfaces;
 using Domain.Interfaces;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,15 +31,17 @@ namespace Infrastructure
                 .Where(mytype => mytype.GetInterface(typeof(IRepository<>).Name) != null && !mytype.IsInterface && mytype != typeof(GenericRepository<>))
                 .ToList();
 
-            foreach (var item in list)
+            foreach (var type in list)
             {
-                string interfaceName = $"I{item.Name}";
-                Type? usedInteface = item.GetInterface(interfaceName);
-                if (usedInteface is not null)
+                var interfaceType = type.GetInterfaces().FirstOrDefault(x => x.Name != typeof(IRepository<>).Name);
+                if (interfaceType != null)
                 {
-                    services.AddTransient(usedInteface, item);
+                    services.AddTransient(interfaceType, type);
                 }
             }
+
+            // Register Azure Storage Service
+            services.AddTransient<IFileStorageService, AzureBlobStorageService>();
         }
     }
 }

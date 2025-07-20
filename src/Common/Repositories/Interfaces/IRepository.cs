@@ -5,8 +5,8 @@ namespace Common.Repositories.Interfaces
 {
     public interface IRepository<T> where T : IAggregateRoot
     {
-        Task<T> GetByIdAsync(Guid Id);
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
         void Add(T entity);
         void AddRange(IEnumerable<T> entities);
         void Update(T entity);

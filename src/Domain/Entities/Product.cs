@@ -7,6 +7,7 @@ namespace Domain.Entities
     public class Product : AuditableTenantEntityBase<Guid>, IAggregateRoot, ISoftDeletable
     {
         private List<ProductTag> productTags = new();
+        private List<ProductPhoto> productPhotos = new();
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public ProductUnit Unit { get; set; }
@@ -35,6 +36,11 @@ namespace Domain.Entities
             get => productTags;
         }
 
+        public IReadOnlyCollection<ProductPhoto> ProductPhotos
+        {
+            get => productPhotos;
+        }
+
         private void AddTags(List<Guid> tagIds)
         {
             productTags.AddRange(tagIds.Select(tagId => new ProductTag(this.Id, tagId)).ToList());
@@ -52,6 +58,39 @@ namespace Domain.Entities
             List<Guid> tagsToBeDeleted = existingTagIds.Except(tagIds).ToList();
             AddTags(tagsToBeAdded);
             RemoveTags(tagsToBeDeleted);
+        }
+
+        public void AddPhoto(ProductPhoto photo)
+        {
+            productPhotos.Add(photo);
+        }
+
+        public void RemovePhoto(Guid photoId)
+        {
+            var photo = productPhotos.FirstOrDefault(p => p.Id == photoId);
+            if (photo != null)
+            {
+                productPhotos.Remove(photo);
+            }
+        }
+
+        public void SetPrimaryPhoto(Guid photoId)
+        {
+            // Remove primary flag from all photos
+            foreach (var photo in productPhotos)
+            {
+                if (photo.IsPrimary)
+                {
+                    photo.SetAsPrimary(false);
+                }
+            }
+
+            // Set the specified photo as primary
+            var targetPhoto = productPhotos.FirstOrDefault(p => p.Id == photoId);
+            if (targetPhoto != null)
+            {
+                targetPhoto.SetAsPrimary(true);
+            }
         }
     }
 }

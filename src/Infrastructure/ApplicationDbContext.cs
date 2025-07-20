@@ -31,6 +31,7 @@ namespace Infrastructure
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductTag> ProductTags { get; set; }
+        public DbSet<ProductPhoto> ProductPhotos { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -48,6 +49,7 @@ namespace Infrastructure
         IQueryable<Tag> IReadOnlyApplicationDbContext.Tags => Tags.AsQueryable();
         IQueryable<Product> IReadOnlyApplicationDbContext.Products => Products.AsQueryable();
         IQueryable<ProductTag> IReadOnlyApplicationDbContext.ProductTags => ProductTags.AsQueryable();
+        IQueryable<ProductPhoto> IReadOnlyApplicationDbContext.ProductPhotos => ProductPhotos.AsQueryable();
         IQueryable<Supplier> IReadOnlyApplicationDbContext.Suppliers => Suppliers.AsQueryable();
         IQueryable<Inventory> IReadOnlyApplicationDbContext.Inventories => Inventories.AsQueryable();
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
@@ -62,6 +64,17 @@ namespace Infrastructure
             Assembly assemblyWithConfigurations = typeof(TenantConfiguration).Assembly;
             modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
             base.OnModelCreating(modelBuilder);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                // Find the 'Id' property
+                var idProperty = entityType.FindProperty("Id");
+
+                if (idProperty != null)
+                {
+                    idProperty.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.Never;
+                }
+            }
         }
     }
 }

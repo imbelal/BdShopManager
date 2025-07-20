@@ -13,10 +13,10 @@ namespace Infrastructure.Repositories
             _context = applicationDbContext;
         }
 
-        public async override Task<Order> GetByIdAsync(Guid Id)
+        public async override Task<Order> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
         {
             return await _context.Orders.Include(order => order.OrderDetails)
-                                        .Where(order => order.Id == Id).FirstOrDefaultAsync();
+                                        .Where(order => order.Id == Id).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

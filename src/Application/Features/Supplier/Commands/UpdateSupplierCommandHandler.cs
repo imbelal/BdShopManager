@@ -15,7 +15,7 @@ namespace Application.Features.Supplier.Commands
 
         public async Task<IResponse<Guid>> Handle(UpdateSupplierCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Supplier supplier = await _supplierRepository.GetByIdAsync(command.Id);
+            Domain.Entities.Supplier supplier = await _supplierRepository.GetByIdAsync(command.Id, cancellationToken);
             if (supplier == null) throw new Exception("Supplier not found!!");
 
             supplier.Update(command.Name, command.Details, command.ContactNo);

@@ -14,7 +14,7 @@ namespace Application.Features.Order.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteOrderCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Order order = await _orderRepository.GetByIdAsync(command.Id);
+            Domain.Entities.Order order = await _orderRepository.GetByIdAsync(command.Id, cancellationToken);
             if (order == null) throw new Exception("Order not found!!");
 
             _orderRepository.Remove(order);

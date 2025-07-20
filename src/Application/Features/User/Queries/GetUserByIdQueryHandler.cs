@@ -18,7 +18,7 @@ namespace Application.Features.User.Queries
         }
         public async Task<IResponse<UserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.Where(u => u.Id == request.Id).FirstOrDefaultAsync();
+            var user = await _context.Users.Where(u => u.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
             var result = _mapper.Map<Domain.Entities.User, UserDto>(user);
             if (result == null)
             {
