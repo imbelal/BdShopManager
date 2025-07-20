@@ -13,7 +13,14 @@ namespace Infrastructure.Repositories
         public override async Task<Domain.Entities.Product> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
         {
             return await GetDbSet()
-                .Include(p => p.ProductPhotos)
+                .Include(p => p.ProductPhotos) // Load all photos for detailed operations
+                .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+        }
+
+        public async Task<Domain.Entities.Product> GetByIdWithPrimaryPhotoAsync(Guid Id, CancellationToken cancellationToken = default)
+        {
+            return await GetDbSet()
+                .Include(p => p.ProductPhotos.Where(pp => pp.IsPrimary)) // Only load primary photos
                 .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
         }
 

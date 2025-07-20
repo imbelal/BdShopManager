@@ -33,11 +33,11 @@ namespace Application.Features.Product.Queries
                     IsPrimary = pp.IsPrimary,
                     DisplayOrder = pp.DisplayOrder,
                     CreatedBy = pp.CreatedBy,
-                    CreatedDate = pp.CreatedUtcDate.ToString("F")
+                    CreatedDate = pp.CreatedUtcDate.ToString()
                 })
                 .ToListAsync(cancellationToken);
 
             return Response.Success(photos);
         }
     }
-} 
+}
