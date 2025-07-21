@@ -1,5 +1,6 @@
 ﻿using Application.Features.Product.Commands;
 using Application.Features.Product.Queries;
+using Domain.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,9 +38,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("GetProductWithPaging/{pageSize}/{pageNumber}")]
-        public async Task<IActionResult> GetProducts(int pageSize, int pageNumber)
+        public async Task<IActionResult> GetProducts(int pageSize, int pageNumber, [FromQuery] string searchTerm = null)
         {
-            GetAllProductsQuery query = new(pageNumber, pageSize);
+            GetAllProductsQuery query = new(pageNumber, pageSize, searchTerm);
             return Ok(await _mediator.Send(query));
         }
 
@@ -52,9 +53,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("{productId}/photos")]
-        public async Task<IActionResult> UploadPhoto(Guid productId, IFormFile file, [FromQuery] bool isPrimary = false, [FromQuery] int displayOrder = 0)
+        public async Task<IActionResult> UploadPhoto(Guid productId, [FromForm] UploadProductPhotoDto dto)
         {
-            var command = new UploadProductPhotoCommand(productId, file, isPrimary, displayOrder);
+            var command = new UploadProductPhotoCommand(productId, dto.File, dto.IsPrimary, dto.DisplayOrder);
             return Ok(await _mediator.Send(command));
         }
 

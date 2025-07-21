@@ -221,7 +221,7 @@ namespace IntegrationTest.Tests
 
             // Act
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().GetProducts(3, 1),
+                () => ResolveController<ProductsController>().GetProducts(3, 1, string.Empty),
                 preparedEntities: preparedEntities
             );
 
@@ -283,8 +283,14 @@ namespace IntegrationTest.Tests
             mockFile.Setup(f => f.OpenReadStream()).Returns(new MemoryStream(new byte[1024]));
 
             // Act
+            UploadProductPhotoDto uploadDto = new UploadProductPhotoDto
+            {
+                File = mockFile.Object,
+                IsPrimary = true,
+                DisplayOrder = 1
+            };
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().UploadPhoto(product.Id, mockFile.Object, true, 1),
+                () => ResolveController<ProductsController>().UploadPhoto(product.Id, uploadDto),
                 preparedEntities: [product]
             );
 
@@ -322,8 +328,14 @@ namespace IntegrationTest.Tests
             mockFile.Setup(f => f.OpenReadStream()).Returns(new MemoryStream(new byte[1024]));
 
             // Act
+            UploadProductPhotoDto uploadDto = new UploadProductPhotoDto
+            {
+                File = mockFile.Object,
+                IsPrimary = false,
+                DisplayOrder = 1
+            };
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().UploadPhoto(product.Id, mockFile.Object, false, 1),
+                () => ResolveController<ProductsController>().UploadPhoto(product.Id, uploadDto),
                 preparedEntities: [product]
             );
 
@@ -349,8 +361,14 @@ namespace IntegrationTest.Tests
             mockFile.Setup(f => f.OpenReadStream()).Returns(new MemoryStream(new byte[1024]));
 
             // Act
+            UploadProductPhotoDto uploadDto = new UploadProductPhotoDto
+            {
+                File = mockFile.Object,
+                IsPrimary = false,
+                DisplayOrder = 1
+            };
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().UploadPhoto(nonExistentProductId, mockFile.Object, false, 1)
+                () => ResolveController<ProductsController>().UploadPhoto(nonExistentProductId, uploadDto)
             );
 
             // Assert
@@ -514,8 +532,14 @@ namespace IntegrationTest.Tests
             var product = _productFaker.Generate();
 
             // Act
+            UploadProductPhotoDto uploadDto = new UploadProductPhotoDto
+            {
+                File = null,
+                IsPrimary = false,
+                DisplayOrder = 1
+            };
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().UploadPhoto(product.Id, null, false, 1),
+                () => ResolveController<ProductsController>().UploadPhoto(product.Id, uploadDto),
                 preparedEntities: [product]
             );
 
@@ -541,8 +565,14 @@ namespace IntegrationTest.Tests
             mockFile.Setup(f => f.OpenReadStream()).Returns(new MemoryStream());
 
             // Act
+            UploadProductPhotoDto uploadDto = new UploadProductPhotoDto
+            {
+                File = mockFile.Object,
+                IsPrimary = false,
+                DisplayOrder = 1
+            };
             var result = await ExecuteControllerMethodAsync(
-                () => ResolveController<ProductsController>().UploadPhoto(product.Id, mockFile.Object, false, 1),
+                () => ResolveController<ProductsController>().UploadPhoto(product.Id, uploadDto),
                 preparedEntities: [product]
             );
 

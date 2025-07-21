@@ -17,9 +17,22 @@ namespace Application.Features.Product.Queries
 
         public async Task<IResponse<Pagination<ProductDto>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
+            var term = request.SearchTerm?.Trim().ToLower();
+
             var queryable = _context.Products
                 .Include(p => p.ProductTags)
                 .Include(p => p.ProductPhotos.Where(pp => pp.IsPrimary)) // Only load primary photos
+                .AsQueryable();
+
+            // Add search filter only if searchTerm is provided
+            if (!string.IsNullOrEmpty(term))
+            {
+                queryable = queryable.Where(p =>
+                    p.Title.ToLower().Contains(term) ||
+                    p.Description.ToLower().Contains(term));
+            }
+
+            var query = queryable
                 .Select(p => new ProductDto
                 {
                     Id = p.Id,
@@ -52,7 +65,7 @@ namespace Application.Features.Product.Queries
                         .ToList()
                 });
 
-            var pagination = await new Pagination<ProductDto>().CreateAsync(queryable, request.PageNumber, request.PageSize, cancellationToken);
+            var pagination = await new Pagination<ProductDto>().CreateAsync(query, request.PageNumber, request.PageSize, cancellationToken);
             return Response.Success(pagination);
         }
     }
