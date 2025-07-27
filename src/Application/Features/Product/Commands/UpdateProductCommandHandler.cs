@@ -27,6 +27,7 @@ namespace Application.Features.Product.Commands
             product.Title = command.Title;
             product.Description = command.Description;
             product.CategoryId = command.CategoryId;
+            product.Unit = command.Unit;
 
             _productRepository.Update(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
