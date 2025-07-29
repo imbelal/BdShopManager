@@ -79,5 +79,12 @@ namespace WebApi.Controllers
             var command = new SetPrimaryProductPhotoCommand(photoId);
             return Ok(await _mediator.Send(command));
         }
+
+        [HttpGet("select-list")]
+        public async Task<IActionResult> GetProductIdTitleList()
+        {
+            var result = await _mediator.Send(new GetProductIdTitleListQuery());
+            return Ok(result);
+        }
     }
 }
