@@ -1,5 +1,6 @@
 ﻿using Common.Entities;
 using Common.Entities.Interfaces;
+using Domain.Events;
 
 namespace Domain.Entities
 {
@@ -27,6 +28,9 @@ namespace Domain.Entities
             CostPerUnit = costPerUnit;
             TotalCost = totalCost;
             Remark = remark;
+
+            // Raise domain event for inventory added
+            RaiseDomainEvent(new InventoryAddedEvent(productId, quantity));
         }
 
         public void DecreaseQuantity(int quantity)

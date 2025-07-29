@@ -47,7 +47,7 @@ namespace UnitTest
         }
 
         [Fact]
-        public void EnsureOnlySingleRepositoryUsedForWritePorposeInCommandHandler()
+        public void EnsureOnlySingleRepositoryUsedForWritePurposeInCommandHandler()
         {
             // Define the assembly where command handlers are located.
             var assembly = typeof(CreateProductCommand).Assembly;
@@ -75,6 +75,11 @@ namespace UnitTest
                     .Count(param => param.ParameterType
                         .GetInterfaces()
                         .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRepository<>)));
+
+                if (isApplicationDbContextUsed)
+                {
+                    isApplicationDbContextUsed = true;
+                }
 
                 // Assert that command handler shouldn't use ApplicationDbContext.
                 Assert.False(isApplicationDbContextUsed);

@@ -38,6 +38,7 @@ namespace Application.Features.Product.Queries
                     Id = p.Id,
                     Title = p.Title,
                     Description = p.Description,
+                    StockQuantity = p.StockQuantity,
                     Unit = p.Unit,
                     CategoryId = p.CategoryId,
                     CategoryName = _context.Categories.Where(c => c.Id.Equals(p.CategoryId)).FirstOrDefault().Title,

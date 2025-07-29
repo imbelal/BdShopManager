@@ -112,7 +112,8 @@ namespace IntegrationTest.Tests
                 product.Id,
                 "Updated Product Name",
                 "Updated Description",
-                category.Id);
+                category.Id,
+                Domain.Enums.ProductUnit.Piece);
 
             // Act
             var result = await ExecuteControllerMethodAsync(
@@ -144,7 +145,8 @@ namespace IntegrationTest.Tests
                 Guid.NewGuid(), // Non-existent product
                 "Updated Product Name",
                 "Updated Description",
-                category.Id);
+                category.Id,
+                Domain.Enums.ProductUnit.Piece);
 
             // Act
             var result = await ExecuteControllerMethodAsync(

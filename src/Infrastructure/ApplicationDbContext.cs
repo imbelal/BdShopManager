@@ -70,7 +70,7 @@ namespace Infrastructure
                 // Find the 'Id' property
                 var idProperty = entityType.FindProperty("Id");
 
-                if (idProperty != null)
+                if (idProperty != null && entityType.ClrType != typeof(ErrorLog))
                 {
                     idProperty.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.Never;
                 }

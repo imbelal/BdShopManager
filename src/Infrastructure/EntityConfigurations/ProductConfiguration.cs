@@ -14,6 +14,7 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.Unit).HasColumnName("Unit").HasColumnType("int").IsRequired();
             builder.Property(x => x.CategoryId).HasColumnName("CategoryId").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(x => x.Status).HasColumnName("Status").HasColumnType("tinyint").IsRequired();
+            builder.Property(x => x.StockQuantity).HasColumnName("StockQuantity").HasColumnType("int").IsRequired().HasDefaultValue(0);
             builder.Property(x => x.IsDeleted).HasColumnName("IsDeleted").HasColumnType("bit").IsRequired().HasDefaultValue(false);
             builder.HasMany(x => x.ProductTags).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade).IsRequired(false);
             builder.Property(x => x.TenantId).HasColumnName("TenantId").HasColumnType("uniqueidentifier").IsRequired();

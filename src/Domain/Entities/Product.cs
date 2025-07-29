@@ -13,6 +13,7 @@ namespace Domain.Entities
         public ProductUnit Unit { get; set; }
         public Guid CategoryId { get; set; }
         public ProductStatus Status { get; set; }
+        public int StockQuantity { get; private set; } = 0;
         public bool IsDeleted { get; set; } = false;
         public Tenant Tenant { get; set; }
 
@@ -90,6 +91,22 @@ namespace Domain.Entities
             if (targetPhoto != null)
             {
                 targetPhoto.SetAsPrimary(true);
+            }
+        }
+
+        public void IncreaseStockQuantity(int quantity)
+        {
+            if (quantity > 0)
+            {
+                StockQuantity += quantity;
+            }
+        }
+
+        public void DecreaseStockQuantity(int quantity)
+        {
+            if (quantity > 0 && StockQuantity >= quantity)
+            {
+                StockQuantity -= quantity;
             }
         }
     }
