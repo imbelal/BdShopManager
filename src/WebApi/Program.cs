@@ -133,13 +133,10 @@ try
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
     app.MapControllers();
-
-    if (!app.Environment.IsDevelopment())
-    {
-        // Run auto migration for production and staging envrionment.
-        logger.Debug("Database migration");
-        RunAutoDatabaseMigration(app);
-    }
+    
+    // Run auto migration.
+    logger.Debug("Database migration");
+    RunAutoDatabaseMigration(app);
 
     logger.Debug("Application Starting Up");
     app.Run();
