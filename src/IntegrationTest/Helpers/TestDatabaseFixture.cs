@@ -1,4 +1,5 @@
-﻿using Common.Services.Interfaces;
+﻿using System.Runtime.InteropServices;
+using Common.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -20,12 +21,13 @@ namespace IntegrationTest.Helpers
             // Check if running on Azure Pipeline agent
             var isRunningInPipeline = Environment.GetEnvironmentVariable("TF_BUILD") == "True";
 
-            if (isRunningInPipeline)
+            // Use TestContainer for azure / mac os
+            if (isRunningInPipeline || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 // Use TestContainers in Azure Pipeline
                 Console.WriteLine("##vso[task.debug]Running in Azure Pipeline: Using TestContainers for MSSQL");
                 _msSqlContainer = new MsSqlBuilder()
-                    .WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
+                    .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                     .Build();
 
                 _msSqlContainer.StartAsync().GetAwaiter().GetResult();
@@ -59,7 +61,7 @@ namespace IntegrationTest.Helpers
                     new Mock<IHostEnvironment>().Object,
                     new Mock<ILogger<TestDbContext>>().Object);
 
-                context.Database.EnsureCreatedAsync().GetAwaiter().GetResult();
+                context.Database.Migrate();
                 _isInitialized = true;
             }
         }
