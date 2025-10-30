@@ -44,11 +44,16 @@ namespace Application.Features.Order.Queries
                 .Select(o => new OrderDto
                 {
                     Id = o.Id,
+                    OrderNumber = o.OrderNumber,
                     CustomerId = o.CustomerId,
                     CustomerName = _context.Customers.Where(c => c.Id == o.CustomerId).Select(c => c.FirstName + " " + c.LastName).FirstOrDefault() ?? "",
                     TotalPrice = o.TotalPrice,
+                    TaxPercentage = o.TaxPercentage,
+                    TaxAmount = o.TaxAmount,
+                    GrandTotal = o.GrandTotal,
                     TotalPaid = o.TotalPaid,
-                    RemainingAmount = o.TotalPrice - o.TotalPaid,
+                    RemainingAmount = o.GrandTotal - o.TotalPaid,
+                    Status = o.Status,
                     Remark = o.Remark,
                     CreatedBy = o.CreatedBy,
                     CreatedDate = o.CreatedUtcDate.DateTime,

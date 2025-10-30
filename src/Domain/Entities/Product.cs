@@ -104,10 +104,17 @@ namespace Domain.Entities
 
         public void DecreaseStockQuantity(int quantity)
         {
-            if (quantity > 0 && StockQuantity >= quantity)
+            if (quantity <= 0)
             {
-                StockQuantity -= quantity;
+                throw new InvalidOperationException("Quantity to decrease must be greater than zero.");
             }
+
+            if (StockQuantity < quantity)
+            {
+                throw new InvalidOperationException($"Insufficient stock for product '{Title}'. Available: {StockQuantity}, Requested: {quantity}");
+            }
+
+            StockQuantity -= quantity;
         }
     }
 }

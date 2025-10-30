@@ -26,7 +26,8 @@ namespace WebApi.Controllers
                 request.TotalPrice,
                 request.TotalPaid,
                 request.Remark,
-                request.OrderDetails)));
+                request.OrderDetails,
+                request.TaxPercentage)));
         }
 
         [HttpGet("{id}")]
@@ -62,6 +63,36 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _mediator.Send(new DeleteOrderCommand(id)));
+        }
+
+        [HttpPost("{orderId}/payments")]
+        public async Task<IActionResult> AddPayment(Guid orderId, AddPaymentCommand command)
+        {
+            if (orderId != command.OrderId)
+            {
+                return BadRequest("Order ID mismatch");
+            }
+
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpGet("{orderId}/payments")]
+        public async Task<IActionResult> GetPayments(Guid orderId)
+        {
+            return Ok(await _mediator.Send(new GetPaymentsByOrderQuery { OrderId = orderId }));
+        }
+
+        [HttpGet("{orderId}/pdf")]
+        public async Task<IActionResult> GetOrderPdf(Guid orderId)
+        {
+            var response = await _mediator.Send(new GetOrderPdfQuery { OrderId = orderId });
+
+            if (response.Succeeded && response.Data != null)
+            {
+                return File(response.Data, "application/pdf", $"Order_{orderId.ToString().Substring(0, 8)}.pdf");
+            }
+
+            return BadRequest("Failed to generate PDF");
         }
     }
 }

@@ -26,10 +26,30 @@ namespace Application.Features.Order.Commands
                 command.TotalPrice,
                 command.TotalPaid,
                 command.Remark,
-                command.OrderDetails);
+                command.OrderDetails,
+                command.TaxPercentage);
+
+            // Generate unique order number
+            order.OrderNumber = await GenerateOrderNumber(cancellationToken);
+
             _orderRepository.Add(order);
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             return Response.Success(order.Id);
+        }
+
+        private async Task<string> GenerateOrderNumber(CancellationToken cancellationToken)
+        {
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
+            var datePrefix = today.ToString("yyyyMMdd");
+
+            // Get the count of orders created today to determine the sequence number
+            var ordersToday = await _context.Orders
+                .Where(o => o.CreatedUtcDate >= today && o.CreatedUtcDate < tomorrow)
+                .CountAsync(cancellationToken);
+
+            var sequenceNumber = ordersToday + 1;
+            return $"ORD-{datePrefix}-{sequenceNumber:D3}";
         }
     }
 }

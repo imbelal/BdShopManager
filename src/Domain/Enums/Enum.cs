@@ -43,4 +43,12 @@
         ReadOnlyUser = 2
     }
 
+    public enum OrderStatus
+    {
+        Pending = 0,        // No payment made yet
+        PartiallyPaid = 1,  // Some payment made but not full
+        Paid = 2,           // Full payment received
+        Cancelled = 3       // Order cancelled
+    }
+
 }

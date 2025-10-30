@@ -6,20 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Order.Queries
 {
-    public class GetOrderByIdQueryHandler : IQueryHandler<GetOrderByIdQuery, OrderDto>
+    public class GetOrderPdfQueryHandler : IQueryHandler<GetOrderPdfQuery, byte[]>
     {
         private readonly IReadOnlyApplicationDbContext _context;
+        private readonly IPdfGeneratorService _pdfGeneratorService;
 
-        public GetOrderByIdQueryHandler(IReadOnlyApplicationDbContext context)
+        public GetOrderPdfQueryHandler(IReadOnlyApplicationDbContext context, IPdfGeneratorService pdfGeneratorService)
         {
             _context = context;
+            _pdfGeneratorService = pdfGeneratorService;
         }
 
-        public async Task<IResponse<OrderDto>> Handle(GetOrderByIdQuery query, CancellationToken cancellationToken)
+        public async Task<IResponse<byte[]>> Handle(GetOrderPdfQuery query, CancellationToken cancellationToken)
         {
+            // Get the order with all details
             var order = await _context.Orders
                 .Include(o => o.OrderDetails)
-                .Where(o => o.Id == query.Id && !o.IsDeleted)
+                .Where(o => o.Id == query.OrderId && !o.IsDeleted)
                 .Select(o => new OrderDto
                 {
                     Id = o.Id,
@@ -54,7 +57,30 @@ namespace Application.Features.Order.Queries
                 throw new Exception("Order not found!");
             }
 
-            return Response.Success(order);
+            // Get tenant details
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == order.CustomerId, cancellationToken);
+            if (customer == null)
+            {
+                throw new Exception("Customer not found!");
+            }
+
+            var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == customer.TenantId, cancellationToken);
+            if (tenant == null)
+            {
+                throw new Exception("Tenant not found!");
+            }
+
+            // Generate PDF
+            var pdfBytes = _pdfGeneratorService.GenerateOrderPdf(
+                order,
+                tenant.Name,
+                tenant.Address,
+                tenant.PhoneNumber,
+                customer.Address,
+                customer.ContactNo
+            );
+
+            return Response.Success(pdfBytes);
         }
     }
 }

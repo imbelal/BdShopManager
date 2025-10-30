@@ -37,6 +37,7 @@ namespace Infrastructure
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
 
         #region ReadOnly
@@ -55,6 +56,7 @@ namespace Infrastructure
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
         IQueryable<Order> IReadOnlyApplicationDbContext.Orders => Orders.AsQueryable();
         IQueryable<OrderDetail> IReadOnlyApplicationDbContext.OrderDetails => OrderDetails.AsQueryable();
+        IQueryable<Payment> IReadOnlyApplicationDbContext.Payments => Payments.AsQueryable();
         IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
         #endregion
 

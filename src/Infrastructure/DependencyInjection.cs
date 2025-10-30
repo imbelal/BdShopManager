@@ -42,6 +42,9 @@ namespace Infrastructure
 
             // Register Azure Storage Service
             services.AddTransient<IFileStorageService, AzureBlobStorageService>();
+
+            // Register PDF Generator Service
+            services.AddTransient<IPdfGeneratorService, PdfGeneratorService>();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Application.Features.Order.Commands
                 throw new Exception("Customer not found!");
             }
 
-            order.Update(command.CustomerId, command.TotalPrice, command.TotalPaid, command.Remark, command.OrderDetails);
+            order.Update(command.CustomerId, command.TotalPrice, command.TotalPaid, command.Remark, command.OrderDetails, command.TaxPercentage);
             _orderRepository.Update(order);
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
