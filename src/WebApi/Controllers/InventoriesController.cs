@@ -29,5 +29,22 @@ namespace WebApi.Controllers
         {
             return Ok(await _mediator.Send(new GetAllInventoriesQuery()));
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateInventoryCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("ID mismatch");
+            }
+
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            return Ok(await _mediator.Send(new DeleteInventoryCommand { Id = id }));
+        }
     }
 }

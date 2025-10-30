@@ -14,10 +14,11 @@ namespace Application.Features.Order.Commands
         }
         public async Task<IResponse<Guid>> Handle(DeleteOrderCommand command, CancellationToken cancellationToken)
         {
-            Domain.Entities.Order order = await _orderRepository.GetByIdAsync(command.Id, cancellationToken);
+            Domain.Entities.Order? order = await _orderRepository.GetByIdAsync(command.Id, cancellationToken);
             if (order == null) throw new Exception("Order not found!!");
 
-            _orderRepository.Remove(order);
+            order.Delete();
+            _orderRepository.Update(order);
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Response.Success(order.Id);

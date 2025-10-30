@@ -48,5 +48,28 @@ namespace Domain.Entities
 
             return newOrder;
         }
+
+        public void Update(Guid customerId, decimal totalPrice, decimal totalPaid, string remark, List<OrderDetailsDto> orderDetailDtos)
+        {
+            CustomerId = customerId;
+            TotalPrice = totalPrice;
+            TotalPaid = totalPaid;
+            Remark = remark;
+
+            // Clear existing order details and add new ones
+            orderDetails.Clear();
+            orderDetails.AddRange(
+                orderDetailDtos.Select(orderDetail => new OrderDetail(this.Id,
+                orderDetail.ProductId,
+                orderDetail.Quantity,
+                orderDetail.Unit,
+                orderDetail.UnitPrice)).ToList()
+            );
+        }
+
+        public void Delete()
+        {
+            IsDeleted = true;
+        }
     }
 }

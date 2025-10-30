@@ -33,12 +33,27 @@ namespace Domain.Entities
             RaiseDomainEvent(new InventoryAddedEvent(productId, quantity));
         }
 
+        public void Update(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, string remark)
+        {
+            ProductId = productId;
+            SupplierId = supplierId;
+            Quantity = quantity;
+            CostPerUnit = costPerUnit;
+            TotalCost = quantity * costPerUnit;
+            Remark = remark;
+        }
+
         public void DecreaseQuantity(int quantity)
         {
             if (quantity > 0)
             {
                 Quantity -= quantity;
             }
+        }
+
+        public void Delete()
+        {
+            IsDeleted = true;
         }
 
     }
