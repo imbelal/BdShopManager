@@ -10,7 +10,7 @@ namespace Domain.Entities
     {
         private List<OrderDetail> orderDetails = new();
         private List<Payment> payments = new();
-        public string OrderNumber { get; set; } = string.Empty;
+        public string OrderNumber { get; private set; } = string.Empty;
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TaxPercentage { get; set; } = 0;
@@ -57,7 +57,7 @@ namespace Domain.Entities
             decimal calculatedTotal = orderDetailDtos.Sum(od => od.Quantity * od.UnitPrice);
             if (Math.Abs(calculatedTotal - totalPrice) > 0.01m) // Allow for minor rounding differences
             {
-                throw new InvalidOperationException($"Total price mismatch. Provided: {totalPrice:N2}, Calculated from order details: {calculatedTotal:N2}");
+                throw new Common.Exceptions.BusinessLogicException($"Total price mismatch. Provided: {totalPrice:N2}, Calculated from order details: {calculatedTotal:N2}");
             }
 
             Order newOrder = new(customerId, totalPrice, totalPaid, remark, taxPercentage);
@@ -82,7 +82,7 @@ namespace Domain.Entities
             decimal calculatedTotal = orderDetailDtos.Sum(od => od.Quantity * od.UnitPrice);
             if (Math.Abs(calculatedTotal - totalPrice) > 0.01m) // Allow for minor rounding differences
             {
-                throw new InvalidOperationException($"Total price mismatch. Provided: {totalPrice:N2}, Calculated from order details: {calculatedTotal:N2}");
+                throw new Common.Exceptions.BusinessLogicException($"Total price mismatch. Provided: {totalPrice:N2}, Calculated from order details: {calculatedTotal:N2}");
             }
 
             // Capture old order details before clearing for stock adjustment
@@ -121,21 +121,36 @@ namespace Domain.Entities
             RaiseDomainEvent(new OrderDeletedEvent(this.Id, orderDetailInfos));
         }
 
+        public void SetOrderNumber(string orderNumber)
+        {
+            if (string.IsNullOrWhiteSpace(orderNumber))
+            {
+                throw new Common.Exceptions.BusinessLogicException("Order number cannot be empty.");
+            }
+            OrderNumber = orderNumber;
+        }
+
+        public static string GenerateOrderNumber(DateTime date, int sequenceNumber)
+        {
+            var datePrefix = date.ToString("yyyyMMdd");
+            return $"ORD-{datePrefix}-{sequenceNumber:D3}";
+        }
+
         public void AddPayment(decimal amount, string paymentMethod, string remark)
         {
             if (amount <= 0)
             {
-                throw new InvalidOperationException("Payment amount must be greater than zero.");
+                throw new Common.Exceptions.BusinessLogicException("Payment amount must be greater than zero.");
             }
 
             if (Status == OrderStatus.Paid)
             {
-                throw new InvalidOperationException("Order is already fully paid.");
+                throw new Common.Exceptions.BusinessLogicException("Order is already fully paid.");
             }
 
             if (Status == OrderStatus.Cancelled)
             {
-                throw new InvalidOperationException("Cannot add payment to a cancelled order.");
+                throw new Common.Exceptions.BusinessLogicException("Cannot add payment to a cancelled order.");
             }
 
             // Create and add new payment

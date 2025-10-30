@@ -51,7 +51,7 @@ namespace Application.Features.Order.Queries
 
             if (order == null)
             {
-                throw new Exception("Order not found!");
+                throw new Common.Exceptions.BusinessLogicException("Order not found!");
             }
 
             return Response.Success(order);

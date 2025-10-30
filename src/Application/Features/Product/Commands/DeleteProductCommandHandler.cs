@@ -20,7 +20,8 @@ namespace Application.Features.Product.Commands
             if (product == null)
                 return Response.Fail<Guid>("Product not found");
 
-            _productRepository.Remove(product);
+            product.Delete();
+            _productRepository.Update(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Response.Success(product.Id);

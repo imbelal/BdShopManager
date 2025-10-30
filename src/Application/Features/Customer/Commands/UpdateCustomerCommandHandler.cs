@@ -16,7 +16,7 @@ namespace Application.Features.Customer.Commands
         public async Task<IResponse<Guid>> Handle(UpdateCustomerCommand command, CancellationToken cancellationToken)
         {
             Domain.Entities.Customer customer = await _customerRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (customer == null) throw new Exception("Customer not found!!");
+            if (customer == null) throw new Common.Exceptions.BusinessLogicException("Customer not found!!");
 
             customer.Update(command.FirstName, command.LastName, command.Address, command.ContactNo, command.Email, command.Remark);
             _customerRepository.Update(customer);

@@ -21,14 +21,14 @@ namespace Application.Features.Order.Commands
             Domain.Entities.Order? order = await _orderRepository.GetByIdAsync(command.Id, cancellationToken);
             if (order == null)
             {
-                throw new Exception("Order not found!");
+                throw new Common.Exceptions.BusinessLogicException("Order not found!");
             }
 
             Domain.Entities.Customer? customer = await _context.Customers
                 .FirstOrDefaultAsync(x => x.Id == command.CustomerId, cancellationToken);
             if (customer == null)
             {
-                throw new Exception("Customer not found!");
+                throw new Common.Exceptions.BusinessLogicException("Customer not found!");
             }
 
             order.Update(command.CustomerId, command.TotalPrice, command.TotalPaid, command.Remark, command.OrderDetails, command.TaxPercentage);

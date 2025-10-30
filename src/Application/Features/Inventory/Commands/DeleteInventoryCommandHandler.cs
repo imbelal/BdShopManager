@@ -18,7 +18,7 @@ namespace Application.Features.Inventory.Commands
             Domain.Entities.Inventory? inventory = await _inventoryRepository.GetByIdAsync(command.Id, cancellationToken);
             if (inventory == null)
             {
-                throw new Exception("Inventory not found!!");
+                throw new Common.Exceptions.BusinessLogicException("Inventory not found!!");
             }
 
             inventory.Delete();

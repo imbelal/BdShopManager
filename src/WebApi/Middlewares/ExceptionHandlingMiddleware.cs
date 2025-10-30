@@ -1,4 +1,5 @@
 ﻿using Application.Services.Exceptions;
+using Common.Exceptions;
 using Common.ResponseWrapper;
 using System.Net;
 using System.Text.Json;
@@ -34,6 +35,11 @@ namespace WebApi.Middlewares
 
             switch (exception)
             {
+                case BusinessLogicException ex:
+                    // Business logic errors - safe to expose to client
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorMessage = ex.Message;
+                    break;
                 case ApplicationException ex:
                     if (ex.Message.Contains("Invalid token"))
                     {
@@ -57,6 +63,7 @@ namespace WebApi.Middlewares
                     errorMessage = ex.Message;
                     break;
                 default:
+                    // All other exceptions - hide details for security
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     errorMessage = "Internal Server errors. Check Logs!";
                     break;

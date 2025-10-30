@@ -20,7 +20,7 @@ namespace Application.Features.Order.Commands
         {
             Domain.Entities.Customer customer = await _context.Customers
                 .FirstOrDefaultAsync(x => x.Id == command.CustomerId, cancellationToken) ??
-                throw new Exception("Customer not found!");
+                throw new Common.Exceptions.BusinessLogicException("Customer not found!");
 
             Domain.Entities.Order order = Domain.Entities.Order.CreateOrderWithDetails(command.CustomerId,
                 command.TotalPrice,
@@ -29,8 +29,9 @@ namespace Application.Features.Order.Commands
                 command.OrderDetails,
                 command.TaxPercentage);
 
-            // Generate unique order number
-            order.OrderNumber = await GenerateOrderNumber(cancellationToken);
+            // Generate and set unique order number
+            var orderNumber = await GenerateOrderNumber(cancellationToken);
+            order.SetOrderNumber(orderNumber);
 
             _orderRepository.Add(order);
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -41,7 +42,6 @@ namespace Application.Features.Order.Commands
         {
             var today = DateTime.UtcNow.Date;
             var tomorrow = today.AddDays(1);
-            var datePrefix = today.ToString("yyyyMMdd");
 
             // Get the count of orders created today to determine the sequence number
             var ordersToday = await _context.Orders
@@ -49,7 +49,9 @@ namespace Application.Features.Order.Commands
                 .CountAsync(cancellationToken);
 
             var sequenceNumber = ordersToday + 1;
-            return $"ORD-{datePrefix}-{sequenceNumber:D3}";
+
+            // Use domain entity method for order number formatting
+            return Domain.Entities.Order.GenerateOrderNumber(today, sequenceNumber);
         }
     }
 }

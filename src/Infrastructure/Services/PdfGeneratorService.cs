@@ -48,7 +48,7 @@ namespace Infrastructure.Services
                         column.Item().Text($"Phone: {tenantPhone}").FontSize(9);
                     });
 
-                    row.ConstantItem(100).Column(column =>
+                    row.ConstantItem(150).Column(column =>
                     {
                         column.Item().BorderBottom(1).Padding(2).Text("ORDER INVOICE").FontSize(12).Bold();
                         column.Item().Text($"Order #: {order.OrderNumber}").FontSize(8);

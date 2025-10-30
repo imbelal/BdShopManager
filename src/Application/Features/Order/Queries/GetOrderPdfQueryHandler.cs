@@ -54,20 +54,20 @@ namespace Application.Features.Order.Queries
 
             if (order == null)
             {
-                throw new Exception("Order not found!");
+                throw new Common.Exceptions.BusinessLogicException("Order not found!");
             }
 
             // Get tenant details
             var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == order.CustomerId, cancellationToken);
             if (customer == null)
             {
-                throw new Exception("Customer not found!");
+                throw new Common.Exceptions.BusinessLogicException("Customer not found!");
             }
 
             var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == customer.TenantId, cancellationToken);
             if (tenant == null)
             {
-                throw new Exception("Tenant not found!");
+                throw new Common.Exceptions.BusinessLogicException("Tenant not found!");
             }
 
             // Generate PDF

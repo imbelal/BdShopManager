@@ -22,17 +22,17 @@ namespace Application.Features.Inventory.Commands
                 .FirstOrDefaultAsync(x => x.Id == command.ProductId, cancellationToken);
             if (product == null)
             {
-                throw new Exception("Product not found!!");
+                throw new Common.Exceptions.BusinessLogicException("Product not found!!");
             }
 
             Domain.Entities.Supplier? supplier = await _context.Suppliers
                 .FirstOrDefaultAsync(x => x.Id == command.SupplierId, cancellationToken);
             if (supplier == null)
             {
-                throw new Exception("Supplier not found!!");
+                throw new Common.Exceptions.BusinessLogicException("Supplier not found!!");
             }
 
-            Domain.Entities.Inventory inventory = new(command.ProductId, command.SupplierId, command.Quantity, command.CostPerUnit, command.Quantity * command.CostPerUnit, command.Remark);
+            Domain.Entities.Inventory inventory = new(command.ProductId, command.SupplierId, command.Quantity, command.CostPerUnit, command.Remark);
             _inventoryRepository.Add(inventory);
             await _inventoryRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

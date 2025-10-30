@@ -20,13 +20,13 @@ namespace Domain.Entities
 
         }
 
-        public Inventory(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, decimal totalCost, string remark) : base(Guid.NewGuid())
+        public Inventory(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, string remark) : base(Guid.NewGuid())
         {
             ProductId = productId;
             SupplierId = supplierId;
             Quantity = quantity;
             CostPerUnit = costPerUnit;
-            TotalCost = totalCost;
+            TotalCost = quantity * costPerUnit; // Calculate internally - business logic
             Remark = remark;
 
             // Raise domain event for inventory added

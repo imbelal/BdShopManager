@@ -32,6 +32,19 @@ namespace Domain.Entities
             AddTags(tagIds);
         }
 
+        public void Update(string title, string description, Guid categoryId, ProductUnit unit)
+        {
+            Title = title;
+            Description = description;
+            CategoryId = categoryId;
+            Unit = unit;
+        }
+
+        public void Delete()
+        {
+            IsDeleted = true;
+        }
+
         public IReadOnlyCollection<ProductTag> ProductTags
         {
             get => productTags;
@@ -106,12 +119,12 @@ namespace Domain.Entities
         {
             if (quantity <= 0)
             {
-                throw new InvalidOperationException("Quantity to decrease must be greater than zero.");
+                throw new Common.Exceptions.BusinessLogicException("Quantity to decrease must be greater than zero.");
             }
 
             if (StockQuantity < quantity)
             {
-                throw new InvalidOperationException($"Insufficient stock for product '{Title}'. Available: {StockQuantity}, Requested: {quantity}");
+                throw new Common.Exceptions.BusinessLogicException($"Insufficient stock for product '{Title}'. Available: {StockQuantity}, Requested: {quantity}");
             }
 
             StockQuantity -= quantity;

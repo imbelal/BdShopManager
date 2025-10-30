@@ -18,7 +18,7 @@ namespace Application.Features.Order.Commands
             Domain.Entities.Order? order = await _orderRepository.GetByIdAsync(command.OrderId, cancellationToken);
             if (order == null)
             {
-                throw new Exception("Order not found!");
+                throw new Common.Exceptions.BusinessLogicException("Order not found!");
             }
 
             // AddPayment will validate and update status automatically

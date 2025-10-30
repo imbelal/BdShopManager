@@ -16,7 +16,7 @@ namespace Application.Features.Category.Commands
         public async Task<IResponse<Guid>> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             Domain.Entities.Category category = await _categoryRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (category == null) throw new Exception("Category not found!!");
+            if (category == null) throw new Common.Exceptions.BusinessLogicException("Category not found!!");
 
             category.Title = command.Title;
             category.RaiseUpdatedEvent();
