@@ -14,30 +14,39 @@ namespace Domain.Entities
         public Guid CategoryId { get; set; }
         public ProductStatus Status { get; set; }
         public int StockQuantity { get; private set; } = 0;
+        public decimal CostPrice { get; private set; } = 0; // Average buying price
+        public decimal SellingPrice { get; set; } = 0; // Retail/selling price
         public bool IsDeleted { get; set; } = false;
         public Tenant Tenant { get; set; }
+
+        // Calculated property for profit margin percentage
+        public decimal ProfitMargin => SellingPrice > 0
+            ? Math.Round(((SellingPrice - CostPrice) / SellingPrice) * 100, 2)
+            : 0;
 
         public Product() : base()
         {
 
         }
 
-        public Product(string title, string description, Guid categoryId, ProductUnit unit, List<Guid> tagIds) : base(Guid.NewGuid())
+        public Product(string title, string description, Guid categoryId, ProductUnit unit, decimal sellingPrice, List<Guid> tagIds) : base(Guid.NewGuid())
         {
             Title = title;
             Description = description;
             CategoryId = categoryId;
             Unit = unit;
+            SellingPrice = sellingPrice;
             Status = ProductStatus.Active;
             AddTags(tagIds);
         }
 
-        public void Update(string title, string description, Guid categoryId, ProductUnit unit)
+        public void Update(string title, string description, Guid categoryId, ProductUnit unit, decimal sellingPrice)
         {
             Title = title;
             Description = description;
             CategoryId = categoryId;
             Unit = unit;
+            SellingPrice = sellingPrice;
         }
 
         public void Delete()
@@ -128,6 +137,48 @@ namespace Domain.Entities
             }
 
             StockQuantity -= quantity;
+        }
+
+        public void UpdateAverageCost(decimal newCost, int newQuantity)
+        {
+            if (newCost < 0)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Cost cannot be negative.");
+            }
+
+            if (newQuantity <= 0)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Quantity must be greater than zero.");
+            }
+
+            if (StockQuantity == 0)
+            {
+                // First purchase - set cost directly
+                CostPrice = newCost;
+            }
+            else
+            {
+                // Calculate weighted average cost
+                decimal totalValue = (CostPrice * StockQuantity) + (newCost * newQuantity);
+                decimal totalQuantity = StockQuantity + newQuantity;
+                CostPrice = Math.Round(totalValue / totalQuantity, 2);
+            }
+        }
+
+        public void SetSellingPriceByMargin(decimal targetMarginPercentage)
+        {
+            if (targetMarginPercentage < 0 || targetMarginPercentage >= 100)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Profit margin must be between 0 and 100.");
+            }
+
+            if (CostPrice <= 0)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Cannot calculate selling price without cost price.");
+            }
+
+            // SellingPrice = CostPrice / (1 - targetMargin/100)
+            SellingPrice = Math.Round(CostPrice / (1 - (targetMarginPercentage / 100)), 2);
         }
     }
 }

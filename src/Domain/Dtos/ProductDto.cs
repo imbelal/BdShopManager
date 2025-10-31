@@ -11,6 +11,9 @@ namespace Domain.Dtos
         public ProductUnit Unit { get; set; }
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal SellingPrice { get; set; }
+        public decimal ProfitMargin { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedDate { get; set; }
         public List<string> ProductTags { get; set; }

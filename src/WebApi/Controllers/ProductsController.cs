@@ -86,5 +86,27 @@ namespace WebApi.Controllers
             var result = await _mediator.Send(new GetProductIdTitleListQuery());
             return Ok(result);
         }
+
+        [HttpGet("profitability")]
+        public async Task<IActionResult> GetProductProfitability(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null,
+            [FromQuery] decimal? minimumProfitMargin = null)
+        {
+            var query = new GetProductProfitabilityQuery(pageNumber, pageSize, startDate, endDate, minimumProfitMargin);
+            return Ok(await _mediator.Send(query));
+        }
+
+        [HttpGet("low-profit")]
+        public async Task<IActionResult> GetLowProfitProducts(
+            [FromQuery] decimal maxProfitMargin = 10.0m,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetLowProfitProductsQuery(maxProfitMargin, pageNumber, pageSize);
+            return Ok(await _mediator.Send(query));
+        }
     }
 }

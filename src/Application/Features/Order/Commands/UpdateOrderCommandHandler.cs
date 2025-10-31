@@ -31,6 +31,24 @@ namespace Application.Features.Order.Commands
                 throw new Common.Exceptions.BusinessLogicException("Customer not found!");
             }
 
+            // Fetch all products to get their cost prices
+            var productIds = command.OrderDetails.Select(od => od.ProductId).Distinct().ToList();
+            var products = await _context.Products
+                .Where(p => productIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
+
+            // Validate all products exist and populate unit costs
+            foreach (var orderDetail in command.OrderDetails)
+            {
+                if (!products.ContainsKey(orderDetail.ProductId))
+                {
+                    throw new Common.Exceptions.BusinessLogicException($"Product with ID {orderDetail.ProductId} not found!");
+                }
+
+                // Populate the unit cost from product's current cost price
+                orderDetail.UnitCost = products[orderDetail.ProductId].CostPrice;
+            }
+
             order.Update(command.CustomerId, command.TotalPrice, command.TotalPaid, command.Remark, command.OrderDetails, command.TaxPercentage);
             _orderRepository.Update(order);
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

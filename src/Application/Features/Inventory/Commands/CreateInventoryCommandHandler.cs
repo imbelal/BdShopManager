@@ -18,6 +18,7 @@ namespace Application.Features.Inventory.Commands
 
         public async Task<IResponse<Guid>> Handle(CreateInventoryCommand command, CancellationToken cancellationToken)
         {
+            // Validate product exists
             Domain.Entities.Product? product = await _context.Products
                 .FirstOrDefaultAsync(x => x.Id == command.ProductId, cancellationToken);
             if (product == null)
@@ -25,6 +26,7 @@ namespace Application.Features.Inventory.Commands
                 throw new Common.Exceptions.BusinessLogicException("Product not found!!");
             }
 
+            // Validate supplier exists
             Domain.Entities.Supplier? supplier = await _context.Suppliers
                 .FirstOrDefaultAsync(x => x.Id == command.SupplierId, cancellationToken);
             if (supplier == null)
@@ -32,6 +34,7 @@ namespace Application.Features.Inventory.Commands
                 throw new Common.Exceptions.BusinessLogicException("Supplier not found!!");
             }
 
+            // Create inventory - domain event will handle product updates
             Domain.Entities.Inventory inventory = new(command.ProductId, command.SupplierId, command.Quantity, command.CostPerUnit, command.Remark);
             _inventoryRepository.Add(inventory);
             await _inventoryRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

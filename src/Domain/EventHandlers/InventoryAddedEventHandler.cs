@@ -24,6 +24,8 @@ namespace Domain.EventHandlers
 
             if (product != null)
             {
+                // Update average cost before increasing stock (order matters for calculation)
+                product.UpdateAverageCost(notification.CostPerUnit, notification.Quantity);
                 product.IncreaseStockQuantity(notification.Quantity);
                 _productRepository.Update(product);
             }

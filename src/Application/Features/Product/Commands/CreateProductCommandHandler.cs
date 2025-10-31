@@ -22,7 +22,7 @@ namespace Application.Features.Product.Commands
             if (category == null)
                 return Response.Fail<Guid>("Category not found");
 
-            Domain.Entities.Product product = new(command.Title, command.Description, command.CategoryId, command.Unit, command.TagIds);
+            Domain.Entities.Product product = new(command.Title, command.Description, command.CategoryId, command.Unit, command.SellingPrice, command.TagIds);
             _productRepository.Add(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

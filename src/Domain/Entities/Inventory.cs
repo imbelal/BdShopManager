@@ -30,7 +30,7 @@ namespace Domain.Entities
             Remark = remark;
 
             // Raise domain event for inventory added
-            RaiseDomainEvent(new InventoryAddedEvent(productId, quantity));
+            RaiseDomainEvent(new InventoryAddedEvent(productId, quantity, costPerUnit));
         }
 
         public void Update(Guid productId, Guid supplierId, int quantity, decimal costPerUnit, string remark)

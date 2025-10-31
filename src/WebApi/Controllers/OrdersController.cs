@@ -94,5 +94,15 @@ namespace WebApi.Controllers
 
             return BadRequest("Failed to generate PDF");
         }
+
+        [HttpGet("profit-summary")]
+        public async Task<IActionResult> GetProfitSummary(
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate,
+            [FromQuery] string groupBy = "day")
+        {
+            var query = new GetProfitSummaryQuery(startDate, endDate, groupBy);
+            return Ok(await _mediator.Send(query));
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Common.Pagination;
+using Common.Pagination;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Dtos;
@@ -7,32 +7,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Product.Queries
 {
-    public class GetAllProductsQueryHandler : IQueryHandler<GetAllProductsQuery, Pagination<ProductDto>>
+    public class GetLowProfitProductsQueryHandler : IQueryHandler<GetLowProfitProductsQuery, Pagination<ProductDto>>
     {
         private readonly IReadOnlyApplicationDbContext _context;
-        public GetAllProductsQueryHandler(IReadOnlyApplicationDbContext context)
+
+        public GetLowProfitProductsQueryHandler(IReadOnlyApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IResponse<Pagination<ProductDto>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse<Pagination<ProductDto>>> Handle(GetLowProfitProductsQuery request, CancellationToken cancellationToken)
         {
-            var term = request.SearchTerm?.Trim().ToLower();
-
-            var queryable = _context.Products
+            // Calculate profit margin inline for EF Core translation
+            var query = _context.Products
                 .Include(p => p.ProductTags)
-                .Include(p => p.ProductPhotos.Where(pp => pp.IsPrimary)) // Only load primary photos
-                .AsQueryable();
-
-            // Add search filter only if searchTerm is provided
-            if (!string.IsNullOrEmpty(term))
-            {
-                queryable = queryable.Where(p =>
-                    p.Title.ToLower().Contains(term) ||
-                    p.Description.ToLower().Contains(term));
-            }
-
-            var query = queryable
+                .Include(p => p.ProductPhotos.Where(pp => pp.IsPrimary))
+                .Where(p => p.SellingPrice > 0
+                    ? (((p.SellingPrice - p.CostPrice) / p.SellingPrice) * 100) <= request.MaxProfitMargin
+                    : 0 <= request.MaxProfitMargin) // Filter by low profit margin
+                .OrderBy(p => p.SellingPrice > 0
+                    ? ((p.SellingPrice - p.CostPrice) / p.SellingPrice) * 100
+                    : 0) // Order by lowest margin first
                 .Select(p => new ProductDto
                 {
                     Id = p.Id,
@@ -49,7 +44,7 @@ namespace Application.Features.Product.Queries
                     CreatedDate = p.CreatedUtcDate.ToString(),
                     ProductTags = _context.Tags.Where(t => p.ProductTags.Any(pt => pt.TagId.Equals(t.Id))).Select(t => t.Title).ToList(),
                     ProductPhotos = p.ProductPhotos
-                        .Where(pp => pp.IsPrimary) // Only include primary photos
+                        .Where(pp => pp.IsPrimary)
                         .Select(pp => new ProductPhotoDto
                         {
                             Id = pp.Id,
@@ -62,14 +57,16 @@ namespace Application.Features.Product.Queries
                             IsPrimary = pp.IsPrimary,
                             DisplayOrder = pp.DisplayOrder,
                             CreatedBy = pp.CreatedBy,
-                            CreatedDate = pp.CreatedUtcDate.ToString() // Use default ToString() which EF can translate
+                            CreatedDate = pp.CreatedUtcDate.ToString()
                         })
                         .OrderBy(pp => pp.DisplayOrder)
-                        .ThenBy(pp => pp.CreatedDate) // Order by date instead of formatted string
+                        .ThenBy(pp => pp.CreatedDate)
                         .ToList()
                 });
 
-            var pagination = await new Pagination<ProductDto>().CreateAsync(query, request.PageNumber, request.PageSize, cancellationToken);
+            var pagination = await new Pagination<ProductDto>()
+                .CreateAsync(query, request.PageNumber, request.PageSize, cancellationToken);
+
             return Response.Success(pagination);
         }
     }

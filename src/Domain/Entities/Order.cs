@@ -24,6 +24,13 @@ namespace Domain.Entities
         public decimal TaxAmount => TotalPrice * (TaxPercentage / 100);
         public decimal GrandTotal => TotalPrice + TaxAmount;
 
+        // Profit calculation properties
+        public decimal OrderTotalCost => orderDetails.Sum(od => od.TotalCost);
+        public decimal OrderProfit => TotalPrice - OrderTotalCost;
+        public decimal OrderProfitMargin => TotalPrice > 0
+            ? Math.Round((OrderProfit / TotalPrice) * 100, 2)
+            : 0;
+
         public IReadOnlyCollection<OrderDetail> OrderDetails
         {
             get => orderDetails;
@@ -66,7 +73,8 @@ namespace Domain.Entities
                 orderDetail.ProductId,
                 orderDetail.Quantity,
                 orderDetail.Unit,
-                orderDetail.UnitPrice)).ToList()
+                orderDetail.UnitPrice,
+                orderDetail.UnitCost)).ToList()
             );
 
             // Raise domain event with order details for stock management
@@ -101,7 +109,8 @@ namespace Domain.Entities
                 orderDetail.ProductId,
                 orderDetail.Quantity,
                 orderDetail.Unit,
-                orderDetail.UnitPrice)).ToList()
+                orderDetail.UnitPrice,
+                orderDetail.UnitCost)).ToList()
             );
 
             // Raise domain event for stock adjustment

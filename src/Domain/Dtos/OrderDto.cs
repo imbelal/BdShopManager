@@ -19,5 +19,10 @@ namespace Domain.Dtos
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public List<OrderDetailDto> OrderDetails { get; set; }
+
+        // Profit tracking fields
+        public decimal OrderTotalCost { get; set; }
+        public decimal OrderProfit { get; set; }
+        public decimal OrderProfitMargin { get; set; }
     }
 }
