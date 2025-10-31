@@ -1,0 +1,50 @@
+using Application.Features.Purchase.Commands;
+using Application.Features.Purchase.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApi.Controllers
+{
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PurchasesController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+
+        public PurchasesController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreatePurchaseCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _mediator.Send(new GetAllPurchasesQuery()));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdatePurchaseCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("ID mismatch");
+            }
+
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            return Ok(await _mediator.Send(new DeletePurchaseCommand { Id = id }));
+        }
+    }
+}

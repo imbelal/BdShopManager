@@ -34,6 +34,8 @@ namespace Infrastructure
         public DbSet<ProductPhoto> ProductPhotos { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
+        public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<PurchaseItem> PurchaseItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
@@ -53,6 +55,8 @@ namespace Infrastructure
         IQueryable<ProductPhoto> IReadOnlyApplicationDbContext.ProductPhotos => ProductPhotos.AsQueryable();
         IQueryable<Supplier> IReadOnlyApplicationDbContext.Suppliers => Suppliers.AsQueryable();
         IQueryable<Inventory> IReadOnlyApplicationDbContext.Inventories => Inventories.AsQueryable();
+        IQueryable<Purchase> IReadOnlyApplicationDbContext.Purchases => Purchases.AsQueryable();
+        IQueryable<PurchaseItem> IReadOnlyApplicationDbContext.PurchaseItems => PurchaseItems.AsQueryable();
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
         IQueryable<Order> IReadOnlyApplicationDbContext.Orders => Orders.AsQueryable();
         IQueryable<OrderDetail> IReadOnlyApplicationDbContext.OrderDetails => OrderDetails.AsQueryable();
