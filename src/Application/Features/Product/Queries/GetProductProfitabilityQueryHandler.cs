@@ -18,25 +18,25 @@ namespace Application.Features.Product.Queries
 
         public async Task<IResponse<Pagination<ProductProfitabilityDto>>> Handle(GetProductProfitabilityQuery request, CancellationToken cancellationToken)
         {
-            // Start with all order details
-            var orderDetailsQuery = _context.OrderDetails.AsQueryable();
+            // Start with all sales items
+            var salesItemsQuery = _context.SalesItems.AsQueryable();
 
             // Apply date range filter if provided
             if (request.StartDate.HasValue)
             {
-                orderDetailsQuery = orderDetailsQuery.Where(od =>
-                    _context.Orders.Any(o => o.Id == od.OrderId && o.CreatedUtcDate >= request.StartDate.Value));
+                salesItemsQuery = salesItemsQuery.Where(si =>
+                    _context.Sales.Any(s => s.Id == si.SalesId && s.CreatedUtcDate >= request.StartDate.Value));
             }
 
             if (request.EndDate.HasValue)
             {
-                orderDetailsQuery = orderDetailsQuery.Where(od =>
-                    _context.Orders.Any(o => o.Id == od.OrderId && o.CreatedUtcDate <= request.EndDate.Value));
+                salesItemsQuery = salesItemsQuery.Where(si =>
+                    _context.Sales.Any(s => s.Id == si.SalesId && s.CreatedUtcDate <= request.EndDate.Value));
             }
 
             // Group by product and calculate metrics
-            var profitabilityQuery = from od in orderDetailsQuery
-                                     group od by od.ProductId into g
+            var profitabilityQuery = from si in salesItemsQuery
+                                     group si by si.ProductId into g
                                      select new
                                      {
                                          ProductId = g.Key,

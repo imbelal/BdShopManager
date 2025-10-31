@@ -18,8 +18,8 @@ namespace Domain.Interfaces
         IQueryable<Purchase> Purchases { get; }
         IQueryable<PurchaseItem> PurchaseItems { get; }
         IQueryable<Customer> Customers { get; }
-        IQueryable<Order> Orders { get; }
-        IQueryable<OrderDetail> OrderDetails { get; }
+        IQueryable<Sales> Sales { get; }
+        IQueryable<SalesItem> SalesItems { get; }
         IQueryable<Payment> Payments { get; }
         IQueryable<Tenant> Tenants { get; }
     }

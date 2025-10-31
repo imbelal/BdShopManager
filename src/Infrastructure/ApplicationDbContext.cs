@@ -37,8 +37,8 @@ namespace Infrastructure
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<PurchaseItem> PurchaseItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Sales> Sales { get; set; }
+        public DbSet<SalesItem> SalesItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
 
@@ -58,8 +58,8 @@ namespace Infrastructure
         IQueryable<Purchase> IReadOnlyApplicationDbContext.Purchases => Purchases.AsQueryable();
         IQueryable<PurchaseItem> IReadOnlyApplicationDbContext.PurchaseItems => PurchaseItems.AsQueryable();
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
-        IQueryable<Order> IReadOnlyApplicationDbContext.Orders => Orders.AsQueryable();
-        IQueryable<OrderDetail> IReadOnlyApplicationDbContext.OrderDetails => OrderDetails.AsQueryable();
+        IQueryable<Sales> IReadOnlyApplicationDbContext.Sales => Sales.AsQueryable();
+        IQueryable<SalesItem> IReadOnlyApplicationDbContext.SalesItems => SalesItems.AsQueryable();
         IQueryable<Payment> IReadOnlyApplicationDbContext.Payments => Payments.AsQueryable();
         IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
         #endregion

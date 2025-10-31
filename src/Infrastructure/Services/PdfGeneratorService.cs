@@ -9,10 +9,10 @@ namespace Infrastructure.Services
 {
     public class PdfGeneratorService : IPdfGeneratorService
     {
-        public byte[] GenerateOrderPdf(OrderDto order, string tenantName, string tenantAddress, string tenantPhone, string customerAddress, string customerPhone)
+        public byte[] GenerateSalesPdf(SalesDto sales, string tenantName, string tenantAddress, string tenantPhone, string customerAddress, string customerPhone)
         {
-            // Generate QR Code for the order number (human-readable)
-            var qrCodeBytes = GenerateQRCode(order.OrderNumber);
+            // Generate QR Code for the sales number (human-readable)
+            var qrCodeBytes = GenerateQRCode(sales.SalesNumber);
 
             var document = Document.Create(container =>
             {
@@ -50,10 +50,10 @@ namespace Infrastructure.Services
 
                     row.ConstantItem(150).Column(column =>
                     {
-                        column.Item().BorderBottom(1).Padding(2).Text("ORDER INVOICE").FontSize(12).Bold();
-                        column.Item().Text($"Order #: {order.OrderNumber}").FontSize(8);
-                        column.Item().Text($"Date: {order.CreatedDate:dd/MM/yyyy}").FontSize(8);
-                        column.Item().Text($"Status: {order.Status}").FontSize(8).Bold();
+                        column.Item().BorderBottom(1).Padding(2).Text("SALES INVOICE").FontSize(12).Bold();
+                        column.Item().Text($"Sales #: {sales.SalesNumber}").FontSize(8);
+                        column.Item().Text($"Date: {sales.CreatedDate:dd/MM/yyyy}").FontSize(8);
+                        column.Item().Text($"Status: {sales.Status}").FontSize(8).Bold();
                     });
 
                     // QR Code
@@ -77,10 +77,10 @@ namespace Infrastructure.Services
                     column.Item().Element(ComposePaymentSummary);
 
                     // Footer Note
-                    if (!string.IsNullOrWhiteSpace(order.Remark))
+                    if (!string.IsNullOrWhiteSpace(sales.Remark))
                     {
                         column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(5)
-                            .Text($"Note: {order.Remark}").FontSize(9).Italic();
+                            .Text($"Note: {sales.Remark}").FontSize(9).Italic();
                     }
                 });
             }
@@ -90,7 +90,7 @@ namespace Infrastructure.Services
                 container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
                 {
                     column.Item().Text("CUSTOMER INFORMATION").FontSize(12).Bold();
-                    column.Item().Text($"Name: {order.CustomerName}").FontSize(10);
+                    column.Item().Text($"Name: {sales.CustomerName}").FontSize(10);
                     column.Item().Text($"Address: {customerAddress}").FontSize(10);
                     column.Item().Text($"Phone: {customerPhone}").FontSize(10);
                 });
@@ -130,7 +130,7 @@ namespace Infrastructure.Services
 
                     // Rows
                     int index = 1;
-                    foreach (var item in order.OrderDetails)
+                    foreach (var item in sales.SalesItems)
                     {
                         table.Cell().Element(CellStyle).Text(index.ToString());
                         table.Cell().Element(CellStyle).Text(item.ProductName);
@@ -159,22 +159,22 @@ namespace Infrastructure.Services
                     column.Item().Row(row =>
                     {
                         row.ConstantItem(120).Text("Subtotal:").FontSize(11);
-                        row.ConstantItem(100).AlignRight().Text($"{order.TotalPrice:N2} BDT").FontSize(11);
+                        row.ConstantItem(100).AlignRight().Text($"{sales.TotalPrice:N2} BDT").FontSize(11);
                     });
 
                     // Show tax only if tax percentage is greater than 0
-                    if (order.TaxPercentage > 0)
+                    if (sales.TaxPercentage > 0)
                     {
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text($"Tax ({order.TaxPercentage:N2}%):").FontSize(11);
-                            row.ConstantItem(100).AlignRight().Text($"{order.TaxAmount:N2} BDT").FontSize(11);
+                            row.ConstantItem(120).Text($"Tax ({sales.TaxPercentage:N2}%):").FontSize(11);
+                            row.ConstantItem(100).AlignRight().Text($"{sales.TaxAmount:N2} BDT").FontSize(11);
                         });
 
                         column.Item().Row(row =>
                         {
                             row.ConstantItem(120).Text("Grand Total:").FontSize(11).SemiBold();
-                            row.ConstantItem(100).AlignRight().Text($"{order.GrandTotal:N2} BDT").FontSize(11).SemiBold();
+                            row.ConstantItem(100).AlignRight().Text($"{sales.GrandTotal:N2} BDT").FontSize(11).SemiBold();
                         });
                     }
                     else
@@ -182,30 +182,30 @@ namespace Infrastructure.Services
                         column.Item().Row(row =>
                         {
                             row.ConstantItem(120).Text("Total Amount:").FontSize(11).SemiBold();
-                            row.ConstantItem(100).AlignRight().Text($"{order.TotalPrice:N2} BDT").FontSize(11).SemiBold();
+                            row.ConstantItem(100).AlignRight().Text($"{sales.TotalPrice:N2} BDT").FontSize(11).SemiBold();
                         });
                     }
 
                     column.Item().Row(row =>
                     {
                         row.ConstantItem(120).Text("Total Paid:").FontSize(11).FontColor(Colors.Green.Darken2);
-                        row.ConstantItem(100).AlignRight().Text($"{order.TotalPaid:N2} BDT").FontSize(11).FontColor(Colors.Green.Darken2);
+                        row.ConstantItem(100).AlignRight().Text($"{sales.TotalPaid:N2} BDT").FontSize(11).FontColor(Colors.Green.Darken2);
                     });
 
                     column.Item().Row(row =>
                     {
                         row.ConstantItem(120).Text("Remaining:").FontSize(12).Bold().FontColor(Colors.Red.Medium);
-                        row.ConstantItem(100).AlignRight().Text($"{order.RemainingAmount:N2} BDT").FontSize(12).Bold().FontColor(Colors.Red.Medium);
+                        row.ConstantItem(100).AlignRight().Text($"{sales.RemainingAmount:N2} BDT").FontSize(12).Bold().FontColor(Colors.Red.Medium);
                     });
                 });
             }
         }
 
-        private byte[] GenerateQRCode(string orderNumber)
+        private byte[] GenerateQRCode(string salesNumber)
         {
             using (var qrGenerator = new QRCodeGenerator())
             {
-                var qrCodeData = qrGenerator.CreateQrCode(orderNumber, QRCodeGenerator.ECCLevel.Q);
+                var qrCodeData = qrGenerator.CreateQrCode(salesNumber, QRCodeGenerator.ECCLevel.Q);
                 using (var qrCode = new PngByteQRCode(qrCodeData))
                 {
                     return qrCode.GetGraphic(20);

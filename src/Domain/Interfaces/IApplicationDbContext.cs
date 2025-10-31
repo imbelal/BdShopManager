@@ -20,8 +20,8 @@ namespace Domain.Interfaces
         DbSet<Purchase> Purchases { get; set; }
         DbSet<PurchaseItem> PurchaseItems { get; set; }
         DbSet<Customer> Customers { get; set; }
-        DbSet<Order> Orders { get; set; }
-        DbSet<OrderDetail> OrderDetails { get; set; }
+        DbSet<Sales> Sales { get; set; }
+        DbSet<SalesItem> SalesItems { get; set; }
         DbSet<Tenant> Tenants { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
