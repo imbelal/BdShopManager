@@ -41,6 +41,12 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(command));
         }
 
+        [HttpPut("{id}/cancel")]
+        public async Task<IActionResult> Cancel(Guid id)
+        {
+            return Ok(await _mediator.Send(new CancelPurchaseCommand { Id = id }));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -57,13 +57,21 @@
         OUT = 1   // Stock going out (decrease)
     }
 
+    public enum PurchaseStatus
+    {
+        Pending = 0,
+        Completed = 1,
+        Cancelled = 2
+    }
+
     public enum StockReferenceType
     {
         Purchase = 0,
         Sale = 1,
         SalesReturn = 2,
         Adjustment = 3,
-        SalesCancellation = 4
+        SalesCancellation = 4,
+        PurchaseCancellation = 5
     }
 
 }

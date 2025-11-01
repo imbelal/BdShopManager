@@ -1,5 +1,6 @@
 using Common.Entities;
 using Common.Entities.Interfaces;
+using Domain.Enums;
 using Domain.Events;
 
 namespace Domain.Entities
@@ -12,6 +13,7 @@ namespace Domain.Entities
         public DateTime PurchaseDate { get; private set; }
         public decimal TotalCost { get; private set; }
         public string Remark { get; private set; }
+        public PurchaseStatus Status { get; private set; }
         public bool IsDeleted { get; set; } = false;
 
         // Navigation properties
@@ -29,6 +31,7 @@ namespace Domain.Entities
             SupplierId = supplierId;
             PurchaseDate = purchaseDate;
             Remark = remark;
+            Status = PurchaseStatus.Pending; // Default status
             TotalCost = 0; // Will be calculated when items are added
         }
 
@@ -104,6 +107,28 @@ namespace Domain.Entities
             // Raise domain event to reverse stock and create reversal transactions
             var purchaseItemInfos = _purchaseItems.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
             RaiseDomainEvent(new PurchaseDeletedEvent(Id, purchaseItemInfos));
+        }
+
+        // Cancel purchase - reduces stock and creates cancellation transaction
+        public void Cancel()
+        {
+            if (Status == PurchaseStatus.Cancelled)
+                return; // Already cancelled
+
+            Status = PurchaseStatus.Cancelled;
+
+            // Raise domain event to reverse stock and create cancellation transactions
+            var purchaseItemInfos = _purchaseItems.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
+            RaiseDomainEvent(new PurchaseCancelledEvent(Id, purchaseItemInfos));
+        }
+
+        // Mark purchase as completed
+        public void Complete()
+        {
+            if (Status == PurchaseStatus.Cancelled)
+                throw new InvalidOperationException("Cannot complete a cancelled purchase.");
+
+            Status = PurchaseStatus.Completed;
         }
     }
 }
