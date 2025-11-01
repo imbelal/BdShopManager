@@ -29,6 +29,18 @@ namespace WebApi.Controllers
                 request.SalesReturnItems)));
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateSalesReturnDto request)
+        {
+            return Ok(await _mediator.Send(new UpdateSalesReturnCommand
+            {
+                Id = id,
+                TotalRefundAmount = request.TotalRefundAmount,
+                Remark = request.Remark,
+                SalesReturnItems = request.SalesReturnItems
+            }));
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

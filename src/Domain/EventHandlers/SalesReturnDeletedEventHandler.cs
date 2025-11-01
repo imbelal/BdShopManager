@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Events;
 using Domain.Interfaces;
 using MediatR;
@@ -9,11 +10,16 @@ namespace Domain.EventHandlers
     public class SalesReturnDeletedEventHandler : INotificationHandler<SalesReturnDeletedEvent>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IStockTransactionRepository _stockTransactionRepository;
         private readonly IReadOnlyApplicationDbContext _context;
 
-        public SalesReturnDeletedEventHandler(IProductRepository productRepository, IReadOnlyApplicationDbContext context)
+        public SalesReturnDeletedEventHandler(
+            IProductRepository productRepository,
+            IStockTransactionRepository stockTransactionRepository,
+            IReadOnlyApplicationDbContext context)
         {
             _productRepository = productRepository;
+            _stockTransactionRepository = stockTransactionRepository;
             _context = context;
         }
 
@@ -27,8 +33,20 @@ namespace Domain.EventHandlers
 
                 if (product != null)
                 {
+                    // Decrease stock (reversing the original return increase)
                     product.DecreaseStockQuantity(returnItem.Quantity);
                     _productRepository.Update(product);
+
+                    // Create stock transaction record for Sales Return Deletion (OUT to reverse the original IN)
+                    var reversalTransaction = StockTransaction.CreateOutbound(
+                        productId: returnItem.ProductId,
+                        refType: StockReferenceType.SalesReturn,
+                        refId: notification.SalesReturnId,
+                        quantity: returnItem.Quantity,
+                        unitCost: product.CostPrice, // Use current average cost
+                        transactionDate: DateTime.UtcNow);
+
+                    _stockTransactionRepository.Add(reversalTransaction);
                 }
             }
         }

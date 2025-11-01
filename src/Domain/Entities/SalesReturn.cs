@@ -79,6 +79,38 @@ namespace Domain.Entities
             ReturnNumber = returnNumber;
         }
 
+        public void Update(decimal totalRefundAmount, string remark, List<SalesReturnItemDetailsDto> updatedItems)
+        {
+            // Get current items for comparison
+            var oldReturnItems = salesReturnItems.Select(item =>
+                new SalesReturnItemInfo(item.ProductId, item.Quantity)).ToList();
+
+            // Clear existing items
+            salesReturnItems.Clear();
+
+            // Add updated items
+            salesReturnItems.AddRange(
+                updatedItems.Select(item => new SalesReturnItem(
+                    this.Id,
+                    item.ProductId,
+                    item.Quantity,
+                    item.Unit,
+                    item.UnitPrice,
+                    item.Reason)).ToList()
+            );
+
+            // Update properties
+            TotalRefundAmount = totalRefundAmount;
+            Remark = remark;
+
+            // Create new return items info
+            var newReturnItems = updatedItems.Select(item =>
+                new SalesReturnItemInfo(item.ProductId, item.Quantity)).ToList();
+
+            // Raise domain event for stock adjustment
+            RaiseDomainEvent(new SalesReturnUpdatedEvent(this.Id, oldReturnItems, newReturnItems));
+        }
+
         public static string GenerateReturnNumber(DateTime date, int sequenceNumber)
         {
             var datePrefix = date.ToString("yyyyMMdd");
