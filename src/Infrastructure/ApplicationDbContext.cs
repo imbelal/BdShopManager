@@ -39,6 +39,8 @@ namespace Infrastructure
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Sales> Sales { get; set; }
         public DbSet<SalesItem> SalesItems { get; set; }
+        public DbSet<SalesReturn> SalesReturns { get; set; }
+        public DbSet<SalesReturnItem> SalesReturnItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
 
@@ -60,6 +62,8 @@ namespace Infrastructure
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
         IQueryable<Sales> IReadOnlyApplicationDbContext.Sales => Sales.AsQueryable();
         IQueryable<SalesItem> IReadOnlyApplicationDbContext.SalesItems => SalesItems.AsQueryable();
+        IQueryable<SalesReturn> IReadOnlyApplicationDbContext.SalesReturns => SalesReturns.AsQueryable();
+        IQueryable<SalesReturnItem> IReadOnlyApplicationDbContext.SalesReturnItems => SalesReturnItems.AsQueryable();
         IQueryable<Payment> IReadOnlyApplicationDbContext.Payments => Payments.AsQueryable();
         IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
         #endregion

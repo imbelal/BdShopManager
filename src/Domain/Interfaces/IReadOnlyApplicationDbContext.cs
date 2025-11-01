@@ -20,6 +20,8 @@ namespace Domain.Interfaces
         IQueryable<Customer> Customers { get; }
         IQueryable<Sales> Sales { get; }
         IQueryable<SalesItem> SalesItems { get; }
+        IQueryable<SalesReturn> SalesReturns { get; }
+        IQueryable<SalesReturnItem> SalesReturnItems { get; }
         IQueryable<Payment> Payments { get; }
         IQueryable<Tenant> Tenants { get; }
     }
