@@ -9,6 +9,9 @@ namespace Domain.Dtos
         public Guid CustomerId { get; set; }
         public string CustomerName { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal DiscountPercentage { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal DiscountedPrice { get; set; }
         public decimal TaxPercentage { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal GrandTotal { get; set; }

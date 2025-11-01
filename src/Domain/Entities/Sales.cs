@@ -13,6 +13,7 @@ namespace Domain.Entities
         public string SalesNumber { get; private set; } = string.Empty;
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal DiscountPercentage { get; set; } = 0;
         public decimal TaxPercentage { get; set; } = 0;
         public decimal TotalPaid { get; private set; }
         public SalesStatus Status { get; private set; }
@@ -21,14 +22,16 @@ namespace Domain.Entities
         public Tenant Tenant { get; set; }
 
         // Calculated properties
-        public decimal TaxAmount => TotalPrice * (TaxPercentage / 100);
-        public decimal GrandTotal => TotalPrice + TaxAmount;
+        public decimal DiscountAmount => Math.Round(TotalPrice * (DiscountPercentage / 100), 2);
+        public decimal DiscountedPrice => TotalPrice - DiscountAmount;
+        public decimal TaxAmount => DiscountedPrice * (TaxPercentage / 100);
+        public decimal GrandTotal => DiscountedPrice + TaxAmount;
 
         // Profit calculation properties
         public decimal SalesTotalCost => salesItems.Sum(od => od.TotalCost);
-        public decimal SalesProfit => TotalPrice - SalesTotalCost;
-        public decimal SalesProfitMargin => TotalPrice > 0
-            ? Math.Round((SalesProfit / TotalPrice) * 100, 2)
+        public decimal SalesProfit => DiscountedPrice - SalesTotalCost;
+        public decimal SalesProfitMargin => DiscountedPrice > 0
+            ? Math.Round((SalesProfit / DiscountedPrice) * 100, 2)
             : 0;
 
         public IReadOnlyCollection<SalesItem> SalesItems
@@ -46,19 +49,23 @@ namespace Domain.Entities
 
         }
 
-        public Sales(Guid customerId, decimal totalPrice, decimal totalPaid, string remark, decimal taxPercentage = 0) : base(Guid.NewGuid())
+        public Sales(Guid customerId, decimal totalPrice, decimal discountPercentage, decimal totalPaid, string remark, decimal taxPercentage = 0) : base(Guid.NewGuid())
         {
             CustomerId = customerId;
             TotalPrice = totalPrice;
+            DiscountPercentage = discountPercentage;
             TaxPercentage = taxPercentage;
             TotalPaid = totalPaid;
             Remark = remark;
+
+            // Validate discount
+            ValidateDiscount();
 
             // Set initial status based on payment
             UpdatePaymentStatus();
         }
 
-        public static Sales CreateSalesWithItems(Guid customerId, decimal totalPrice, decimal totalPaid, string remark, List<SalesItemDetailsDto> salesItemDtos, decimal taxPercentage = 0)
+        public static Sales CreateSalesWithItems(Guid customerId, decimal totalPrice, decimal discountPercentage, decimal totalPaid, string remark, List<SalesItemDetailsDto> salesItemDtos, decimal taxPercentage = 0)
         {
             // Validate total price matches order details
             decimal calculatedTotal = salesItemDtos.Sum(od => od.Quantity * od.UnitPrice);
@@ -67,7 +74,7 @@ namespace Domain.Entities
                 throw new Common.Exceptions.BusinessLogicException($"Total price mismatch. Provided: {totalPrice:N2}, Calculated from order details: {calculatedTotal:N2}");
             }
 
-            Sales newSales = new(customerId, totalPrice, totalPaid, remark, taxPercentage);
+            Sales newSales = new(customerId, totalPrice, discountPercentage, totalPaid, remark, taxPercentage);
             newSales.salesItems.AddRange(
                 salesItemDtos.Select(salesItem => new SalesItem(newSales.Id,
                 salesItem.ProductId,
@@ -84,7 +91,7 @@ namespace Domain.Entities
             return newSales;
         }
 
-        public void Update(Guid customerId, decimal totalPrice, decimal totalPaid, string remark, List<SalesItemDetailsDto> salesItemDtos, decimal taxPercentage = 0)
+        public void Update(Guid customerId, decimal totalPrice, decimal discountPercentage, decimal totalPaid, string remark, List<SalesItemDetailsDto> salesItemDtos, decimal taxPercentage = 0)
         {
             // Validate total price matches order details
             decimal calculatedTotal = salesItemDtos.Sum(od => od.Quantity * od.UnitPrice);
@@ -98,9 +105,13 @@ namespace Domain.Entities
 
             CustomerId = customerId;
             TotalPrice = totalPrice;
+            DiscountPercentage = discountPercentage;
             TaxPercentage = taxPercentage;
             TotalPaid = totalPaid;
             Remark = remark;
+
+            // Validate discount
+            ValidateDiscount();
 
             // Clear existing order details and add new ones
             salesItems.Clear();
@@ -171,6 +182,21 @@ namespace Domain.Entities
 
             // Update order status
             UpdatePaymentStatus();
+        }
+
+        private void ValidateDiscount()
+        {
+            // Validate discount percentage
+            if (DiscountPercentage < 0 || DiscountPercentage > 100)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Discount percentage must be between 0 and 100.");
+            }
+
+            // Validate that calculated discount amount doesn't exceed total price
+            if (DiscountAmount > TotalPrice)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Calculated discount amount cannot exceed total price.");
+            }
         }
 
         private void UpdatePaymentStatus()

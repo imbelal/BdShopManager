@@ -55,7 +55,7 @@ namespace Application.Features.Sales.Commands
                 salesItem.UnitCost = products[salesItem.ProductId].CostPrice;
             }
 
-            sales.Update(command.CustomerId, command.TotalPrice, command.TotalPaid, command.Remark, command.SalesItems, command.TaxPercentage);
+            sales.Update(command.CustomerId, command.TotalPrice, command.DiscountPercentage, command.TotalPaid, command.Remark, command.SalesItems, command.TaxPercentage);
             _salesRepository.Update(sales);
             await _salesRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

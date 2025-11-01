@@ -24,6 +24,7 @@ namespace WebApi.Controllers
         {
             return Ok(await _mediator.Send(new CreateSalesCommand(request.CustomerId,
                 request.TotalPrice,
+                request.DiscountPercentage,
                 request.TotalPaid,
                 request.Remark,
                 request.SalesItems,

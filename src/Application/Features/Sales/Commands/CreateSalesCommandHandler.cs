@@ -42,6 +42,7 @@ namespace Application.Features.Sales.Commands
 
             Domain.Entities.Sales sales = Domain.Entities.Sales.CreateSalesWithItems(command.CustomerId,
                 command.TotalPrice,
+                command.DiscountPercentage,
                 command.TotalPaid,
                 command.Remark,
                 command.SalesItems,

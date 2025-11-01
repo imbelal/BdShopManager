@@ -162,6 +162,22 @@ namespace Infrastructure.Services
                         row.ConstantItem(100).AlignRight().Text($"{sales.TotalPrice:N2} BDT").FontSize(11);
                     });
 
+                    // Show discount if there is any discount
+                    if (sales.DiscountAmount > 0)
+                    {
+                        column.Item().Row(row =>
+                        {
+                            row.ConstantItem(120).Text($"Discount ({sales.DiscountPercentage:N2}%):").FontSize(11).FontColor(Colors.Red.Medium);
+                            row.ConstantItem(100).AlignRight().Text($"-{sales.DiscountAmount:N2} BDT").FontSize(11).FontColor(Colors.Red.Medium);
+                        });
+
+                        column.Item().Row(row =>
+                        {
+                            row.ConstantItem(120).Text("After Discount:").FontSize(11);
+                            row.ConstantItem(100).AlignRight().Text($"{sales.DiscountedPrice:N2} BDT").FontSize(11);
+                        });
+                    }
+
                     // Show tax only if tax percentage is greater than 0
                     if (sales.TaxPercentage > 0)
                     {
@@ -182,7 +198,7 @@ namespace Infrastructure.Services
                         column.Item().Row(row =>
                         {
                             row.ConstantItem(120).Text("Total Amount:").FontSize(11).SemiBold();
-                            row.ConstantItem(100).AlignRight().Text($"{sales.TotalPrice:N2} BDT").FontSize(11).SemiBold();
+                            row.ConstantItem(100).AlignRight().Text($"{sales.DiscountedPrice:N2} BDT").FontSize(11).SemiBold();
                         });
                     }
 

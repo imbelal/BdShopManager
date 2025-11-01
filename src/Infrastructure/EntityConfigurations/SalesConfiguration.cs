@@ -13,6 +13,7 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.SalesNumber).HasColumnName("SalesNumber");
             builder.Property(x => x.CustomerId).HasColumnName("CustomerId").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(x => x.TotalPrice).HasColumnName("TotalPrice").HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(x => x.DiscountPercentage).HasColumnName("DiscountPercentage").HasColumnType("decimal(5,2)").IsRequired().HasDefaultValue(0);
             builder.Property(x => x.TaxPercentage).HasColumnName("TaxPercentage").HasColumnType("decimal(5,2)").IsRequired().HasDefaultValue(0);
             builder.Property(x => x.TotalPaid).HasColumnName("TotalPaid").HasColumnType("decimal(18,2)").IsRequired();
             builder.Property(x => x.Remark).HasColumnName("Remark").HasColumnType("nvarchar(max)").IsRequired();
