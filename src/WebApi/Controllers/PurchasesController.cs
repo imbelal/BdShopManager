@@ -1,5 +1,6 @@
 using Application.Features.Purchase.Commands;
 using Application.Features.Purchase.Queries;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,28 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] Guid? supplierId = null,
+            [FromQuery] PurchaseStatus? status = null,
+            [FromQuery] Guid? productId = null,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
-            return Ok(await _mediator.Send(new GetAllPurchasesQuery()));
+            var query = new GetPurchasesQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SupplierId = supplierId,
+                Status = status,
+                ProductId = productId,
+                SearchTerm = searchTerm,
+                StartDate = startDate,
+                EndDate = endDate
+            };
+            return Ok(await _mediator.Send(query));
         }
 
         [HttpPut("{id}")]

@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Dtos
 {
     public class PurchaseDto
@@ -8,6 +10,7 @@ namespace Domain.Dtos
         public DateTime PurchaseDate { get; set; }
         public decimal TotalCost { get; set; }
         public string Remark { get; set; }
+        public PurchaseStatus Status { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedDate { get; set; }
         public List<PurchaseItemDto> PurchaseItems { get; set; } = new();

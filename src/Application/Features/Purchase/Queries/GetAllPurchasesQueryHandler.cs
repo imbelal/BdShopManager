@@ -31,6 +31,7 @@ namespace Application.Features.Purchase.Queries
                     PurchaseDate = p.PurchaseDate,
                     TotalCost = p.TotalCost,
                     Remark = p.Remark,
+                    Status = p.Status,
                     CreatedBy = p.CreatedBy,
                     CreatedDate = p.CreatedUtcDate.ToString(),
                     PurchaseItems = p.PurchaseItems.Select(pi => new PurchaseItemDto
