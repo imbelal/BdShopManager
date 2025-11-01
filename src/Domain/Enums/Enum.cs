@@ -51,4 +51,18 @@
         Cancelled = 3       // Order cancelled
     }
 
+    public enum StockTransactionType
+    {
+        IN = 0,   // Stock coming in (increase)
+        OUT = 1   // Stock going out (decrease)
+    }
+
+    public enum StockReferenceType
+    {
+        Purchase = 0,
+        Sale = 1,
+        SalesReturn = 2,
+        Adjustment = 3
+    }
+
 }

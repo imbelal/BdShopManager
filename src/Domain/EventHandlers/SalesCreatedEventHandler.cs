@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Events;
 using Domain.Interfaces;
 using MediatR;
@@ -9,11 +10,16 @@ namespace Domain.EventHandlers
     public class SalesCreatedEventHandler : INotificationHandler<SalesCreatedEvent>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IStockTransactionRepository _stockTransactionRepository;
         private readonly IReadOnlyApplicationDbContext _context;
 
-        public SalesCreatedEventHandler(IProductRepository productRepository, IReadOnlyApplicationDbContext context)
+        public SalesCreatedEventHandler(
+            IProductRepository productRepository,
+            IStockTransactionRepository stockTransactionRepository,
+            IReadOnlyApplicationDbContext context)
         {
             _productRepository = productRepository;
+            _stockTransactionRepository = stockTransactionRepository;
             _context = context;
         }
 
@@ -29,6 +35,17 @@ namespace Domain.EventHandlers
                 {
                     product.DecreaseStockQuantity(salesItem.Quantity);
                     _productRepository.Update(product);
+
+                    // Create stock transaction record for Sale
+                    var stockTransaction = StockTransaction.CreateOutbound(
+                        productId: salesItem.ProductId,
+                        refType: StockReferenceType.Sale,
+                        refId: notification.SalesId,
+                        quantity: salesItem.Quantity,
+                        unitCost: product.CostPrice, // Use current average cost
+                        transactionDate: DateTime.UtcNow);
+
+                    _stockTransactionRepository.Add(stockTransaction);
                 }
             }
         }

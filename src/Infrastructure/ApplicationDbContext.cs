@@ -33,7 +33,6 @@ namespace Infrastructure
         public DbSet<ProductTag> ProductTags { get; set; }
         public DbSet<ProductPhoto> ProductPhotos { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<PurchaseItem> PurchaseItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -42,6 +41,8 @@ namespace Infrastructure
         public DbSet<SalesReturn> SalesReturns { get; set; }
         public DbSet<SalesReturnItem> SalesReturnItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<StockTransaction> StockTransactions { get; set; }
+        public DbSet<StockAdjustment> StockAdjustments { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
 
         #region ReadOnly
@@ -56,7 +57,6 @@ namespace Infrastructure
         IQueryable<ProductTag> IReadOnlyApplicationDbContext.ProductTags => ProductTags.AsQueryable();
         IQueryable<ProductPhoto> IReadOnlyApplicationDbContext.ProductPhotos => ProductPhotos.AsQueryable();
         IQueryable<Supplier> IReadOnlyApplicationDbContext.Suppliers => Suppliers.AsQueryable();
-        IQueryable<Inventory> IReadOnlyApplicationDbContext.Inventories => Inventories.AsQueryable();
         IQueryable<Purchase> IReadOnlyApplicationDbContext.Purchases => Purchases.AsQueryable();
         IQueryable<PurchaseItem> IReadOnlyApplicationDbContext.PurchaseItems => PurchaseItems.AsQueryable();
         IQueryable<Customer> IReadOnlyApplicationDbContext.Customers => Customers.AsQueryable();
@@ -65,6 +65,8 @@ namespace Infrastructure
         IQueryable<SalesReturn> IReadOnlyApplicationDbContext.SalesReturns => SalesReturns.AsQueryable();
         IQueryable<SalesReturnItem> IReadOnlyApplicationDbContext.SalesReturnItems => SalesReturnItems.AsQueryable();
         IQueryable<Payment> IReadOnlyApplicationDbContext.Payments => Payments.AsQueryable();
+        IQueryable<StockTransaction> IReadOnlyApplicationDbContext.StockTransactions => StockTransactions.AsQueryable();
+        IQueryable<StockAdjustment> IReadOnlyApplicationDbContext.StockAdjustments => StockAdjustments.AsQueryable();
         IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
         #endregion
 

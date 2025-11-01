@@ -40,7 +40,7 @@ namespace IntegrationTest.Tests
         {
             // Arrange
             Category entity = new("TestCate");
-            Product product = new("TestProduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, []);
+            Product product = new("TestProduct", "desc", entity.Id, Domain.Enums.ProductUnit.Piece, 0, []);
             DeleteCategoryCommand command = new(entity.Id);
 
             // Act

@@ -14,7 +14,6 @@ namespace Domain.Interfaces
         IQueryable<ProductTag> ProductTags { get; }
         IQueryable<ProductPhoto> ProductPhotos { get; }
         IQueryable<Supplier> Suppliers { get; }
-        IQueryable<Inventory> Inventories { get; }
         IQueryable<Purchase> Purchases { get; }
         IQueryable<PurchaseItem> PurchaseItems { get; }
         IQueryable<Customer> Customers { get; }
@@ -23,6 +22,8 @@ namespace Domain.Interfaces
         IQueryable<SalesReturn> SalesReturns { get; }
         IQueryable<SalesReturnItem> SalesReturnItems { get; }
         IQueryable<Payment> Payments { get; }
+        IQueryable<StockTransaction> StockTransactions { get; }
+        IQueryable<StockAdjustment> StockAdjustments { get; }
         IQueryable<Tenant> Tenants { get; }
     }
 }

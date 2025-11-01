@@ -16,7 +16,6 @@ namespace Domain.Interfaces
         DbSet<ProductTag> ProductTags { get; set; }
         DbSet<ProductPhoto> ProductPhotos { get; set; }
         DbSet<Supplier> Suppliers { get; set; }
-        DbSet<Inventory> Inventories { get; set; }
         DbSet<Purchase> Purchases { get; set; }
         DbSet<PurchaseItem> PurchaseItems { get; set; }
         DbSet<Customer> Customers { get; set; }
@@ -24,6 +23,8 @@ namespace Domain.Interfaces
         DbSet<SalesItem> SalesItems { get; set; }
         DbSet<SalesReturn> SalesReturns { get; set; }
         DbSet<SalesReturnItem> SalesReturnItems { get; set; }
+        DbSet<StockTransaction> StockTransactions { get; set; }
+        DbSet<StockAdjustment> StockAdjustments { get; set; }
         DbSet<Tenant> Tenants { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
