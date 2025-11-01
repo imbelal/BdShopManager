@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Domain.EventHandlers
 {
-    public class PurchaseCreatedEventHandler : INotificationHandler<PurchaseCreatedEvent>
+    public class PurchaseDeletedEventHandler : INotificationHandler<PurchaseDeletedEvent>
     {
         private readonly IProductRepository _productRepository;
         private readonly IStockTransactionRepository _stockTransactionRepository;
         private readonly IReadOnlyApplicationDbContext _context;
 
-        public PurchaseCreatedEventHandler(
+        public PurchaseDeletedEventHandler(
             IProductRepository productRepository,
             IStockTransactionRepository stockTransactionRepository,
             IReadOnlyApplicationDbContext context)
@@ -23,9 +23,9 @@ namespace Domain.EventHandlers
             _context = context;
         }
 
-        public async Task Handle(PurchaseCreatedEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(PurchaseDeletedEvent notification, CancellationToken cancellationToken)
         {
-            // Process all purchase items in bulk
+            // Reverse all purchase items - decrease stock and create reversal transactions
             foreach (var purchaseItem in notification.PurchaseItems)
             {
                 Product? product = await _context.Products
@@ -33,13 +33,12 @@ namespace Domain.EventHandlers
 
                 if (product != null)
                 {
-                    // Update average cost before increasing stock (order matters for calculation)
-                    product.UpdateAverageCost(purchaseItem.CostPerUnit, purchaseItem.Quantity);
-                    product.IncreaseStockQuantity(purchaseItem.Quantity);
+                    // Decrease stock (reversing the original purchase increase)
+                    product.DecreaseStockQuantity(purchaseItem.Quantity);
                     _productRepository.Update(product);
 
-                    // Create stock transaction record for Purchase
-                    var stockTransaction = StockTransaction.CreateInbound(
+                    // Create reversal stock transaction (OUT to reverse the original IN)
+                    var reversalTransaction = StockTransaction.CreateOutbound(
                         productId: purchaseItem.ProductId,
                         refType: StockReferenceType.Purchase,
                         refId: notification.PurchaseId,
@@ -47,9 +46,13 @@ namespace Domain.EventHandlers
                         unitCost: purchaseItem.CostPerUnit,
                         transactionDate: DateTime.UtcNow);
 
-                    _stockTransactionRepository.Add(stockTransaction);
+                    _stockTransactionRepository.Add(reversalTransaction);
                 }
             }
+
+            // Note: Average cost reversal is complex and would require tracking historical costs.
+            // For now, we maintain the current average cost as it reflects the weighted average
+            // of all historical purchases. Future purchases will adjust the average naturally.
         }
     }
 }

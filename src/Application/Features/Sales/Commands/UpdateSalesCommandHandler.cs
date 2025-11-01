@@ -24,6 +24,12 @@ namespace Application.Features.Sales.Commands
                 throw new Common.Exceptions.BusinessLogicException("Sales not found!");
             }
 
+            // Prevent editing sales when it's fully paid
+            if (sales.Status == Domain.Enums.SalesStatus.Paid)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Cannot edit sales that is fully paid!");
+            }
+
             Domain.Entities.Customer? customer = await _context.Customers
                 .FirstOrDefaultAsync(x => x.Id == command.CustomerId, cancellationToken);
             if (customer == null)

@@ -37,14 +37,12 @@ namespace Application.Features.Purchase.Commands
                 }
             }
 
-            // Create purchase aggregate - domain events will handle product updates
-            Domain.Entities.Purchase purchase = new(command.SupplierId, command.PurchaseDate, command.Remark);
-
-            // Add purchase items through the aggregate root
-            foreach (var item in command.PurchaseItems)
-            {
-                purchase.AddPurchaseItem(item.ProductId, item.Quantity, item.CostPerUnit);
-            }
+            // Create purchase with items (bulk operation) - domain events will handle product updates
+            Domain.Entities.Purchase purchase = Domain.Entities.Purchase.CreatePurchaseWithItems(
+                command.SupplierId,
+                command.PurchaseDate,
+                command.Remark,
+                command.PurchaseItems);
 
             _purchaseRepository.Add(purchase);
             await _purchaseRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

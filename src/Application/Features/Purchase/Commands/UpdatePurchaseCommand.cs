@@ -1,4 +1,5 @@
 using Common.RequestWrapper;
+using Domain.Dtos;
 
 namespace Application.Features.Purchase.Commands
 {
@@ -8,5 +9,6 @@ namespace Application.Features.Purchase.Commands
         public Guid SupplierId { get; set; }
         public DateTime PurchaseDate { get; set; }
         public string Remark { get; set; }
+        public List<CreatePurchaseItemDto> PurchaseItems { get; set; } = new();
     }
 }

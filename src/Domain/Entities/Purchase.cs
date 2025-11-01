@@ -32,19 +32,28 @@ namespace Domain.Entities
             TotalCost = 0; // Will be calculated when items are added
         }
 
-        // Add purchase item and recalculate total cost
-        public void AddPurchaseItem(Guid productId, int quantity, decimal costPerUnit)
+        // Static factory method to create purchase with items (bulk operation like Sales)
+        public static Purchase CreatePurchaseWithItems(Guid supplierId, DateTime purchaseDate, string remark, List<Dtos.CreatePurchaseItemDto> purchaseItemDtos)
         {
-            var purchaseItem = new PurchaseItem(Id, productId, quantity, costPerUnit);
-            _purchaseItems.Add(purchaseItem);
-            RecalculateTotalCost();
+            Purchase newPurchase = new(supplierId, purchaseDate, remark);
 
-            // Raise domain event when purchase item is added
-            // This will trigger updating product stock and average cost
-            RaiseDomainEvent(new PurchaseCreatedEvent(Id, productId, quantity, costPerUnit));
+            // Add all purchase items
+            foreach (var item in purchaseItemDtos)
+            {
+                var purchaseItem = new PurchaseItem(newPurchase.Id, item.ProductId, item.Quantity, item.CostPerUnit);
+                newPurchase._purchaseItems.Add(purchaseItem);
+            }
+
+            newPurchase.RecalculateTotalCost();
+
+            // Raise domain event with all items at once for bulk processing
+            var purchaseItemInfos = purchaseItemDtos.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
+            newPurchase.RaiseDomainEvent(new PurchaseCreatedEvent(newPurchase.Id, purchaseItemInfos));
+
+            return newPurchase;
         }
 
-        // Update purchase header info
+        // Update purchase header info only
         public void Update(Guid supplierId, DateTime purchaseDate, string remark)
         {
             SupplierId = supplierId;
@@ -52,27 +61,31 @@ namespace Domain.Entities
             Remark = remark;
         }
 
-        // Remove purchase item and recalculate total
-        public void RemovePurchaseItem(Guid purchaseItemId)
+        // Update purchase with items (complete replacement)
+        public void UpdateWithItems(Guid supplierId, DateTime purchaseDate, string remark, List<Dtos.CreatePurchaseItemDto> purchaseItemDtos)
         {
-            var item = _purchaseItems.FirstOrDefault(i => i.Id == purchaseItemId);
-            if (item != null)
+            // Capture old purchase items before clearing for stock adjustment
+            var oldPurchaseItemInfos = _purchaseItems.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
+
+            SupplierId = supplierId;
+            PurchaseDate = purchaseDate;
+            Remark = remark;
+
+            // Clear existing purchase items and add new ones
+            _purchaseItems.Clear();
+            foreach (var item in purchaseItemDtos)
             {
-                _purchaseItems.Remove(item);
-                RecalculateTotalCost();
+                var purchaseItem = new PurchaseItem(Id, item.ProductId, item.Quantity, item.CostPerUnit);
+                _purchaseItems.Add(purchaseItem);
             }
+
+            RecalculateTotalCost();
+
+            // Raise domain event for stock adjustment and average cost recalculation
+            var newPurchaseItemInfos = purchaseItemDtos.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
+            RaiseDomainEvent(new PurchaseUpdatedEvent(Id, oldPurchaseItemInfos, newPurchaseItemInfos));
         }
 
-        // Update purchase item and recalculate total
-        public void UpdatePurchaseItem(Guid purchaseItemId, Guid productId, int quantity, decimal costPerUnit)
-        {
-            var item = _purchaseItems.FirstOrDefault(i => i.Id == purchaseItemId);
-            if (item != null)
-            {
-                item.Update(productId, quantity, costPerUnit);
-                RecalculateTotalCost();
-            }
-        }
 
         // Business logic: Recalculate total cost based on all purchase items
         private void RecalculateTotalCost()
@@ -87,6 +100,10 @@ namespace Domain.Entities
             {
                 item.Delete();
             }
+
+            // Raise domain event to reverse stock and create reversal transactions
+            var purchaseItemInfos = _purchaseItems.Select(pi => new PurchaseItemInfo(pi.ProductId, pi.Quantity, pi.CostPerUnit)).ToList();
+            RaiseDomainEvent(new PurchaseDeletedEvent(Id, purchaseItemInfos));
         }
     }
 }
