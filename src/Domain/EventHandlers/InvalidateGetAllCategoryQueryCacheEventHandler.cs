@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Domain.EventHandlers
 {
-    public class InvalidateGetAllCategoryQueryCacheEventHandler : INotificationHandler<CategoryCreatedEvent>, INotificationHandler<CategoryUpdatedEvent>, INotificationHandler<CategoryDeletedEvent>
+    public class InvalidateGetAllCategoryQueryCacheEventHandler : INotificationHandler<CategoryCreatedEvent>, INotificationHandler<CategoryUpdatedEvent>
     {
         private readonly IMemoryCache _memoryCache;
         private readonly string _cacheKey;
@@ -23,12 +23,6 @@ namespace Domain.EventHandlers
             return Task.CompletedTask;
         }
         public Task Handle(CategoryUpdatedEvent notification, CancellationToken cancellationToken)
-        {
-            InvalidateAllCategoryQuery();
-
-            return Task.CompletedTask;
-        }
-        public Task Handle(CategoryDeletedEvent notification, CancellationToken cancellationToken)
         {
             InvalidateAllCategoryQuery();
 

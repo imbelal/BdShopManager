@@ -20,11 +20,6 @@ namespace Domain.Entities
             Title = title;
         }
 
-        public void RaiseDeleteEvent()
-        {
-            RaiseDomainEvent(new CategoryDeletedEvent(this.Id));
-        }
-
         public void RaiseCreatedEvent()
         {
             RaiseDomainEvent(new CategoryCreatedEvent());
