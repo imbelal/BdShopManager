@@ -25,13 +25,14 @@ namespace Infrastructure.Services
 
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
-                    page.Footer().AlignCenter().Text(x =>
-                    {
-                        x.Span("Page ");
-                        x.CurrentPageNumber();
-                        x.Span(" of ");
-                        x.TotalPages();
-                    });
+
+                page.Footer().AlignCenter().Text(x =>
+                {
+                    x.Span("Page ");
+                    x.CurrentPageNumber();
+                    x.Span(" of ");
+                    x.TotalPages();
+                });
                 });
             });
 
@@ -53,7 +54,11 @@ namespace Infrastructure.Services
                         column.Item().BorderBottom(1).Padding(2).Text("SALES INVOICE").FontSize(12).Bold();
                         column.Item().Text($"Sales #: {sales.SalesNumber}").FontSize(8);
                         column.Item().Text($"Date: {sales.CreatedDate:dd/MM/yyyy}").FontSize(8);
-                        column.Item().Text($"Status: {sales.Status}").FontSize(8).Bold();
+
+                        // Show status with appropriate color
+                        var statusText = sales.Status.ToString();
+                        var statusColor = sales.Status == Domain.Enums.SalesStatus.Cancelled ? Colors.Red.Darken2 : Colors.Black;
+                        column.Item().Text($"Status: {statusText}").FontSize(8).Bold().FontColor(statusColor);
                     });
 
                     // QR Code
@@ -63,28 +68,52 @@ namespace Infrastructure.Services
 
             void ComposeContent(IContainer container)
             {
-                container.PaddingVertical(20).Column(column =>
+                // Create a layered container for watermark overlay
+                container.Layers(layers =>
                 {
-                    column.Spacing(10);
-
-                    // Customer Information
-                    column.Item().Element(ComposeCustomerInfo);
-
-                    // Order Details Table
-                    column.Item().Element(ComposeTable);
-
-                    // Payment Summary
-                    column.Item().Element(ComposePaymentSummary);
-
-                    // Footer Note
-                    if (!string.IsNullOrWhiteSpace(sales.Remark))
+                    // Main content layer (primary layer)
+                    layers.PrimaryLayer().Column(column =>
                     {
-                        column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(5)
-                            .Text($"Note: {sales.Remark}").FontSize(9).Italic();
+                        column.Spacing(10);
+
+                        // Customer Information
+                        column.Item().Element(ComposeCustomerInfo);
+
+                        // Order Details Table
+                        column.Item().Element(ComposeTable);
+
+                        // Payment Summary
+                        column.Item().Element(ComposePaymentSummary);
+
+                        // Footer Note
+                        if (!string.IsNullOrWhiteSpace(sales.Remark))
+                        {
+                            column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(5)
+                                .Text($"Note: {sales.Remark}").FontSize(9).Italic();
+                        }
+
+                        // Cancellation notice
+                        if (sales.Status == Domain.Enums.SalesStatus.Cancelled)
+                        {
+                            column.Item().PaddingTop(10).BorderTop(2).BorderColor(Colors.Red.Medium).PaddingTop(5)
+                                .Text("This order has been cancelled. Stock has been restored to inventory.")
+                                .FontSize(10).FontColor(Colors.Red.Medium).Bold();
+                        }
+                    });
+
+                    // Watermark layer (only for cancelled orders)
+                    if (sales.Status == Domain.Enums.SalesStatus.Cancelled)
+                    {
+                        layers.Layer().AlignCenter().AlignMiddle().Rotate(-45)
+                            .Text("CANCELLED")
+                            .FontSize(72)
+                            .Bold()
+                            .FontColor(Colors.Red.Lighten3);
                     }
                 });
             }
 
+            
             void ComposeCustomerInfo(IContainer container)
             {
                 container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>

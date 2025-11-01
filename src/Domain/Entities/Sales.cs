@@ -141,6 +141,21 @@ namespace Domain.Entities
             RaiseDomainEvent(new SalesDeletedEvent(this.Id, salesItemInfos));
         }
 
+        public void Cancel()
+        {
+            // Only allow cancellation of pending or partially paid orders
+            if (Status == SalesStatus.Paid || Status == SalesStatus.Cancelled)
+            {
+                throw new Common.Exceptions.BusinessLogicException($"Cannot cancel sales that is {Status}.");
+            }
+
+            Status = SalesStatus.Cancelled;
+
+            // Raise domain event to restore stock for cancelled order
+            var salesItemInfos = salesItems.Select(od => new SalesItemInfo(od.ProductId, od.Quantity)).ToList();
+            RaiseDomainEvent(new SalesCancelledEvent(this.Id, salesItemInfos));
+        }
+
         public void SetSalesNumber(string salesNumber)
         {
             if (string.IsNullOrWhiteSpace(salesNumber))

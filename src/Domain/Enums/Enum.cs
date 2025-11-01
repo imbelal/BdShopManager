@@ -62,7 +62,8 @@
         Purchase = 0,
         Sale = 1,
         SalesReturn = 2,
-        Adjustment = 3
+        Adjustment = 3,
+        SalesCancellation = 4
     }
 
 }
