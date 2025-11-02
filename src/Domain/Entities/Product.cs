@@ -10,6 +10,8 @@ namespace Domain.Entities
         private List<ProductPhoto> productPhotos = new();
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
         public ProductUnit Unit { get; set; }
         public Guid CategoryId { get; set; }
         public ProductStatus Status { get; set; }
@@ -29,10 +31,12 @@ namespace Domain.Entities
 
         }
 
-        public Product(string title, string description, Guid categoryId, ProductUnit unit, decimal sellingPrice, List<Guid> tagIds) : base(Guid.NewGuid())
+        public Product(string title, string description, string size, string color, Guid categoryId, ProductUnit unit, decimal sellingPrice, List<Guid> tagIds) : base(Guid.NewGuid())
         {
             Title = title;
             Description = description;
+            Size = size;
+            Color = color;
             CategoryId = categoryId;
             Unit = unit;
             SellingPrice = sellingPrice;
@@ -40,10 +44,12 @@ namespace Domain.Entities
             AddTags(tagIds);
         }
 
-        public void Update(string title, string description, Guid categoryId, ProductUnit unit, decimal sellingPrice)
+        public void Update(string title, string description, string size, string color, Guid categoryId, ProductUnit unit, decimal sellingPrice)
         {
             Title = title;
             Description = description;
+            Size = size;
+            Color = color;
             CategoryId = categoryId;
             Unit = unit;
             SellingPrice = sellingPrice;

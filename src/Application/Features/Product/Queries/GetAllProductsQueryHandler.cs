@@ -29,7 +29,9 @@ namespace Application.Features.Product.Queries
             {
                 queryable = queryable.Where(p =>
                     p.Title.ToLower().Contains(term) ||
-                    p.Description.ToLower().Contains(term));
+                    p.Description.ToLower().Contains(term) ||
+                    (p.Size != null && p.Size.ToLower().Contains(term)) ||
+                    (p.Color != null && p.Color.ToLower().Contains(term)));
             }
 
             var query = queryable
@@ -38,6 +40,8 @@ namespace Application.Features.Product.Queries
                     Id = p.Id,
                     Title = p.Title,
                     Description = p.Description,
+                    Size = p.Size,
+                    Color = p.Color,
                     StockQuantity = p.StockQuantity,
                     Unit = p.Unit,
                     CategoryId = p.CategoryId,

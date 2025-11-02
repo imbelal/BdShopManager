@@ -38,7 +38,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("GetProductWithPaging/{pageSize}/{pageNumber}")]
-        public async Task<IActionResult> GetProducts(int pageSize, int pageNumber, [FromQuery] string searchTerm = null)
+        public async Task<IActionResult> GetProducts(int pageSize = 10, int pageNumber = 1, [FromQuery] string searchTerm = null)
         {
             GetAllProductsQuery query = new(pageNumber, pageSize, searchTerm);
             return Ok(await _mediator.Send(query));

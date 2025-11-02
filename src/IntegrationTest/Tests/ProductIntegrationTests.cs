@@ -52,6 +52,8 @@ namespace IntegrationTest.Tests
             var command = new CreateProductCommand(
                 "Test Product",
                 "Test Description",
+                "Large",
+                "Blue",
                 category.Id,
                 ProductUnit.Piece,
                 100.00m,
@@ -84,6 +86,8 @@ namespace IntegrationTest.Tests
             var command = new CreateProductCommand(
                 "Test Product",
                 "Test Description",
+                "Medium",
+                "Red",
                 Guid.NewGuid(), // Non-existent category
                 ProductUnit.Piece,
                 100.00m,
@@ -114,6 +118,8 @@ namespace IntegrationTest.Tests
                 product.Id,
                 "Updated Product Name",
                 "Updated Description",
+                "XLarge",
+                "Green",
                 category.Id,
                 Domain.Enums.ProductUnit.Piece,
                 150.00m);
@@ -148,6 +154,8 @@ namespace IntegrationTest.Tests
                 Guid.NewGuid(), // Non-existent product
                 "Updated Product Name",
                 "Updated Description",
+                "Small",
+                "Yellow",
                 category.Id,
                 Domain.Enums.ProductUnit.Piece,
                 150.00m);

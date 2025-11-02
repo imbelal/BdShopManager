@@ -24,7 +24,7 @@ namespace Application.Features.Product.Commands
             if (product == null)
                 return Response.Fail<Guid>("Product not found");
 
-            product.Update(command.Title, command.Description, command.CategoryId, command.Unit, command.SellingPrice);
+            product.Update(command.Title, command.Description, command.Size, command.Color, command.CategoryId, command.Unit, command.SellingPrice);
 
             _productRepository.Update(product);
             await _productRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
