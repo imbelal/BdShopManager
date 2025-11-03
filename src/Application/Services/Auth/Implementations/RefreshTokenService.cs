@@ -15,6 +15,6 @@ namespace Application.Services.Auth.Implementations
 
         public string Generate(User user) => _tokenGenerator.Generate(_appSettings.JwtSettings.Secret,
             _appSettings.JwtSettings.ValidIssuer, _appSettings.JwtSettings.ValidAudience,
-            _appSettings.JwtSettings.RefreshTokenValidityInDays);
+            _appSettings.JwtSettings.RefreshTokenValidityInMinutes);
     }
 }

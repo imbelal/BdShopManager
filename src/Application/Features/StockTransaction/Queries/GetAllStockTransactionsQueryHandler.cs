@@ -1,3 +1,4 @@
+using Common.Pagination;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Dtos;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.StockTransaction.Queries
 {
-    public class GetAllStockTransactionsQueryHandler : IQueryHandler<GetAllStockTransactionsQuery, List<StockTransactionDto>>
+    public class GetAllStockTransactionsQueryHandler : IQueryHandler<GetAllStockTransactionsQuery, Pagination<StockTransactionDto>>
     {
         private readonly IReadOnlyApplicationDbContext _context;
 
@@ -15,7 +16,7 @@ namespace Application.Features.StockTransaction.Queries
             _context = context;
         }
 
-        public async Task<IResponse<List<StockTransactionDto>>> Handle(GetAllStockTransactionsQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse<Pagination<StockTransactionDto>>> Handle(GetAllStockTransactionsQuery request, CancellationToken cancellationToken)
         {
             var query = _context.StockTransactions
                 .Where(st => !st.IsDeleted);
@@ -48,11 +49,9 @@ namespace Application.Features.StockTransaction.Queries
                 query = query.Where(st => st.TransactionDate < endOfDay);
             }
 
-            var transactions = await query
+            var transactionsDtoQuery = query
                 .Join(_context.Products, st => st.ProductId, p => p.Id, (st, p) => new { StockTransaction = st, Product = p })
                 .OrderByDescending(x => x.StockTransaction.TransactionDate)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
                 .Select(x => new StockTransactionDto
                 {
                     Id = x.StockTransaction.Id,
@@ -69,13 +68,14 @@ namespace Application.Features.StockTransaction.Queries
                     TransactionDate = x.StockTransaction.TransactionDate.ToString("yyyy-MM-dd HH:mm:ss"),
                     CreatedBy = x.StockTransaction.CreatedBy,
                     CreatedDate = x.StockTransaction.CreatedUtcDate.ToString("yyyy-MM-dd HH:mm:ss")
-                })
-                .ToListAsync(cancellationToken);
+                });
 
-            if (transactions.Count == 0)
-                return Response.Fail<List<StockTransactionDto>>("No stock transactions found!");
+            var pagination = await new Pagination<StockTransactionDto>().CreateAsync(transactionsDtoQuery, request.PageNumber, request.PageSize, cancellationToken);
 
-            return Response.Success(transactions);
+            if (pagination.Items.Count == 0)
+                return Response.Fail<Pagination<StockTransactionDto>>("No stock transactions found!");
+
+            return Response.Success(pagination);
         }
     }
 }
