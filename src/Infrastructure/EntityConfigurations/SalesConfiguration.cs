@@ -16,6 +16,7 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.DiscountPercentage).HasColumnName("DiscountPercentage").HasColumnType("decimal(5,2)").IsRequired().HasDefaultValue(0);
             builder.Property(x => x.TaxPercentage).HasColumnName("TaxPercentage").HasColumnType("decimal(5,2)").IsRequired().HasDefaultValue(0);
             builder.Property(x => x.TotalPaid).HasColumnName("TotalPaid").HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(x => x.Status).HasColumnName("Status").IsRequired().HasConversion<int>();
             builder.Property(x => x.Remark).HasColumnName("Remark").HasColumnType("nvarchar(max)").IsRequired();
             builder.Property(x => x.IsDeleted).HasColumnName("IsDeleted").HasColumnType("bit").IsRequired().HasDefaultValue(false);
             builder.Property(x => x.TenantId).HasColumnName("TenantId").HasColumnType("uniqueidentifier").IsRequired();

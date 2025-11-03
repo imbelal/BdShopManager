@@ -3,7 +3,6 @@ using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Dtos;
 using Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Product.Queries
 {
@@ -20,8 +19,6 @@ namespace Application.Features.Product.Queries
             var term = request.SearchTerm?.Trim().ToLower();
 
             var queryable = _context.Products
-                .Include(p => p.ProductTags)
-                .Include(p => p.ProductPhotos.Where(pp => pp.IsPrimary)) // Only load primary photos
                 .AsQueryable();
 
             // Add search filter only if searchTerm is provided
@@ -32,6 +29,82 @@ namespace Application.Features.Product.Queries
                     p.Description.ToLower().Contains(term) ||
                     (p.Size != null && p.Size.ToLower().Contains(term)) ||
                     (p.Color != null && p.Color.ToLower().Contains(term)));
+            }
+
+            // Add category filter
+            if (request.CategoryId.HasValue)
+            {
+                queryable = queryable.Where(p => p.CategoryId == request.CategoryId.Value);
+            }
+
+            // Add unit filter
+            if (request.Unit.HasValue)
+            {
+                queryable = queryable.Where(p => (int)p.Unit == request.Unit.Value);
+            }
+
+            // Add price range filter
+            if (request.MinPrice.HasValue)
+            {
+                queryable = queryable.Where(p => p.SellingPrice >= request.MinPrice.Value);
+            }
+
+            if (request.MaxPrice.HasValue)
+            {
+                queryable = queryable.Where(p => p.SellingPrice <= request.MaxPrice.Value);
+            }
+
+            // Add stock filter
+            if (request.InStock.HasValue)
+            {
+                if (request.InStock.Value)
+                {
+                    queryable = queryable.Where(p => p.StockQuantity > 0);
+                }
+                else
+                {
+                    queryable = queryable.Where(p => p.StockQuantity <= 0);
+                }
+            }
+
+            // Apply sorting
+            if (!string.IsNullOrEmpty(request.SortBy))
+            {
+                var sortBy = request.SortBy.ToLower();
+                var isAscending = request.SortOrder?.ToLower() != "desc";
+
+                switch (sortBy)
+                {
+                    case "title":
+                        queryable = isAscending
+                            ? queryable.OrderBy(p => p.Title)
+                            : queryable.OrderByDescending(p => p.Title);
+                        break;
+                    case "price":
+                        queryable = isAscending
+                            ? queryable.OrderBy(p => p.SellingPrice)
+                            : queryable.OrderByDescending(p => p.SellingPrice);
+                        break;
+                    case "stockquantity":
+                        queryable = isAscending
+                            ? queryable.OrderBy(p => p.StockQuantity)
+                            : queryable.OrderByDescending(p => p.StockQuantity);
+                        break;
+                    case "createddate":
+                        queryable = isAscending
+                            ? queryable.OrderBy(p => p.CreatedUtcDate)
+                            : queryable.OrderByDescending(p => p.CreatedUtcDate);
+                        break;
+                    default:
+                        // Default sort by created date descending
+                        queryable = queryable.OrderByDescending(p => p.CreatedUtcDate);
+                        break;
+                }
+            }
+            else
+            {
+                // Default sort by created date descending
+                queryable = queryable.OrderByDescending(p => p.CreatedUtcDate);
             }
 
             var query = queryable
@@ -49,11 +122,11 @@ namespace Application.Features.Product.Queries
                     CostPrice = p.CostPrice,
                     SellingPrice = p.SellingPrice,
                     ProfitMargin = p.ProfitMargin,
+                    Status = p.Status,
                     CreatedBy = p.CreatedBy,
                     CreatedDate = p.CreatedUtcDate.ToString(),
                     ProductTags = _context.Tags.Where(t => p.ProductTags.Any(pt => pt.TagId.Equals(t.Id))).Select(t => t.Title).ToList(),
                     ProductPhotos = p.ProductPhotos
-                        .Where(pp => pp.IsPrimary) // Only include primary photos
                         .Select(pp => new ProductPhotoDto
                         {
                             Id = pp.Id,

@@ -18,6 +18,7 @@ namespace Domain.Dtos
         public decimal ProfitMargin { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedDate { get; set; }
+        public ProductStatus Status { get; set; }
         public List<string> ProductTags { get; set; }
         public List<ProductPhotoDto> ProductPhotos { get; set; } = new List<ProductPhotoDto>();
     }
