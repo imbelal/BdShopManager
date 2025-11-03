@@ -43,5 +43,27 @@ namespace WebApi.Controllers
 
             return Ok(results);
         }
+
+        /// <summary>
+        /// Get all customers with pagination and total due amounts
+        /// </summary>
+        /// <param name="pageNumber">Page number (default: 1)</param>
+        /// <param name="pageSize">Page size (default: 10)</param>
+        /// <param name="searchTerm">Search term to filter customers by name, email, phone, or address</param>
+        /// <returns>Paginated list of customers with total due amounts from sales</returns>
+        [HttpGet("paginated")]
+        public async Task<IActionResult> GetAllWithPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null)
+        {
+            var query = new GetAllCustomersWithPaginationQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SearchTerm = searchTerm
+            };
+
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
     }
 }
