@@ -84,8 +84,34 @@ namespace Application.Features.Customer.Queries
                 customersDto.Add(customerDto);
             }
 
-            // Apply ordering after materialization
-            customersDto = customersDto.OrderByDescending(c => c.CreatedDate).ToList();
+            // Apply dynamic ordering after materialization
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                switch (query.SortBy.ToLower())
+                {
+                    case "totaldueamount":
+                        customersDto = query.SortOrder?.ToLower() == "asc"
+                            ? customersDto.OrderBy(c => c.TotalDueAmount).ToList()
+                            : customersDto.OrderByDescending(c => c.TotalDueAmount).ToList();
+                        break;
+                    case "lastsaledate":
+                        customersDto = query.SortOrder?.ToLower() == "asc"
+                            ? customersDto.OrderBy(c => c.LastSaleDate ?? DateTime.MinValue).ToList()
+                            : customersDto.OrderByDescending(c => c.LastSaleDate ?? DateTime.MinValue).ToList();
+                        break;
+                    case "createddate":
+                    default:
+                        customersDto = query.SortOrder?.ToLower() == "asc"
+                            ? customersDto.OrderBy(c => c.CreatedDate).ToList()
+                            : customersDto.OrderByDescending(c => c.CreatedDate).ToList();
+                        break;
+                }
+            }
+            else
+            {
+                // Default ordering
+                customersDto = customersDto.OrderByDescending(c => c.CreatedDate).ToList();
+            }
 
             // Create pagination by filtering the full list with pagination logic
             var allCustomersQueryable = customersDto.AsQueryable();

@@ -50,15 +50,24 @@ namespace WebApi.Controllers
         /// <param name="pageNumber">Page number (default: 1)</param>
         /// <param name="pageSize">Page size (default: 10)</param>
         /// <param name="searchTerm">Search term to filter customers by name, email, phone, or address</param>
+        /// <param name="sortBy">Sort by field (totalDueAmount, lastSaleDate, createdDate)</param>
+        /// <param name="sortOrder">Sort order (asc, desc)</param>
         /// <returns>Paginated list of customers with total due amounts from sales</returns>
         [HttpGet("paginated")]
-        public async Task<IActionResult> GetAllWithPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null)
+        public async Task<IActionResult> GetAllWithPagination(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] string? sortOrder = null)
         {
             var query = new GetAllCustomersWithPaginationQuery
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                SearchTerm = searchTerm
+                SearchTerm = searchTerm,
+                SortBy = sortBy,
+                SortOrder = sortOrder
             };
 
             var result = await _mediator.Send(query);
