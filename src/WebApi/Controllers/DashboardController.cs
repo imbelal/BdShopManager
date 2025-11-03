@@ -90,8 +90,9 @@ namespace WebApi.Controllers
         [HttpGet("sales-trends")]
         public async Task<IActionResult> GetSalesTrends([FromQuery] int days = 30)
         {
-            // For now, return a placeholder - this will be implemented in a future phase
-            return Ok(new { message = "Sales trends endpoint coming in next phase" });
+            var query = new GetSalesTrendsQuery(days);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
     }
 }
