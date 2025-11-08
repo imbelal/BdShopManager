@@ -43,6 +43,7 @@ namespace Infrastructure
         public DbSet<Payment> Payments { get; set; }
         public DbSet<StockTransaction> StockTransactions { get; set; }
         public DbSet<StockAdjustment> StockAdjustments { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
 
         #region ReadOnly
@@ -67,6 +68,7 @@ namespace Infrastructure
         IQueryable<Payment> IReadOnlyApplicationDbContext.Payments => Payments.AsQueryable();
         IQueryable<StockTransaction> IReadOnlyApplicationDbContext.StockTransactions => StockTransactions.AsQueryable();
         IQueryable<StockAdjustment> IReadOnlyApplicationDbContext.StockAdjustments => StockAdjustments.AsQueryable();
+        IQueryable<Expense> IReadOnlyApplicationDbContext.Expenses => Expenses.AsQueryable();
         IQueryable<Tenant> IReadOnlyApplicationDbContext.Tenants => Tenants.AsQueryable();
         #endregion
 

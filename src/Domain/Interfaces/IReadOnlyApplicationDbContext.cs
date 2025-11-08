@@ -24,6 +24,7 @@ namespace Domain.Interfaces
         IQueryable<Payment> Payments { get; }
         IQueryable<StockTransaction> StockTransactions { get; }
         IQueryable<StockAdjustment> StockAdjustments { get; }
+        IQueryable<Expense> Expenses { get; }
         IQueryable<Tenant> Tenants { get; }
     }
 }

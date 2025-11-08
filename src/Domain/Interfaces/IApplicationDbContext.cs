@@ -25,6 +25,7 @@ namespace Domain.Interfaces
         DbSet<SalesReturnItem> SalesReturnItems { get; set; }
         DbSet<StockTransaction> StockTransactions { get; set; }
         DbSet<StockAdjustment> StockAdjustments { get; set; }
+        DbSet<Expense> Expenses { get; set; }
         DbSet<Tenant> Tenants { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
