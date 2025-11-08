@@ -1,9 +1,11 @@
+using Application.Features.Expense.DTOs;
 using Domain.Dtos;
 using Domain.Interfaces;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QRCoder;
+using System.Reflection;
 
 namespace Infrastructure.Services
 {
@@ -244,6 +246,214 @@ namespace Infrastructure.Services
                     });
                 });
             }
+        }
+
+        public byte[] GenerateExpensesPdf<T>(List<T> expenses, string tenantName, string tenantAddress, string tenantPhone, DateTime? startDate, DateTime? endDate) where T : class
+        {
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    page.Header().Element(ComposeHeader);
+                    page.Content().Element(ComposeContent);
+
+                    page.Footer().AlignCenter().Text(x =>
+                    {
+                        x.Span("Page ");
+                        x.CurrentPageNumber();
+                        x.Span(" of ");
+                        x.TotalPages();
+                    });
+                });
+            });
+
+            return document.GeneratePdf();
+
+            void ComposeHeader(IContainer container)
+            {
+                container.Row(row =>
+                {
+                    row.RelativeItem().Column(column =>
+                    {
+                        column.Item().Text(tenantName).FontSize(20).Bold().FontColor(Colors.Blue.Medium);
+                        column.Item().Text(tenantAddress).FontSize(9);
+                        column.Item().Text($"Phone: {tenantPhone}").FontSize(9);
+                    });
+
+                    row.RelativeItem().Column(column =>
+                    {
+                        column.Item().BorderBottom(1).Padding(2).Text("EXPENSES REPORT").FontSize(12).Bold();
+                        column.Item().Text($"Generated: {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8);
+
+                        if (startDate.HasValue && endDate.HasValue)
+                        {
+                            column.Item().Text($"Period: {startDate.Value:dd/MM/yyyy} - {endDate.Value:dd/MM/yyyy}").FontSize(8);
+                        }
+                        else if (startDate.HasValue)
+                        {
+                            column.Item().Text($"From: {startDate.Value:dd/MM/yyyy}").FontSize(8);
+                        }
+                        else if (endDate.HasValue)
+                        {
+                            column.Item().Text($"Until: {endDate.Value:dd/MM/yyyy}").FontSize(8);
+                        }
+
+                        column.Item().Text($"Total Expenses: {expenses.Count}").FontSize(8);
+                    });
+                });
+            }
+
+            void ComposeContent(IContainer container)
+            {
+                container.Column(column =>
+                {
+                    column.Spacing(10);
+
+                    // Summary Section
+                    column.Item().Element(ComposeSummary);
+
+                    // Expenses Table
+                    column.Item().Element(ComposeExpensesTable);
+                });
+            }
+
+            void ComposeSummary(IContainer container)
+            {
+                container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
+                {
+                    column.Item().Text("SUMMARY").FontSize(12).Bold();
+
+                    var totalAmount = expenses.Sum(e => GetDecimalProperty(e, "Amount"));
+                    var paidAmount = expenses.Where(e => GetIntProperty(e, "Status") == 2).Sum(e => GetDecimalProperty(e, "Amount")); // Assuming status 2 = Paid
+                    var pendingAmount = expenses.Where(e => GetIntProperty(e, "Status") == 1).Sum(e => GetDecimalProperty(e, "Amount")); // Assuming status 1 = Pending
+                    var rejectedAmount = expenses.Where(e => GetIntProperty(e, "Status") == 3).Sum(e => GetDecimalProperty(e, "Amount")); // Assuming status 3 = Rejected
+
+                    column.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text($"Total Amount:").FontSize(10);
+                        row.RelativeItem().AlignRight().Text($"{totalAmount:N2} BDT").FontSize(10).Bold();
+                    });
+
+                    column.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text("Paid:").FontSize(10).FontColor(Colors.Green.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{paidAmount:N2} BDT").FontSize(10).FontColor(Colors.Green.Darken2);
+                    });
+
+                    column.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text("Pending:").FontSize(10).FontColor(Colors.Orange.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{pendingAmount:N2} BDT").FontSize(10).FontColor(Colors.Orange.Darken2);
+                    });
+
+                    column.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text("Rejected:").FontSize(10).FontColor(Colors.Red.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{rejectedAmount:N2} BDT").FontSize(10).FontColor(Colors.Red.Darken2);
+                    });
+                });
+            }
+
+            void ComposeExpensesTable(IContainer container)
+            {
+                container.Table(table =>
+                {
+                    // Define columns
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(25);  // #
+                        columns.RelativeColumn(2);    // Date
+                        columns.RelativeColumn(3);    // Title
+                        columns.RelativeColumn(2);    // Category
+                        columns.RelativeColumn(1.5f); // Status
+                        columns.RelativeColumn(1.5f); // Payment Method
+                        columns.RelativeColumn(1.5f); // Amount
+                    });
+
+                    // Header
+                    table.Header(header =>
+                    {
+                        header.Cell().Element(CellStyle).Text("#").Bold();
+                        header.Cell().Element(CellStyle).Text("Date").Bold();
+                        header.Cell().Element(CellStyle).Text("Title").Bold();
+                        header.Cell().Element(CellStyle).Text("Category").Bold();
+                        header.Cell().Element(CellStyle).Text("Status").Bold();
+                        header.Cell().Element(CellStyle).Text("Payment").Bold();
+                        header.Cell().Element(CellStyle).AlignRight().Text("Amount").Bold();
+
+                        static IContainer CellStyle(IContainer container)
+                        {
+                            return container.DefaultTextStyle(x => x.SemiBold()).PaddingVertical(5)
+                                .BorderBottom(1).BorderColor(Colors.Black);
+                        }
+                    });
+
+                    // Rows
+                    int index = 1;
+                    var sortedExpenses = expenses.OrderByDescending(e => GetDateTimeProperty(e, "ExpenseDate"));
+                    foreach (var expense in sortedExpenses)
+                    {
+                        var status = GetIntProperty(expense, "Status");
+                        var statusColor = GetStatusColor(status);
+
+                        table.Cell().Element(CellStyle).Text(index.ToString()).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(GetDateTimeProperty(expense, "ExpenseDate").ToString("dd/MM/yyyy")).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "Title")).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "ExpenseTypeName") ?? "").FontSize(9);
+                        table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "StatusName") ?? "").FontColor(statusColor).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "PaymentMethodName") ?? "").FontSize(9);
+                        table.Cell().Element(CellStyle).AlignRight().Text($"{GetDecimalProperty(expense, "Amount"):N2}").FontColor(statusColor).FontSize(9);
+
+                        index++;
+
+                        static IContainer CellStyle(IContainer container)
+                        {
+                            return container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
+                                .PaddingVertical(3);
+                        }
+                    }
+                });
+            }
+        }
+
+        private Color GetStatusColor(int status)
+        {
+            return status switch
+            {
+                1 => Colors.Orange.Darken2, // Pending
+                2 => Colors.Green.Darken2,  // Paid
+                3 => Colors.Red.Darken2,    // Rejected
+                _ => Colors.Grey.Darken1    // Default
+            };
+        }
+
+        private string GetStringProperty(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            return property?.GetValue(obj)?.ToString() ?? string.Empty;
+        }
+
+        private decimal GetDecimalProperty(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            return property != null ? Convert.ToDecimal(property.GetValue(obj) ?? 0) : 0;
+        }
+
+        private int GetIntProperty(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            return property != null ? Convert.ToInt32(property.GetValue(obj) ?? 0) : 0;
+        }
+
+        private DateTime GetDateTimeProperty(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            return property != null ? Convert.ToDateTime(property.GetValue(obj) ?? DateTime.MinValue) : DateTime.MinValue;
         }
 
         private byte[] GenerateQRCode(string salesNumber)

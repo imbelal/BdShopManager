@@ -1,3 +1,4 @@
+using Common.Exceptions;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Common.Services.Interfaces;
@@ -26,12 +27,12 @@ namespace Application.Features.Expense.Commands
 
             if (expense == null)
             {
-                return Response.Fail<Guid>("Expense not found.");
+                throw new BusinessLogicException("Expense not found.");
             }
 
             if (!expense.CanBePaid())
             {
-                return Response.Fail<Guid>($"Expense cannot be marked as paid in {expense.Status} status.");
+                throw new BusinessLogicException($"Expense cannot be marked as paid in {expense.Status} status.");
             }
 
             expense.MarkAsPaid();

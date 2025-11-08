@@ -1,4 +1,5 @@
 using Application.Features.Expense.DTOs;
+using Common.Exceptions;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Domain.Interfaces;
@@ -21,7 +22,7 @@ namespace Application.Features.Expense.Queries
 
             if (expense == null)
             {
-                return Response.Fail<ExpenseDto>("Expense not found.");
+                throw new BusinessLogicException("Expense not found.");
             }
 
             var expenseDto = new ExpenseDto

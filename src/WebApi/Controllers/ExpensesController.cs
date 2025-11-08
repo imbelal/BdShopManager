@@ -67,5 +67,41 @@ namespace WebApi.Controllers
             var result = await _mediator.Send(new GetExpenseByIdQuery(id));
             return Ok(result);
         }
+
+        [HttpGet("pdf")]
+        public async Task<IActionResult> GetExpensesPdf([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+        {
+            var response = await _mediator.Send(new GetExpensesPdfQuery
+            {
+                StartDate = startDate,
+                EndDate = endDate
+            });
+
+            if (response.Succeeded && response.Data != null)
+            {
+                var fileName = "Expenses_";
+                if (startDate.HasValue && endDate.HasValue)
+                {
+                    fileName += $"{startDate.Value:yyyyMMdd}_to_{endDate.Value:yyyyMMdd}";
+                }
+                else if (startDate.HasValue)
+                {
+                    fileName += $"from_{startDate.Value:yyyyMMdd}";
+                }
+                else if (endDate.HasValue)
+                {
+                    fileName += $"until_{endDate.Value:yyyyMMdd}";
+                }
+                else
+                {
+                    fileName += $"all_{DateTime.Now:yyyyMMdd}";
+                }
+                fileName += ".pdf";
+
+                return File(response.Data, "application/pdf", fileName);
+            }
+
+            return BadRequest("Failed to generate PDF");
+        }
     }
 }

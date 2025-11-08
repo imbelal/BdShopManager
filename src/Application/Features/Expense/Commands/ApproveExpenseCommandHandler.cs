@@ -1,3 +1,4 @@
+using Common.Exceptions;
 using Common.RequestWrapper;
 using Common.ResponseWrapper;
 using Common.Services.Interfaces;
@@ -24,12 +25,12 @@ namespace Application.Features.Expense.Commands
 
             if (expense == null)
             {
-                return Response.Fail<Guid>("Expense not found.");
+                throw new BusinessLogicException("Expense not found.");
             }
 
             if (!expense.CanBeApproved())
             {
-                return Response.Fail<Guid>($"Expense cannot be approved in {expense.Status} status.");
+                throw new BusinessLogicException($"Expense cannot be approved in {expense.Status} status.");
             }
 
             string user = _currentUserService?.GetUser()?.Claims?.FirstOrDefault(x => x.Type == "username")?.Value;
@@ -40,7 +41,7 @@ namespace Application.Features.Expense.Commands
             }
             else
             {
-                return Response.Fail<Guid>("User not found.");
+                throw new BusinessLogicException("User not found.");
             }
 
             await _context.SaveChangesAsync(cancellationToken);
