@@ -1,6 +1,5 @@
 ﻿using Common.RequestWrapper;
 using Common.ResponseWrapper;
-using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Features.User.Commands
@@ -18,7 +17,7 @@ namespace Application.Features.User.Commands
 
         public async Task<IResponse<Guid>> Handle(CreateTenantWithUserCommand request, CancellationToken cancellationToken)
         {
-            Tenant tenant = new(request.UserToCreate);
+            Domain.Entities.Tenant tenant = new(request.UserToCreate);
             _tenantRepository.Add(tenant);
             await _tenantRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

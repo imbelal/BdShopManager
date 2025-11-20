@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Domain.Enums;
 
 namespace Domain.Dtos
 {
@@ -65,9 +63,8 @@ namespace Domain.Dtos
         public string CustomerPhone { get; set; }
         public int TotalItems { get; set; }
         public decimal TotalAmount { get; set; }
-        public string PaymentStatus { get; set; }
         public string PaymentMethod { get; set; }
-        public string Status { get; set; }
+        public SalesStatus Status { get; set; }
         public string CreatedBy { get; set; }
         public string FormattedSaleDate { get; set; }
         public string FormattedTotalAmount { get; set; }

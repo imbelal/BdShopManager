@@ -34,9 +34,8 @@ namespace Application.Features.Dashboard.Queries
                         CustomerPhone = x.Customer.ContactNo,
                         TotalItems = x.Sales.SalesItems.Count(),
                         TotalAmount = x.Sales.TotalPrice,
-                        PaymentStatus = x.Sales.Status.ToString(),
                         PaymentMethod = x.Sales.Payments.FirstOrDefault().PaymentMethod,
-                        Status = x.Sales.Status.ToString(),
+                        Status = x.Sales.Status,
                         CreatedBy = x.Sales.CreatedBy,
                         FormattedSaleDate = x.Sales.CreatedUtcDate.ToString("yyyy-MM-dd HH:mm:ss"),
                         FormattedTotalAmount = x.Sales.TotalPrice.ToString("N2")
