@@ -17,6 +17,12 @@ namespace Application.Features.Sales.Commands
             Domain.Entities.Sales? sales = await _salesRepository.GetByIdAsync(command.Id, cancellationToken);
             if (sales == null) throw new Common.Exceptions.BusinessLogicException("Sales not found!!");
 
+            // Prevent deleting sales when any payment has been made
+            if (sales.TotalPaid > 0)
+            {
+                throw new Common.Exceptions.BusinessLogicException("Cannot delete sales that has payments! Only cancellation is allowed.");
+            }
+
             sales.Delete();
             _salesRepository.Update(sales);
             await _salesRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

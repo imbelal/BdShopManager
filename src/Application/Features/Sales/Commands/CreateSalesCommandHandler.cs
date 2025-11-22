@@ -43,7 +43,7 @@ namespace Application.Features.Sales.Commands
             Domain.Entities.Sales sales = Domain.Entities.Sales.CreateSalesWithItems(command.CustomerId,
                 command.TotalPrice,
                 command.DiscountPercentage,
-                command.TotalPaid,
+                0, // Start with 0 TotalPaid, will be updated by AddPayment
                 command.Remark,
                 command.SalesItems,
                 command.TaxPercentage);
@@ -51,6 +51,12 @@ namespace Application.Features.Sales.Commands
             // Generate and set unique sales number
             var salesNumber = await GenerateSalesNumber(cancellationToken);
             sales.SetSalesNumber(salesNumber);
+
+            // Create payment record if TotalPaid > 0
+            if (command.TotalPaid > 0)
+            {
+                sales.AddPayment(command.TotalPaid, "Cash", "Initial payment during sales creation");
+            }
 
             _salesRepository.Add(sales);
             await _salesRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

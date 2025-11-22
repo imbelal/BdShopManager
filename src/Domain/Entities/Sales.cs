@@ -199,6 +199,19 @@ namespace Domain.Entities
             UpdatePaymentStatus();
         }
 
+        public void AddPaymentReversal(decimal amount, string paymentMethod, string remark)
+        {
+            // Create and add reversal payment (negative amount)
+            var reversalPayment = new Payment(this.Id, amount, paymentMethod, remark);
+            payments.Add(reversalPayment);
+
+            // Update total paid (will be reduced by negative amount)
+            TotalPaid += amount;
+
+            // Update order status after reversal
+            UpdatePaymentStatus();
+        }
+
         private void ValidateDiscount()
         {
             // Validate discount percentage

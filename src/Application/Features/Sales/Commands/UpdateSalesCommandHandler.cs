@@ -24,10 +24,10 @@ namespace Application.Features.Sales.Commands
                 throw new Common.Exceptions.BusinessLogicException("Sales not found!");
             }
 
-            // Prevent editing sales when it's fully paid
-            if (sales.Status == Domain.Enums.SalesStatus.Paid)
+            // Prevent editing sales when any payment has been made
+            if (sales.TotalPaid > 0)
             {
-                throw new Common.Exceptions.BusinessLogicException("Cannot edit sales that is fully paid!");
+                throw new Common.Exceptions.BusinessLogicException("Cannot edit sales that has payments! Only cancellation is allowed.");
             }
 
             Domain.Entities.Customer? customer = await _context.Customers
@@ -55,7 +55,19 @@ namespace Application.Features.Sales.Commands
                 salesItem.UnitCost = products[salesItem.ProductId].CostPrice;
             }
 
-            sales.Update(command.CustomerId, command.TotalPrice, command.DiscountPercentage, command.TotalPaid, command.Remark, command.SalesItems, command.TaxPercentage);
+            // Store the old TotalPaid to calculate the difference
+            var oldTotalPaid = sales.TotalPaid;
+
+            // Update sales with the current TotalPaid (before adding new payment)
+            sales.Update(command.CustomerId, command.TotalPrice, command.DiscountPercentage, oldTotalPaid, command.Remark, command.SalesItems, command.TaxPercentage);
+
+            // Create payment record for additional amount if TotalPaid increased
+            var additionalPayment = command.TotalPaid - oldTotalPaid;
+            if (additionalPayment > 0)
+            {
+                sales.AddPayment(additionalPayment, "Cash", "Additional payment during sales update");
+            }
+
             _salesRepository.Update(sales);
             await _salesRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

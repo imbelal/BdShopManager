@@ -26,14 +26,20 @@ namespace Application.Features.Sales.Commands
             }
 
             // Check if sales can be cancelled
-            if (sales.Status == Domain.Enums.SalesStatus.Paid)
-            {
-                throw new Common.Exceptions.BusinessLogicException("Cannot cancel sales that is fully paid!");
-            }
-
             if (sales.Status == Domain.Enums.SalesStatus.Cancelled)
             {
                 throw new Common.Exceptions.BusinessLogicException("Sales is already cancelled!");
+            }
+
+            // Create reversal payment if any payment was made
+            if (sales.TotalPaid > 0)
+            {
+                // Create a negative payment to reverse the amount
+                var reversalAmount = -sales.TotalPaid; // Negative amount for reversal
+                var reversalRemark = $"Payment reversal for cancelled sales {sales.SalesNumber}";
+
+                // Add the reversal payment using the new AddPaymentReversal method
+                sales.AddPaymentReversal(reversalAmount, "Reversal", reversalRemark);
             }
 
             // Cancel the sales
