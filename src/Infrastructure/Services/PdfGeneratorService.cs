@@ -1,16 +1,101 @@
-using Application.Features.Expense.DTOs;
 using Domain.Dtos;
 using Domain.Interfaces;
+using QRCoder;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QRCoder;
-using System.Reflection;
+using System.Text;
 
 namespace Infrastructure.Services
 {
     public class PdfGeneratorService : IPdfGeneratorService
     {
+        private static string ConvertToBengaliDigits(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            var bengaliDigits = new Dictionary<char, char>
+            {
+                {'0', '০'}, {'1', '১'}, {'2', '২'}, {'3', '৩'}, {'4', '৪'},
+                {'5', '৫'}, {'6', '৬'}, {'7', '৭'}, {'8', '৮'}, {'9', '৯'}
+            };
+
+            var result = new StringBuilder();
+            foreach (char c in input)
+            {
+                result.Append(bengaliDigits.ContainsKey(c) ? bengaliDigits[c] : c);
+            }
+            return result.ToString();
+        }
+
+        private static string FormatNumberWithBengaliDigits(decimal number, string format = "N2")
+        {
+            return ConvertToBengaliDigits(number.ToString(format));
+        }
+
+        private static string FormatIntegerWithBengaliDigits(int number)
+        {
+            return ConvertToBengaliDigits(number.ToString());
+        }
+
+        private static string GetSalesStatusInBengali(Domain.Enums.SalesStatus status)
+        {
+            return status switch
+            {
+                Domain.Enums.SalesStatus.Pending => "মুলতবি",
+                Domain.Enums.SalesStatus.PartiallyPaid => "আংশিক পরিশোধিত",
+                Domain.Enums.SalesStatus.Paid => "পরিশোধিত",
+                Domain.Enums.SalesStatus.Cancelled => "বাতিল",
+                _ => "অজানা"
+            };
+        }
+
+        private static string GetUnitInBengali(Domain.Enums.ProductUnit unit)
+        {
+            return unit switch
+            {
+                Domain.Enums.ProductUnit.Box => "বক্স",
+                Domain.Enums.ProductUnit.Piece => "পিস",
+                Domain.Enums.ProductUnit.SquareFeet => "বর্গফুট",
+                Domain.Enums.ProductUnit.Kilogram => "কেজি",
+                Domain.Enums.ProductUnit.Gram => "গ্রাম",
+                Domain.Enums.ProductUnit.Liter => "লিটার",
+                Domain.Enums.ProductUnit.Milliliter => "মিলিলিটার",
+                Domain.Enums.ProductUnit.Meter => "মিটার",
+                Domain.Enums.ProductUnit.Centimeter => "সেন্টিমিটার",
+                Domain.Enums.ProductUnit.Inch => "ইঞ্চি",
+                Domain.Enums.ProductUnit.Yard => "গজ",
+                Domain.Enums.ProductUnit.Ton => "টন",
+                Domain.Enums.ProductUnit.Pack => "প্যাক",
+                Domain.Enums.ProductUnit.Dozen => "ডজন",
+                Domain.Enums.ProductUnit.Pair => "জোড়া",
+                Domain.Enums.ProductUnit.Roll => "রোল",
+                Domain.Enums.ProductUnit.Bundle => "বান্ডিল",
+                Domain.Enums.ProductUnit.Carton => "কার্টন",
+                Domain.Enums.ProductUnit.Bag => "ব্যাগ",
+                Domain.Enums.ProductUnit.Set => "সেট",
+                Domain.Enums.ProductUnit.Barrel => "ব্যারেল",
+                Domain.Enums.ProductUnit.Gallon => "গ্যালন",
+                Domain.Enums.ProductUnit.Can => "ক্যান",
+                Domain.Enums.ProductUnit.Tube => "টিউব",
+                Domain.Enums.ProductUnit.Packet => "প্যাকেট",
+                Domain.Enums.ProductUnit.Unit => "ইউনিট",
+                _ => "অজানা"
+            };
+        }
+
+        private static string GetExpenseStatusInBengali(int status)
+        {
+            return status switch
+            {
+                1 => "মুলতবি",
+                2 => "পরিশোধিত",
+                3 => "প্রত্যাখ্যান করা",
+                _ => "অজানা"
+            };
+        }
+
         public byte[] GenerateSalesPdf(SalesDto sales, string tenantName, string tenantAddress, string tenantPhone, string customerAddress, string customerPhone)
         {
             // Generate QR Code for the sales number (human-readable)
@@ -21,19 +106,44 @@ namespace Infrastructure.Services
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
-                    page.Margin(2, Unit.Centimetre);
+                    page.Margin(1, Unit.Centimetre);
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(10));
 
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
 
-                page.Footer().AlignCenter().Text(x =>
+                    page.Footer().AlignCenter().Column(column =>
                 {
-                    x.Span("Page ");
-                    x.CurrentPageNumber();
-                    x.Span(" of ");
-                    x.TotalPages();
+                    column.Spacing(10);
+
+                    // Main footer row with return policy and signatures
+                    column.Item().Row(row =>
+                    {
+                        // Customer signature section
+                        row.RelativeItem().AlignCenter().Column(col =>
+                        {
+                            col.Item().Height(40).BorderBottom(1).BorderColor(Colors.Black);
+                            col.Item().PaddingTop(3).Text("গ্রাহকের স্বাক্ষর").FontSize(9);
+                        });
+
+                        // Center return policy notice
+                        row.RelativeItem(2).AlignCenter().Column(col =>
+                        {
+                            col.Item().Height(40).BorderBottom(1).BorderColor(Colors.White);
+                            col.Item().PaddingTop(3).Text("বিক্রিত মালামাল ফেরৎ যোগ্য নহে")
+                                .FontSize(9).Bold().FontColor(Colors.Red.Darken1);
+                        });
+
+                        // Seller signature section
+                        row.RelativeItem().AlignCenter().Column(col =>
+                        {
+                            col.Item().Height(40).BorderBottom(1).BorderColor(Colors.Black);
+                            col.Item().PaddingTop(3).Text("বিক্রেতার স্বাক্ষর").FontSize(9);
+                        });
+                    });
+
+                    // Page number will be handled automatically by QuestPDF
                 });
                 });
             });
@@ -48,19 +158,19 @@ namespace Infrastructure.Services
                     {
                         column.Item().Text(tenantName).FontSize(20).Bold().FontColor(Colors.Blue.Medium);
                         column.Item().Text(tenantAddress).FontSize(9);
-                        column.Item().Text($"Phone: {tenantPhone}").FontSize(9);
+                        column.Item().Text($"ফোন: {tenantPhone}").FontSize(9);
                     });
 
                     row.ConstantItem(150).Column(column =>
                     {
-                        column.Item().BorderBottom(1).Padding(2).Text("SALES INVOICE").FontSize(12).Bold();
-                        column.Item().Text($"Sales #: {sales.SalesNumber}").FontSize(8);
-                        column.Item().Text($"Date: {sales.CreatedDate:dd/MM/yyyy}").FontSize(8);
+                        column.Item().BorderBottom(1).Padding(2).Text("বিক্রয় চালান").FontSize(12).Bold();
+                        column.Item().Text($"বিক্রয় #: {sales.SalesNumber}").FontSize(8);
+                        column.Item().Text($"তারিখ: {ConvertToBengaliDigits(sales.CreatedDate.ToString("dd/MM/yyyy"))}").FontSize(8);
 
                         // Show status with appropriate color
-                        var statusText = sales.Status.ToString();
+                        var statusText = GetSalesStatusInBengali(sales.Status);
                         var statusColor = sales.Status == Domain.Enums.SalesStatus.Cancelled ? Colors.Red.Darken2 : Colors.Black;
-                        column.Item().Text($"Status: {statusText}").FontSize(8).Bold().FontColor(statusColor);
+                        column.Item().Text($"অবস্থা: {statusText}").FontSize(8).Bold().FontColor(statusColor);
                     });
 
                     // QR Code
@@ -91,14 +201,14 @@ namespace Infrastructure.Services
                         if (!string.IsNullOrWhiteSpace(sales.Remark))
                         {
                             column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(5)
-                                .Text($"Note: {sales.Remark}").FontSize(9).Italic();
+                                .Text($"নোট: {sales.Remark}").FontSize(9).Italic();
                         }
 
                         // Cancellation notice
                         if (sales.Status == Domain.Enums.SalesStatus.Cancelled)
                         {
                             column.Item().PaddingTop(10).BorderTop(2).BorderColor(Colors.Red.Medium).PaddingTop(5)
-                                .Text("This order has been cancelled. Stock has been restored to inventory.")
+                                .Text("এই অর্ডারটি বাতিল করা হয়েছে। স্টক ইনভেন্টরিতে ফিরিয়ে দেওয়া হয়েছে।")
                                 .FontSize(10).FontColor(Colors.Red.Medium).Bold();
                         }
                     });
@@ -107,7 +217,7 @@ namespace Infrastructure.Services
                     if (sales.Status == Domain.Enums.SalesStatus.Cancelled)
                     {
                         layers.Layer().AlignCenter().AlignMiddle().Rotate(-45)
-                            .Text("CANCELLED")
+                            .Text("বাতিল")
                             .FontSize(72)
                             .Bold()
                             .FontColor(Colors.Red.Lighten3);
@@ -115,15 +225,15 @@ namespace Infrastructure.Services
                 });
             }
 
-            
+
             void ComposeCustomerInfo(IContainer container)
             {
                 container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
                 {
-                    column.Item().Text("CUSTOMER INFORMATION").FontSize(12).Bold();
-                    column.Item().Text($"Name: {sales.CustomerName}").FontSize(10);
-                    column.Item().Text($"Address: {customerAddress}").FontSize(10);
-                    column.Item().Text($"Phone: {customerPhone}").FontSize(10);
+                    column.Item().Text("গ্রাহক তথ্য").FontSize(12).Bold();
+                    column.Item().Text($"নাম: {sales.CustomerName}").FontSize(10);
+                    column.Item().Text($"ঠিকানা: {customerAddress}").FontSize(10);
+                    column.Item().Text($"ফোন: {customerPhone}").FontSize(10);
                 });
             }
 
@@ -134,7 +244,7 @@ namespace Infrastructure.Services
                     // Define columns
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.ConstantColumn(25);  // #
+                        columns.ConstantColumn(40);  // #
                         columns.RelativeColumn(3);    // Product Name
                         columns.RelativeColumn(1);    // Unit
                         columns.RelativeColumn(1);    // Quantity
@@ -145,12 +255,12 @@ namespace Infrastructure.Services
                     // Header
                     table.Header(header =>
                     {
-                        header.Cell().Element(CellStyle).Text("#").Bold();
-                        header.Cell().Element(CellStyle).Text("Product Name").Bold();
-                        header.Cell().Element(CellStyle).Text("Unit").Bold();
-                        header.Cell().Element(CellStyle).AlignRight().Text("Qty").Bold();
-                        header.Cell().Element(CellStyle).AlignRight().Text("Unit Price").Bold();
-                        header.Cell().Element(CellStyle).AlignRight().Text("Total").Bold();
+                        header.Cell().Element(CellStyle).Text("ক্রমিক").Bold();
+                        header.Cell().Element(CellStyle).Text("পণ্যের নাম").Bold();
+                        header.Cell().Element(CellStyle).Text("একক").Bold();
+                        header.Cell().Element(CellStyle).AlignRight().Text("পরিমাণ").Bold();
+                        header.Cell().Element(CellStyle).AlignRight().Text("একক মূল্য").Bold();
+                        header.Cell().Element(CellStyle).AlignRight().Text("সর্বমোট").Bold();
 
                         static IContainer CellStyle(IContainer container)
                         {
@@ -163,12 +273,14 @@ namespace Infrastructure.Services
                     int index = 1;
                     foreach (var item in sales.SalesItems)
                     {
-                        table.Cell().Element(CellStyle).Text(index.ToString());
+                        var isEvenRow = index % 2 == 0;
+
+                        table.Cell().Element(CellStyle).Text(FormatIntegerWithBengaliDigits(index));
                         table.Cell().Element(CellStyle).Text(item.ProductName);
-                        table.Cell().Element(CellStyle).Text(item.Unit.ToString());
-                        table.Cell().Element(CellStyle).AlignRight().Text(item.Quantity.ToString());
-                        table.Cell().Element(CellStyle).AlignRight().Text($"{item.UnitPrice:N2}");
-                        table.Cell().Element(CellStyle).AlignRight().Text($"{item.TotalPrice:N2}");
+                        table.Cell().Element(CellStyle).Text(GetUnitInBengali(item.Unit));
+                        table.Cell().Element(CellStyle).AlignRight().Text(FormatNumberWithBengaliDigits(item.Quantity));
+                        table.Cell().Element(CellStyle).AlignRight().Text($"{FormatNumberWithBengaliDigits(item.UnitPrice)} ৳");
+                        table.Cell().Element(CellStyle).AlignRight().Text($"{FormatNumberWithBengaliDigits(item.TotalPrice)} ৳");
 
                         index++;
 
@@ -189,8 +301,8 @@ namespace Infrastructure.Services
 
                     column.Item().Row(row =>
                     {
-                        row.ConstantItem(120).Text("Subtotal:").FontSize(11);
-                        row.ConstantItem(100).AlignRight().Text($"{sales.TotalPrice:N2} BDT").FontSize(11);
+                        row.ConstantItem(120).Text("উপমোট:").FontSize(11);
+                        row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.TotalPrice)} ৳").FontSize(11);
                     });
 
                     // Show discount if there is any discount
@@ -198,14 +310,14 @@ namespace Infrastructure.Services
                     {
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text($"Discount ({sales.DiscountPercentage:N2}%):").FontSize(11).FontColor(Colors.Red.Medium);
-                            row.ConstantItem(100).AlignRight().Text($"-{sales.DiscountAmount:N2} BDT").FontSize(11).FontColor(Colors.Red.Medium);
+                            row.ConstantItem(120).Text($"ডিসকাউন্ট ({FormatNumberWithBengaliDigits(sales.DiscountPercentage, "N2")}%):").FontSize(11).FontColor(Colors.Red.Medium);
+                            row.ConstantItem(100).AlignRight().Text($"-{FormatNumberWithBengaliDigits(sales.DiscountAmount)} ৳").FontSize(11).FontColor(Colors.Red.Medium);
                         });
 
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text("After Discount:").FontSize(11);
-                            row.ConstantItem(100).AlignRight().Text($"{sales.DiscountedPrice:N2} BDT").FontSize(11);
+                            row.ConstantItem(120).Text("ডিসকাউন্টের পর:").FontSize(11);
+                            row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.DiscountedPrice)} ৳").FontSize(11);
                         });
                     }
 
@@ -214,35 +326,35 @@ namespace Infrastructure.Services
                     {
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text($"Tax ({sales.TaxPercentage:N2}%):").FontSize(11);
-                            row.ConstantItem(100).AlignRight().Text($"{sales.TaxAmount:N2} BDT").FontSize(11);
+                            row.ConstantItem(120).Text($"কর ({FormatNumberWithBengaliDigits(sales.TaxPercentage, "N2")}%):").FontSize(11);
+                            row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.TaxAmount)} ৳").FontSize(11);
                         });
 
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text("Grand Total:").FontSize(11).SemiBold();
-                            row.ConstantItem(100).AlignRight().Text($"{sales.GrandTotal:N2} BDT").FontSize(11).SemiBold();
+                            row.ConstantItem(120).Text("সর্বমোট:").FontSize(11).SemiBold();
+                            row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.GrandTotal)} ৳").FontSize(11).SemiBold();
                         });
                     }
                     else
                     {
                         column.Item().Row(row =>
                         {
-                            row.ConstantItem(120).Text("Total Amount:").FontSize(11).SemiBold();
-                            row.ConstantItem(100).AlignRight().Text($"{sales.DiscountedPrice:N2} BDT").FontSize(11).SemiBold();
+                            row.ConstantItem(120).Text("সর্বমোট পরিমাণ:").FontSize(11).SemiBold();
+                            row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.DiscountedPrice)} ৳").FontSize(11).SemiBold();
                         });
                     }
 
                     column.Item().Row(row =>
                     {
-                        row.ConstantItem(120).Text("Total Paid:").FontSize(11).FontColor(Colors.Green.Darken2);
-                        row.ConstantItem(100).AlignRight().Text($"{sales.TotalPaid:N2} BDT").FontSize(11).FontColor(Colors.Green.Darken2);
+                        row.ConstantItem(120).Text("সর্বমোট প্রদত্ত:").FontSize(11).FontColor(Colors.Green.Darken2);
+                        row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.TotalPaid)} ৳").FontSize(11).FontColor(Colors.Green.Darken2);
                     });
 
                     column.Item().Row(row =>
                     {
-                        row.ConstantItem(120).Text("Remaining:").FontSize(12).Bold().FontColor(Colors.Red.Medium);
-                        row.ConstantItem(100).AlignRight().Text($"{sales.RemainingAmount:N2} BDT").FontSize(12).Bold().FontColor(Colors.Red.Medium);
+                        row.ConstantItem(120).Text("বাকি:").FontSize(12).Bold().FontColor(Colors.Red.Medium);
+                        row.ConstantItem(100).AlignRight().Text($"{FormatNumberWithBengaliDigits(sales.RemainingAmount)} ৳").FontSize(12).Bold().FontColor(Colors.Red.Medium);
                     });
                 });
             }
@@ -255,7 +367,7 @@ namespace Infrastructure.Services
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
-                    page.Margin(2, Unit.Centimetre);
+                    page.Margin(1, Unit.Centimetre);
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(10));
 
@@ -264,9 +376,9 @@ namespace Infrastructure.Services
 
                     page.Footer().AlignCenter().Text(x =>
                     {
-                        x.Span("Page ");
+                        x.Span("পৃষ্ঠা ");
                         x.CurrentPageNumber();
-                        x.Span(" of ");
+                        x.Span(" এর ");
                         x.TotalPages();
                     });
                 });
@@ -282,28 +394,28 @@ namespace Infrastructure.Services
                     {
                         column.Item().Text(tenantName).FontSize(20).Bold().FontColor(Colors.Blue.Medium);
                         column.Item().Text(tenantAddress).FontSize(9);
-                        column.Item().Text($"Phone: {tenantPhone}").FontSize(9);
+                        column.Item().Text($"ফোন: {tenantPhone}").FontSize(9);
                     });
 
                     row.RelativeItem().Column(column =>
                     {
-                        column.Item().BorderBottom(1).Padding(2).Text("EXPENSES REPORT").FontSize(12).Bold();
-                        column.Item().Text($"Generated: {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8);
+                        column.Item().BorderBottom(1).Padding(2).Text("ব্যয় প্রতিবেদন").FontSize(12).Bold();
+                        column.Item().Text($"তৈরি: {ConvertToBengaliDigits(DateTime.Now.ToString("dd/MM/yyyy HH:mm"))}").FontSize(8);
 
                         if (startDate.HasValue && endDate.HasValue)
                         {
-                            column.Item().Text($"Period: {startDate.Value:dd/MM/yyyy} - {endDate.Value:dd/MM/yyyy}").FontSize(8);
+                            column.Item().Text($"সময়কাল: {ConvertToBengaliDigits(startDate.Value.ToString("dd/MM/yyyy"))} - {ConvertToBengaliDigits(endDate.Value.ToString("dd/MM/yyyy"))}").FontSize(8);
                         }
                         else if (startDate.HasValue)
                         {
-                            column.Item().Text($"From: {startDate.Value:dd/MM/yyyy}").FontSize(8);
+                            column.Item().Text($"থেকে: {ConvertToBengaliDigits(startDate.Value.ToString("dd/MM/yyyy"))}").FontSize(8);
                         }
                         else if (endDate.HasValue)
                         {
-                            column.Item().Text($"Until: {endDate.Value:dd/MM/yyyy}").FontSize(8);
+                            column.Item().Text($"পর্যন্ত: {ConvertToBengaliDigits(endDate.Value.ToString("dd/MM/yyyy"))}").FontSize(8);
                         }
 
-                        column.Item().Text($"Total Expenses: {expenses.Count}").FontSize(8);
+                        column.Item().Text($"মোট ব্যয়: {FormatIntegerWithBengaliDigits(expenses.Count)}").FontSize(8);
                     });
                 });
             }
@@ -326,7 +438,7 @@ namespace Infrastructure.Services
             {
                 container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
                 {
-                    column.Item().Text("SUMMARY").FontSize(12).Bold();
+                    column.Item().Text("সারসংক্ষেপ").FontSize(12).Bold();
 
                     var totalAmount = expenses.Sum(e => GetDecimalProperty(e, "Amount"));
                     var paidAmount = expenses.Where(e => GetIntProperty(e, "Status") == 2).Sum(e => GetDecimalProperty(e, "Amount")); // Assuming status 2 = Paid
@@ -335,26 +447,26 @@ namespace Infrastructure.Services
 
                     column.Item().Row(row =>
                     {
-                        row.RelativeItem().Text($"Total Amount:").FontSize(10);
-                        row.RelativeItem().AlignRight().Text($"{totalAmount:N2} BDT").FontSize(10).Bold();
+                        row.RelativeItem().Text($"সর্বমোট পরিমাণ:").FontSize(10);
+                        row.RelativeItem().AlignRight().Text($"{FormatNumberWithBengaliDigits(totalAmount)} ৳").FontSize(10).Bold();
                     });
 
                     column.Item().Row(row =>
                     {
-                        row.RelativeItem().Text("Paid:").FontSize(10).FontColor(Colors.Green.Darken2);
-                        row.RelativeItem().AlignRight().Text($"{paidAmount:N2} BDT").FontSize(10).FontColor(Colors.Green.Darken2);
+                        row.RelativeItem().Text("পরিশোধিত:").FontSize(10).FontColor(Colors.Green.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{FormatNumberWithBengaliDigits(paidAmount)} ৳").FontSize(10).FontColor(Colors.Green.Darken2);
                     });
 
                     column.Item().Row(row =>
                     {
-                        row.RelativeItem().Text("Pending:").FontSize(10).FontColor(Colors.Orange.Darken2);
-                        row.RelativeItem().AlignRight().Text($"{pendingAmount:N2} BDT").FontSize(10).FontColor(Colors.Orange.Darken2);
+                        row.RelativeItem().Text("মুলতবি:").FontSize(10).FontColor(Colors.Orange.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{FormatNumberWithBengaliDigits(pendingAmount)} ৳").FontSize(10).FontColor(Colors.Orange.Darken2);
                     });
 
                     column.Item().Row(row =>
                     {
-                        row.RelativeItem().Text("Rejected:").FontSize(10).FontColor(Colors.Red.Darken2);
-                        row.RelativeItem().AlignRight().Text($"{rejectedAmount:N2} BDT").FontSize(10).FontColor(Colors.Red.Darken2);
+                        row.RelativeItem().Text("প্রত্যাখ্যান করা:").FontSize(10).FontColor(Colors.Red.Darken2);
+                        row.RelativeItem().AlignRight().Text($"{FormatNumberWithBengaliDigits(rejectedAmount)} ৳").FontSize(10).FontColor(Colors.Red.Darken2);
                     });
                 });
             }
@@ -366,7 +478,7 @@ namespace Infrastructure.Services
                     // Define columns
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.ConstantColumn(25);  // #
+                        columns.ConstantColumn(40);  // #
                         columns.RelativeColumn(2);    // Date
                         columns.RelativeColumn(3);    // Title
                         columns.RelativeColumn(2);    // Category
@@ -378,13 +490,13 @@ namespace Infrastructure.Services
                     // Header
                     table.Header(header =>
                     {
-                        header.Cell().Element(CellStyle).Text("#").Bold();
-                        header.Cell().Element(CellStyle).Text("Date").Bold();
-                        header.Cell().Element(CellStyle).Text("Title").Bold();
-                        header.Cell().Element(CellStyle).Text("Category").Bold();
-                        header.Cell().Element(CellStyle).Text("Status").Bold();
-                        header.Cell().Element(CellStyle).Text("Payment").Bold();
-                        header.Cell().Element(CellStyle).AlignRight().Text("Amount").Bold();
+                        header.Cell().Element(CellStyle).Text("ক্রমিক").Bold();
+                        header.Cell().Element(CellStyle).Text("তারিখ").Bold();
+                        header.Cell().Element(CellStyle).Text("শিরোনাম").Bold();
+                        header.Cell().Element(CellStyle).Text("বিভাগ").Bold();
+                        header.Cell().Element(CellStyle).Text("অবস্থা").Bold();
+                        header.Cell().Element(CellStyle).Text("পেমেন্ট").Bold();
+                        header.Cell().Element(CellStyle).AlignRight().Text("পরিমাণ").Bold();
 
                         static IContainer CellStyle(IContainer container)
                         {
@@ -400,14 +512,15 @@ namespace Infrastructure.Services
                     {
                         var status = GetIntProperty(expense, "Status");
                         var statusColor = GetStatusColor(status);
+                        var statusText = GetExpenseStatusInBengali(status);
 
-                        table.Cell().Element(CellStyle).Text(index.ToString()).FontSize(9);
-                        table.Cell().Element(CellStyle).Text(GetDateTimeProperty(expense, "ExpenseDate").ToString("dd/MM/yyyy")).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(FormatIntegerWithBengaliDigits(index)).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(ConvertToBengaliDigits(GetDateTimeProperty(expense, "ExpenseDate").ToString("dd/MM/yyyy"))).FontSize(9);
                         table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "Title")).FontSize(9);
                         table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "ExpenseTypeName") ?? "").FontSize(9);
-                        table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "StatusName") ?? "").FontColor(statusColor).FontSize(9);
+                        table.Cell().Element(CellStyle).Text(statusText).FontColor(statusColor).FontSize(9);
                         table.Cell().Element(CellStyle).Text(GetStringProperty(expense, "PaymentMethodName") ?? "").FontSize(9);
-                        table.Cell().Element(CellStyle).AlignRight().Text($"{GetDecimalProperty(expense, "Amount"):N2}").FontColor(statusColor).FontSize(9);
+                        table.Cell().Element(CellStyle).AlignRight().Text($"{FormatNumberWithBengaliDigits(GetDecimalProperty(expense, "Amount"))}").FontColor(statusColor).FontSize(9);
 
                         index++;
 
